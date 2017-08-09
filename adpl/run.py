@@ -3,8 +3,11 @@ import asyncio
 import logging
 
 # Include 3rd-party modules
+from aiohttp import web
+
 # Include DPL modules
 from adpl.core import Controller
+from adpl.api.rest_api import RequestDispatcher
 
 
 # Init processes
@@ -38,18 +41,19 @@ def main():
     :return: None
     """
     loop = asyncio.get_event_loop()
+    loop.set_debug(enabled=True)
+    controller = Controller()
 
     try:
-        loop.set_debug(enabled=True)
-        controller = Controller()
+        asyncio.ensure_future(controller.start(), loop=loop)
 
-        asyncio.ensure_future(controller.setup(), loop=loop)
         loop.run_forever()
 
     except KeyboardInterrupt:
         pass
 
     finally:
+        loop.run_until_complete(controller.shutdown())
         shutdown(loop)
         loop.close()
 
