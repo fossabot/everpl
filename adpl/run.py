@@ -7,7 +7,6 @@ from aiohttp import web
 
 # Include DPL modules
 from adpl.core import Controller
-from adpl.api.rest_api import RequestDispatcher
 
 
 # Init processes
