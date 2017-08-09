@@ -4,6 +4,7 @@ import logging
 
 # Include 3rd-party modules
 # Include DPL modules
+from adpl.core import Controller
 
 
 # Init processes
@@ -31,11 +32,6 @@ def shutdown(loop: asyncio.AbstractEventLoop = None):
         pass
 
 
-async def hello_world():
-    print("Hello, world!")
-    await asyncio.sleep(10)
-
-
 def main():
     """
     Main function of the application
@@ -45,7 +41,9 @@ def main():
 
     try:
         loop.set_debug(enabled=True)
-        asyncio.ensure_future(hello_world(), loop=loop)
+        controller = Controller()
+
+        asyncio.ensure_future(controller.setup(), loop=loop)
         loop.run_forever()
 
     except KeyboardInterrupt:
