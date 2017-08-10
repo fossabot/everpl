@@ -12,12 +12,12 @@ class DispatcherProxy(object):
     def __init__(self, router: web.AbstractRouter):
         self._router = router
 
-    async def dispatch(self, request: web.Request):
+    async def dispatch(self, request: web.Request) -> web.Response:
         resolved = await self._router.resolve(request)  # type: web.AbstractMatchInfo
         return await resolved.handler(request)
 
 
-async def create_rest_server(loop):
+async def create_rest_server(loop: asyncio.AbstractEventLoop) -> None:
     dispatcher = web.UrlDispatcher()
     dispatcher.add_get(path='/', handler=root_get_handler)
 
