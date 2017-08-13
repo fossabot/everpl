@@ -7,7 +7,7 @@ from typing import Dict
 # Include 3rd-party modules
 # Include DPL modules
 from adpl import api
-from adpl import clients
+from adpl import auth
 
 
 class ClientManager(object):
@@ -19,11 +19,11 @@ class ClientManager(object):
         """
         Constructor without parameters
         """
-        self._users = dict()  # type: Dict[UUID, clients.User]
-        self._clients = dict()  # type: Dict[UUID, clients.Client]
+        self._users = dict()  # type: Dict[UUID, auth.User]
+        self._clients = dict()  # type: Dict[UUID, auth.Client]
 
     @property
-    def users(self) -> Dict[UUID, clients.User]:
+    def users(self) -> Dict[UUID, auth.User]:
         """
         A read-only property which returns a collection of users
         :return: a dict with key = UserID and value = an instance of User
@@ -31,21 +31,21 @@ class ClientManager(object):
         return self._users
 
     @property
-    def clients(self) -> Dict[UUID, clients.Client]:
+    def clients(self) -> Dict[UUID, auth.Client]:
         """
-        A read-only property which returns a collection of clients
+        A read-only property which returns a collection of auth
         :return: a dict with key = ClientID and value = an instance of Client
         """
         return self._clients
 
-    def get_user_by_client(self, client_id: UUID) -> clients.User:
+    def get_user_by_client(self, client_id: UUID) -> auth.User:
         """
         Find a user by ID of its client
-        :return: an instance of clients.User
+        :return: an instance of auth.User
         """
         raise NotImplementedError
 
-    def add_user(self, user_ins: clients.User) -> UUID:
+    def add_user(self, user_ins: auth.User) -> UUID:
         """
         Add a user to the system and assign a UUID to him
         :param user_ins: a prepared instance of client.User
