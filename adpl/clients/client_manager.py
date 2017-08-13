@@ -2,6 +2,7 @@
 import asyncio
 import logging
 from uuid import UUID
+from typing import Dict
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -18,11 +19,11 @@ class ClientManager(object):
         """
         Constructor without parameters
         """
-        self._users = dict()  # type: dict[UUID, clients.User]
-        self._clients = dict()  # type: dict[UUID, clients.Client]
+        self._users = dict()  # type: Dict[UUID, clients.User]
+        self._clients = dict()  # type: Dict[UUID, clients.Client]
 
     @property
-    def users(self) -> dict[UUID, clients.User]:
+    def users(self) -> Dict[UUID, clients.User]:
         """
         A read-only property which returns a collection of users
         :return: a dict with key = UserID and value = an instance of User
@@ -30,7 +31,7 @@ class ClientManager(object):
         return self._users
 
     @property
-    def clients(self) -> dict[UUID, clients.Client]:
+    def clients(self) -> Dict[UUID, clients.Client]:
         """
         A read-only property which returns a collection of clients
         :return: a dict with key = ClientID and value = an instance of Client
