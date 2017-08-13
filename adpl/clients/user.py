@@ -2,10 +2,19 @@
 
 
 # Include 3rd-party modules
+import passlib
 from passlib.ifc import PasswordHash
-from passlib.hash import pbkdf2_sha256 as Hasher
+from passlib.hash import pbkdf2_sha256
 
 # Include DPL modules
+
+
+# Specify used hasher
+Hasher = pbkdf2_sha256  # type: PasswordHash
+
+# Patch old versions of passlib
+if passlib.__version__ < '1.7':
+    Hasher.hash = Hasher.encrypt
 
 
 class User(object):
@@ -22,7 +31,7 @@ class User(object):
         self._username = None  # type: str
 
         self.username = username  # set actual value and ensure its validity
-        self._pwd_hash = Hasher.hash(password)  # type: PasswordHash
+        self._pwd_hash = Hasher.hash(password)  # type: str
 
     @property
     def username(self) -> str:
