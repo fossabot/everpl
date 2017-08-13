@@ -7,7 +7,7 @@ import json
 from aiohttp import web
 
 # Include DPL modules
-
+from adpl.auth import User
 
 # Declare constants:
 CONTENT_TYPE_JSON = "application/json"
@@ -51,6 +51,16 @@ def make_json_response(content: object) -> web.Response:
     return response
 
 
+def make_error_response(status: int, message: str) -> web.Response:
+    """
+    Creates a simple response with specified error code and explanatory message
+    :param status: status code of the response
+    :param message: explanatory message
+    :return: created response
+    """
+    return web.Response(body="{0}: {1}".format(status, message), status=status)
+
+
 async def create_rest_server(loop: asyncio.AbstractEventLoop) -> None:
     """
     Factory function that creates fully-functional aiohttp server,
@@ -61,6 +71,7 @@ async def create_rest_server(loop: asyncio.AbstractEventLoop) -> None:
     dispatcher = web.UrlDispatcher()
     dispatcher.add_get(path='/', handler=root_get_handler)
     dispatcher.add_get(path='/json_sample', handler=json_get_handler)
+    dispatcher.add_post(path='/auth', handler=auth_post_handler)
 
     dproxy = DispatcherProxy(dispatcher)
 
@@ -87,3 +98,34 @@ async def json_get_handler(request: web.Request) -> web.Response:
     return make_json_response(
         {"text": "Hello, world!", "status": 200}
     )
+
+
+SAMPLE_USER = User(username="Foo", password="Bar")
+
+
+async def auth_post_handler(request: web.Request) -> web.Response:
+    """
+    Primitive username and password validator
+    :param request: request to be processed
+    :return: a response to request
+    """
+    if request.content_type != CONTENT_TYPE_JSON:
+        return web.Response(body="400: Invalid request content-type", status=400)
+
+    data = await request.json()  # type: dict
+
+    username = data.get("username", None)
+    password = data.get("password", None)
+
+    if username is None:
+        return make_error_response(status=400, message="Username is not specified or is null")
+
+    if password is None:
+        return make_error_response(status=400, message="Password is not specified or is null")
+
+    if username == SAMPLE_USER.username and SAMPLE_USER.verify_password(password):
+        return make_json_response({"token": "12345678"})
+
+    else:
+        return make_error_response(status=403, message="Access is forbidden. Please, "
+                                                       "check your username and password combination")
