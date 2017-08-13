@@ -1,11 +1,14 @@
 # Include standard modules
 import asyncio
 import logging
+import json
 
 # Include 3rd-party modules
 from aiohttp import web
 
 # Include DPL modules
+
+CONTENT_TYPE_JSON = "application/json"
 
 
 class DispatcherProxy(object):
@@ -32,6 +35,20 @@ class DispatcherProxy(object):
         return await resolved.handler(request)
 
 
+def make_json_response(content: object) -> web.Response:
+    """
+    Serialize given content to JSON and create corresponding response
+    :param content: content to serialize
+    :return: created response
+    """
+    serialized = json.dumps(obj=content)
+    response = web.Response()
+    response.content_type = CONTENT_TYPE_JSON
+    response.body = serialized
+
+    return response
+
+
 async def create_rest_server(loop: asyncio.AbstractEventLoop) -> None:
     """
     Factory function that creates fully-functional aiohttp server,
@@ -41,6 +58,7 @@ async def create_rest_server(loop: asyncio.AbstractEventLoop) -> None:
     """
     dispatcher = web.UrlDispatcher()
     dispatcher.add_get(path='/', handler=root_get_handler)
+    dispatcher.add_get(path='/json_sample', handler=json_get_handler)
 
     dproxy = DispatcherProxy(dispatcher)
 
@@ -56,3 +74,14 @@ async def root_get_handler(request: web.Request) -> web.Response:
     """
     response_text = "Hello, world!"
     return web.Response(text=response_text, status=200)
+
+
+async def json_get_handler(request: web.Request) -> web.Response:
+    """
+    Primitive handler for requests with path='/json_sample' and method='GET'
+    :param request: request to be handled
+    :return: a response to request
+    """
+    return make_json_response(
+        {"text": "Hello, world!", "status": 200}
+    )
