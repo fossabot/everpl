@@ -127,5 +127,6 @@ async def auth_post_handler(request: web.Request) -> web.Response:
         return make_json_response({"token": "12345678"})
 
     else:
+        # Fixme: CC1: Change status to 401?
         return make_error_response(status=403, message="Access is forbidden. Please, "
                                                        "check your username and password combination")
