@@ -96,7 +96,7 @@ class RestApi(object):
         server = web.Server(handler=dproxy.dispatch)
 
         # TODO: Make server params configurable
-        await self._loop.create_server(server, host='localhost', port='8888')
+        await self._loop.create_server(server, host='localhost', port='10800')
 
     async def root_get_handler(self, request: web.Request) -> web.Response:
         """
