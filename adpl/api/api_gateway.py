@@ -44,6 +44,7 @@ class ApiGateway(object):
         :param thing_id: an ID of thing to be fetched
         :return: a dict with full information about the thing
         """
+        # FIXME: Remove brute-force search
         for thing in self.get_things(token):
             if thing.get('id') == thing_id:
                 return thing
