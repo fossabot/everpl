@@ -1,5 +1,5 @@
 # Include standard modules
-from typing import Dict, Set, Collection
+from typing import Dict, Set
 
 # Include 3rd-party modules
 
@@ -14,7 +14,7 @@ class AuthManager(object):
     parts of the system
     """
     def __init__(self):
-        self._users = set()  # type: Dict[str, User]
+        self._users = dict()  # type: Dict[str, User]
         self._root_user = None  # type: User
         self._token_manager = TokenManager()
 
@@ -40,7 +40,7 @@ class AuthManager(object):
 
             root_user = User(username, password)
 
-            assert self._users.get(username, None) is None
+            assert username not in self._users
             self._users[username] = root_user
             self._root_user = root_user
 
@@ -56,12 +56,30 @@ class AuthManager(object):
         :return: None
         """
         # FIXME: check if user with specified token is authorized to create new users
+        # There is a temporary solution in the following method:
+        self._check_if_authorized_to_manipulate_users(token)
 
         if username in self._users:
             raise ValueError("User with a specified username is already registered")
 
         new_user = User(username, password)
         self._users[username] = new_user
+
+    def _check_if_authorized_to_manipulate_users(self, token: str):
+        """
+        Checks if user with specified token is authorized to create or remove users.
+        Otherwise raises an exception.
+        :param token: an access token of a user that is trying to create or remove another one
+        :return: None
+        """
+        # FIXME: Temporary solution: only root is authorized to create new users
+        requester = self._token_manager.resolve_token_owner(token)
+
+        if requester != self._root_user:
+            raise ValueError(
+                "Only root user ({0}) is authorized to create new users. "
+                "At least for now.".format(self._root_user.username)
+            )
 
     def remove_user(self, token: str, username: str):
         """
@@ -71,6 +89,8 @@ class AuthManager(object):
         :return: None
         """
         # FIXME: check if user with specified token is authorized to remove users
+        # There is a temporary solution in the following method:
+        self._check_if_authorized_to_manipulate_users(token)
 
         if username == self._root_user.username:
             raise ValueError("Root user can't be removed. You need to reset system settings to do that")
