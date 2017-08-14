@@ -81,12 +81,26 @@ class TestAuthManager(unittest.TestCase):
             self.root_password
         )
 
-        print(type(token))
-
         self.assertTrue(isinstance(token, str))
 
         # TODO: Implement permission checking
         self.assertTrue(am.is_token_grants(token, None))
+
+    def test_root_user_auth_multiple_tokens(self):
+        am = self._get_auth_manager_with_root()
+
+        token = am.auth_user(
+            self.root_username,
+            self.root_password
+        )
+
+        token2 = am.auth_user(
+            self.root_username,
+            self.root_password
+        )
+
+        self.assertTrue(am.is_token_grants(token, None))
+        self.assertTrue(am.is_token_grants(token2, None))
 
     def test_root_user_auth_wrong_password(self):
         am = self._get_auth_manager_with_root()
@@ -186,6 +200,47 @@ class TestAuthManager(unittest.TestCase):
                 sample_user_token,
                 self.sample_user_2_name
             )
+
+    def test_password_change(self):
+        am = self._get_auth_manager_with_root()
+
+        new_root_password = 'unreal admin'
+
+        assert new_root_password != self.root_password
+
+        am.change_password(
+            self.root_username,
+            self.root_password,
+            new_root_password
+        )
+
+        token = am.auth_user(
+            username=self.root_username,
+            password=new_root_password
+        )
+
+        self.assertTrue(am.is_token_grants(token, None))
+
+    def test_password_change_invalidates_tokens(self):
+        am = self._get_auth_manager_with_root()
+
+        old_root_token = am.auth_user(
+            username=self.root_username,
+            password=self.root_password
+        )
+
+        new_root_password = 'unreal admin'
+
+        assert new_root_password != self.root_password
+
+        am.change_password(
+            self.root_username,
+            self.root_password,
+            new_root_password
+        )
+
+        self.assertFalse(am.is_token_grants(old_root_token, None))
+
 
 if __name__ == '__main__':
     unittest.main()
