@@ -76,3 +76,11 @@ class TokenManager(object):
         :return: an object of User or Client that owns the token
         """
         return self.__tokens[token]
+
+    def is_token_present(self, token: str) -> bool:
+        """
+        Checks if the specified token is registered in the system
+        :param token: token to be checked
+        :return: true if token is registered, false otherwise
+        """
+        return token in self.__tokens

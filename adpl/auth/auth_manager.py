@@ -1,5 +1,5 @@
 # Include standard modules
-from typing import Dict
+from typing import Dict, Set, Collection
 
 # Include 3rd-party modules
 
@@ -17,6 +17,15 @@ class AuthManager(object):
         self._users = set()  # type: Dict[str, User]
         self._root_user = None  # type: User
         self._token_manager = TokenManager()
+
+    @property
+    def users(self) -> Set[str]:
+        """
+        Returns a set of registered usernames
+        :return: usernames of all registered users
+        """
+        # FIXME: CC7: Return just plain keys(), as is
+        return set(self._users.keys())
 
     # FIXME: CC4: Maybe return value is needed?
     def create_root_user(self, username: str, password: str):
@@ -119,3 +128,14 @@ class AuthManager(object):
         token = self._token_manager.generate_token(user)
 
         return token
+
+    def is_token_grants(self, token: str, requested_action: object) -> bool:
+        """
+        Check if specified token grants to perform the requested action
+        :param token: an access token
+        :param requested_action: an info about the requested action
+        :return: true if permission is granted, false otherwise
+        """
+        # TODO: Implement permission checking
+
+        return self._token_manager.is_token_present(token)
