@@ -64,3 +64,7 @@ class ApiGateway(object):
         :return: a status of the task
         """
         raise NotImplementedError
+
+    # TODO: Add a method to provide access to push-notifications on system events
+    # like changed status of a thing (for example, but not limited to)
+
