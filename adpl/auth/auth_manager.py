@@ -5,6 +5,7 @@ from typing import Dict
 
 # Include DPL modules
 from adpl.auth import User
+from adpl.auth.token_manager import TokenManager
 
 
 class AuthManager(object):
@@ -15,8 +16,7 @@ class AuthManager(object):
     def __init__(self):
         self._users = set()  # type: Dict[str, User]
         self._root_user = None  # type: User
-
-        raise NotImplementedError
+        self._token_manager = TokenManager()
 
     # FIXME: CC4: Maybe return value is needed?
     def create_root_user(self, username: str, password: str):
@@ -68,7 +68,10 @@ class AuthManager(object):
 
         self._check_user_registered(username)
 
-        self._users.pop(username)
+        user = self._users.pop(username)
+
+        # Remove all tokens for specified user
+        self._token_manager.remove_all_tokens(user)
 
     def change_password(self, username: str, old_password: str, new_password: str):
         """
@@ -83,6 +86,9 @@ class AuthManager(object):
         user = self._users.get(username)
 
         user.update_password(old_password, new_password)
+
+        # Remove all tokens for specified user
+        self._token_manager.remove_all_tokens(user)
 
     # FIXME: Specify a type of exception
     def _check_user_registered(self, username):
@@ -110,5 +116,6 @@ class AuthManager(object):
         if not authenticated:
             raise ValueError("Specified username-password pair is invalid")
 
-        # TODO: Implement access token generation and fetching
-        raise NotImplementedError("Token generation is not yet implemented")
+        token = self._token_manager.generate_token(user)
+
+        return token
