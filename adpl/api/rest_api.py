@@ -184,6 +184,6 @@ class RestApi(object):
             thing = self._gateway.get_thing(token, thing_id)
 
             return make_json_response(thing)
-        except ValueError as e:
+        except PermissionError as e:
             return make_error_response(status=400, message=e.args)
 
