@@ -90,6 +90,7 @@ class RestApi(object):
         dispatcher.add_get(path='/', handler=self.root_get_handler)
         dispatcher.add_post(path='/auth', handler=self.auth_post_handler)
         dispatcher.add_get(path='/things/', handler=self.things_get_handler)
+        dispatcher.add_get(path='/things/{id}', handler=self.thing_get_handler)
 
         dproxy = DispatcherProxy(dispatcher)
 
@@ -154,6 +155,35 @@ class RestApi(object):
             things = self._gateway.get_things(token)
 
             return make_json_response({"things": things})
+        except PermissionError as e:
+            return make_error_response(status=400, message=e.args)
+
+    def _get_thing_id(self, request: web.Request) -> str:
+        url = request.rel_url  # type: web.URL
+        thing_id = url.path.replace('/things/', '')
+
+        return thing_id
+
+    async def thing_get_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for GET requests for path /things/
+        :param request: request to be processed
+        :return: a response to request
+        """
+        headers = request.headers  # type: dict
+
+        token = headers.get("Authorization", None)
+
+        if token is None:
+            return make_error_response(status=401, message="Authorization header is not available or is null")
+
+        # thing_id = request.match_info['id']
+        thing_id = self._get_thing_id(request)
+
+        try:
+            thing = self._gateway.get_thing(token, thing_id)
+
+            return make_json_response(thing)
         except ValueError as e:
             return make_error_response(status=400, message=e.args)
 
