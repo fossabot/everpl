@@ -5,17 +5,24 @@ import logging
 # Include 3rd-party modules
 # Include DPL modules
 from adpl import api
+from adpl import auth
 
 
 class Controller(object):
     def __init__(self):
-        pass
+        am = auth.AuthManager()
+
+        # FIXME: Only for testing purposes
+        am.create_root_user("admin", "admin")
+
+        self._auth_manager = am
+
+        self._api_gateway = api.ApiGateway(self._auth_manager)
+        self._rest_api = api.RestApi(self._api_gateway)
 
     async def start(self):
-        loop = asyncio.get_event_loop()
-
         asyncio.ensure_future(
-            api.create_rest_server(loop=loop)
+            self._rest_api.create_rest_server()
         )
 
     async def shutdown(self):
