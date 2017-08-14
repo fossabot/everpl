@@ -4,6 +4,8 @@ from typing import Dict, List
 # Include 3rd-party modules
 
 # Include DPL modules
+from adpl.auth import AuthManager
+from .dummy_things_example import DUMMY_THINGS_EXAMPLE
 
 
 class ApiGateway(object):
@@ -12,8 +14,8 @@ class ApiGateway(object):
     and pass requests further to corresponding components (to execute some command
     of fetch information about a specific thing, for example)
     """
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, auth_manager: AuthManager):
+        self._am = auth_manager
 
     def auth(self, username: str, password: str) -> str:
         """
@@ -22,7 +24,7 @@ class ApiGateway(object):
         :param password: password of the user
         :return: an access token to be used
         """
-        raise NotImplementedError
+        return self._am.auth_user(username, password)
 
     def get_things(self, token: str) -> List[Dict]:
         """
@@ -30,7 +32,10 @@ class ApiGateway(object):
         :param token: access token
         :return: a list of things data
         """
-        raise NotImplementedError
+        if self._am.is_token_grants(token, None):
+            return DUMMY_THINGS_EXAMPLE
+        else:
+            raise PermissionError("Specified token doesn't permit this action")
 
     def get_thing(self, token: str, thing_id: str) -> Dict:
         """
