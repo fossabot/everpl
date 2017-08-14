@@ -1,8 +1,19 @@
+# Include standard modules
+from typing import Dict, List
+
+# Include 3rd-party modules
+
+# Include DPL modules
+from adpl.auth import User
+
+
 class Client(object):
     """
     Client is a class that stores information about a registered client device
     """
-    def __init__(self):
+    def __init__(self, user: User):
+        self._user = user
+
         raise NotImplementedError
 
     # FIXME: CC3: Store only a hash of access token and add verify_token method?
@@ -37,3 +48,10 @@ class Client(object):
         """
         raise NotImplementedError
 
+    @property
+    def associated_user(self) -> User:
+        """
+        Returns a user which is associated with this client
+        :return: an instance of User
+        """
+        return self._user
