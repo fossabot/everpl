@@ -44,7 +44,11 @@ class ApiGateway(object):
         :param thing_id: an ID of thing to be fetched
         :return: a dict with full information about the thing
         """
-        raise NotImplementedError
+        for thing in self.get_things(token):
+            if thing.get('id') == thing_id:
+                return thing
+
+        raise ValueError("Thing with the specified id is not found")
 
     # FIXME: CC2: Make this method a coroutine?
     # FIXME: Specify a return value type
