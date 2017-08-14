@@ -66,7 +66,7 @@ class AuthManager(object):
         if username == self._root_user.username:
             raise ValueError("Root user can't be removed. You need to reset system settings to do that")
 
-        self._check_user_present(username)
+        self._check_user_registered(username)
 
         self._users.pop(username)
 
@@ -78,16 +78,16 @@ class AuthManager(object):
         :param new_password: a new password of this user
         :return: None
         """
-        self._check_user_present(username)
+        self._check_user_registered(username)
 
         user = self._users.get(username)
 
         user.update_password(old_password, new_password)
 
     # FIXME: Specify a type of exception
-    def _check_user_present(self, username):
+    def _check_user_registered(self, username):
         """
-        Checks if the user is present in the system. Otherwise raises an exception
+        Checks if the user is registered in the system. Otherwise raises an exception
         :param username: username of user to be checked
         :return: None
         """
@@ -101,7 +101,7 @@ class AuthManager(object):
         :param password: password of user to be authenticated
         :return: an access token
         """
-        self._check_user_present(username)
+        self._check_user_registered(username)
 
         user = self._users.get(username)
 
