@@ -7,7 +7,7 @@ import json
 from aiohttp import web
 
 # Include DPL modules
-from adpl.auth import User
+from adpl.api import ApiGateway
 
 # Declare constants:
 CONTENT_TYPE_JSON = "application/json"
@@ -37,6 +37,16 @@ class DispatcherProxy(object):
         return await resolved.handler(request)
 
 
+def make_error_response(status: int, message: str) -> web.Response:
+    """
+    Creates a simple response with specified error code and explanatory message
+    :param status: status code of the response
+    :param message: explanatory message
+    :return: created response
+    """
+    return web.Response(body="{0}: {1}".format(status, message), status=status)
+
+
 def make_json_response(content: object) -> web.Response:
     """
     Serialize given content to JSON and create corresponding response
@@ -51,82 +61,99 @@ def make_json_response(content: object) -> web.Response:
     return response
 
 
-def make_error_response(status: int, message: str) -> web.Response:
+class RestApi(object):
     """
-    Creates a simple response with specified error code and explanatory message
-    :param status: status code of the response
-    :param message: explanatory message
-    :return: created response
+    RestApi is a provider of REST API implementation which receives
+    REST requests from clients and passes them to ApiGateway
     """
-    return web.Response(body="{0}: {1}".format(status, message), status=status)
+    def __init__(self, gateway: ApiGateway, loop=None):
+        """
+        Constructor. Receives a reference to API Gateway that will receive and process all
+        command and data requests
+        :param gateway: an instance of ApiGateway
+        """
+        self._gateway = gateway
 
+        if loop is None:
+            self._loop = asyncio.get_event_loop()
+        else:
+            self._loop = loop
 
-async def create_rest_server(loop: asyncio.AbstractEventLoop) -> None:
-    """
-    Factory function that creates fully-functional aiohttp server,
-    setups its routes and request handlers.
-    :param loop: EventLoop to create server in
-    :return: None
-    """
-    dispatcher = web.UrlDispatcher()
-    dispatcher.add_get(path='/', handler=root_get_handler)
-    dispatcher.add_get(path='/json_sample', handler=json_get_handler)
-    dispatcher.add_post(path='/auth', handler=auth_post_handler)
+    async def create_rest_server(self) -> None:
+        """
+        Factory function that creates fully-functional aiohttp server,
+        setups its routes and request handlers.
+        :param loop: EventLoop to create server in
+        :return: None
+        """
+        dispatcher = web.UrlDispatcher()
+        dispatcher.add_get(path='/', handler=self.root_get_handler)
+        dispatcher.add_post(path='/auth', handler=self.auth_post_handler)
+        dispatcher.add_get(path='/things/', handler=self.things_get_handler)
 
-    dproxy = DispatcherProxy(dispatcher)
+        dproxy = DispatcherProxy(dispatcher)
 
-    server = web.Server(handler=dproxy.dispatch)
-    await loop.create_server(server, host='localhost', port='8888')
+        server = web.Server(handler=dproxy.dispatch)
 
+        # TODO: Make server params configurable
+        await self._loop.create_server(server, host='localhost', port='8888')
 
-async def root_get_handler(request: web.Request) -> web.Response:
-    """
-    Primitive handler for requests with path='/' and method='GET'
-    :param request: request to be handled
-    :return: a response to request
-    """
-    response_text = "Hello, world!"
-    return web.Response(text=response_text, status=200)
+    async def root_get_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for GET requests to path='/'
+        :param request: request to be processed
+        :return: a response to request
+        """
+        return make_json_response(
+            {"things": "/things/",
+             "auth": "/auth"}
+        )
 
+    async def auth_post_handler(self, request: web.Request) -> web.Response:
+        """
+        Primitive username and password validator
+        :param request: request to be processed
+        :return: a response to request
+        """
+        if request.content_type != CONTENT_TYPE_JSON:
+            return web.Response(body="400: Invalid request content-type", status=400)
 
-async def json_get_handler(request: web.Request) -> web.Response:
-    """
-    Primitive handler for requests with path='/json_sample' and method='GET'
-    :param request: request to be handled
-    :return: a response to request
-    """
-    return make_json_response(
-        {"text": "Hello, world!", "status": 200}
-    )
+        data = await request.json()  # type: dict
 
+        username = data.get("username", None)
+        password = data.get("password", None)
 
-SAMPLE_USER = User(username="Foo", password="Bar")
+        if username is None:
+            return make_error_response(status=400, message="Username is not specified or is null")
 
+        if password is None:
+            return make_error_response(status=400, message="Password is not specified or is null")
 
-async def auth_post_handler(request: web.Request) -> web.Response:
-    """
-    Primitive username and password validator
-    :param request: request to be processed
-    :return: a response to request
-    """
-    if request.content_type != CONTENT_TYPE_JSON:
-        return web.Response(body="400: Invalid request content-type", status=400)
+        try:
+            token = self._gateway.auth(username, password)
+            return make_json_response({"message": "authorized", "token": token})
 
-    data = await request.json()  # type: dict
+        except ValueError:
+            return make_error_response(status=401, message="Access is forbidden. Please, "
+                                                           "check your username and password combination")
 
-    username = data.get("username", None)
-    password = data.get("password", None)
+    async def things_get_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for GET requests for path /things/
+        :param request: request to be processed
+        :return: a response to request
+        """
+        headers = request.headers  # type: dict
 
-    if username is None:
-        return make_error_response(status=400, message="Username is not specified or is null")
+        token = headers.get("Authorization", None)
 
-    if password is None:
-        return make_error_response(status=400, message="Password is not specified or is null")
+        if token is None:
+            return make_error_response(status=401, message="Authorization header is not available or is null")
 
-    if username == SAMPLE_USER.username and SAMPLE_USER.verify_password(password):
-        return make_json_response({"token": "12345678"})
+        try:
+            things = self._gateway.get_things(token)
 
-    else:
-        # Fixme: CC1: Change status to 401?
-        return make_error_response(status=403, message="Access is forbidden. Please, "
-                                                       "check your username and password combination")
+            return make_json_response({"things": things})
+        except ValueError as e:
+            return make_error_response(status=400, message=e.args)
+
