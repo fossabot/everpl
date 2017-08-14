@@ -2,12 +2,16 @@
 from typing import Dict, List
 import binascii
 import os
+import logging
 
 # Include 3rd-party modules
 
 # Include DPL modules
 from adpl.auth.user import User
 from adpl.utils import generate_token
+
+# basic setup
+LOGGER = logging.getLogger(__name__)
 
 
 class TokenManager(object):
@@ -63,7 +67,7 @@ class TokenManager(object):
 
         # FIXME: CC5: Remove this check and ignore an absence?
         if not on_removal:  # if there are no tokens registered with a specified owner
-            raise ValueError("Specified owner doesn't own any tokens")
+            LOGGER.debug("Requested to delete tokens of %s which doesn't own any tokens", token_owner)
 
         # Remove each pending token
         for key in on_removal:
