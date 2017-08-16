@@ -4,7 +4,7 @@ from typing import Dict, List
 # Include 3rd-party modules
 
 # Include DPL modules
-from adpl.auth import AuthManager
+from dpl.auth import AuthManager
 from .dummy_things_example import DUMMY_THINGS_EXAMPLE
 
 

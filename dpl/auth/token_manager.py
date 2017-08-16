@@ -7,8 +7,8 @@ import logging
 # Include 3rd-party modules
 
 # Include DPL modules
-from adpl.auth.user import User
-from adpl.utils import generate_token
+from dpl.auth.user import User
+from dpl.utils import generate_token
 
 # basic setup
 LOGGER = logging.getLogger(__name__)

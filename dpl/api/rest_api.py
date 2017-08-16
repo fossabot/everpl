@@ -7,7 +7,7 @@ import json
 from aiohttp import web
 
 # Include DPL modules
-from adpl.api import ApiGateway
+from dpl.api import ApiGateway
 
 # Declare constants:
 CONTENT_TYPE_JSON = "application/json"

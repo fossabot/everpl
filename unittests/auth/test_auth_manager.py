@@ -5,8 +5,8 @@ from typing import Tuple
 # Include 3rd-party modules
 
 # Include DPL modules
-from adpl.auth import User
-from adpl.auth import AuthManager
+from dpl.auth import User
+from dpl.auth import AuthManager
 
 
 class TestAuthManager(unittest.TestCase):

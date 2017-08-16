@@ -6,7 +6,7 @@ import logging
 from aiohttp import web
 
 # Include DPL modules
-from adpl.core import Controller
+from dpl.core import Controller
 
 
 # Init processes

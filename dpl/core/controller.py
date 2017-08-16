@@ -4,8 +4,8 @@ import logging
 
 # Include 3rd-party modules
 # Include DPL modules
-from adpl import api
-from adpl import auth
+from dpl import api
+from dpl import auth
 
 
 class Controller(object):

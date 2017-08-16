@@ -4,8 +4,8 @@ from typing import Dict, Set
 # Include 3rd-party modules
 
 # Include DPL modules
-from adpl.auth import User
-from adpl.auth.token_manager import TokenManager
+from dpl.auth import User
+from dpl.auth.token_manager import TokenManager
 
 
 class AuthManager(object):
