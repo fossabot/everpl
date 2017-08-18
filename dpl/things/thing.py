@@ -109,3 +109,11 @@ class Thing(object):
         """
         raise NotImplementedError
 
+    def _check_is_available(self) -> None:
+        """
+        Checks if this thing is available and raises and exception otherwise
+        :return: None
+        """
+        if not self.is_available:
+            raise RuntimeError("This thing is unavailable and can't be used at this time")
+
