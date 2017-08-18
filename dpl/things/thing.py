@@ -53,11 +53,9 @@ class Thing(object):
         :param con_params: parameters to access connection
         :param metadata: metadata to be stored
         """
-        self._con_instance = con_instance
-        self._con_params = con_params
+        # Connection params must be saved manually in derived classes
+        # Connection params must be parsed and saved manually in derived classes
         self._metadata = metadata
-        self._on_update = None
-        self._on_avail_update = None
 
     @property
     def metadata(self) -> dict:
@@ -104,7 +102,7 @@ class Thing(object):
 
     def enable(self) -> None:
         """
-        Allows communication with a physical objects. Initiates a process
+        Allows communication with a physical object. Initiates a process
         of establishing connection to the physical device. Makes physical
         device to "wake up", to start receiving commands and sending of data.
         :return: None
