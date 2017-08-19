@@ -1,4 +1,5 @@
 # Include standard modules
+import time
 from enum import Enum
 
 # Include 3rd-party modules
@@ -56,6 +57,8 @@ class Thing(object):
         # Connection params must be saved manually in derived classes
         # Connection params must be parsed and saved manually in derived classes
         self._metadata = metadata
+        self._really_internal_state_value = self.States.unknown
+        self._last_updated = time.time()
 
     @property
     def metadata(self) -> dict:
@@ -74,6 +77,25 @@ class Thing(object):
         raise NotImplementedError
 
     @property
+    def _state(self) -> States:
+        """
+        Return a really_internal_state_value
+        :return: an instance of self.State
+        """
+        return self._really_internal_state_value
+
+    @_state.setter
+    def _state(self, new_value: States) -> None:
+        """
+        Internal setter for a really_internal_state_value that can be used to
+        set a new state value and update last_updated time
+        :param new_value: new state value to be set
+        :return: None
+        """
+        self._last_updated = time.time()
+        self._really_internal_state_value = new_value
+
+    @property
     def is_available(self) -> bool:
         """
         Availability of thing for usage and communication
@@ -87,7 +109,7 @@ class Thing(object):
         Returns a timestamp of the last thing state update
         :return: float, UNIX time
         """
-        raise NotImplementedError
+        return self._last_updated
 
     def disable(self) -> None:
         """
