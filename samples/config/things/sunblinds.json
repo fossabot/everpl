@@ -1,0 +1,42 @@
+[
+  {
+    "id": "SB1",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "Kitchen",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[SB1] "
+    }
+  },
+  {
+    "id": "SB2",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "Bedroom",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[SB2] "
+    }
+  },
+  {
+    "id": "SB3",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "Office",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[SB3] "
+    }
+  },
+  {
+    "id": "SB4",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "Living Room",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[SB4] "
+    }
+  }
+]

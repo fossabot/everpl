@@ -1,0 +1,8 @@
+[
+  {
+    "api_type": "rest_api",
+    "hostname": "localhost",
+    "port": 10800,
+    "strict_tls": false
+  }
+]
