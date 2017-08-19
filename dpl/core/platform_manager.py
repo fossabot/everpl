@@ -1,11 +1,13 @@
 # Include standard modules
 from typing import Dict, List, ValuesView
 import logging
+import importlib
 
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.connections import Connection, ConnectionRegistry, ConnectionFactory
 from dpl.things import Thing, ThingRegistry, ThingFactory
+import dpl.platforms
 
 # Get logger:
 LOGGER = logging.getLogger(__name__)
@@ -24,6 +26,15 @@ class PlatformManager(object):
         """
         self._connections = dict()  # type: Dict[str, Connection]
         self._things = dict()  # type: Dict[str, Thing]
+
+    def init_platforms(self, platform_names: List[str]) -> None:
+        """
+        Load all enabled platforms from the specified list
+        :param platform_names: a name of platforms to be loaded
+        :return: None
+        """
+        for item in platform_names:
+            importlib.import_module(name=item, package="dpl.platforms")
 
     def init_connections(self, config: List[Dict]) -> None:
         """
