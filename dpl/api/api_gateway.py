@@ -5,7 +5,9 @@ from typing import Dict, List
 
 # Include DPL modules
 from dpl.auth import AuthManager
-from .dummy_things_example import DUMMY_THINGS_EXAMPLE
+from dpl.core.platform_manager import PlatformManager
+from dpl.utils import obj_to_dict
+from dpl.things import Thing
 
 
 class ApiGateway(object):
@@ -14,8 +16,9 @@ class ApiGateway(object):
     and pass requests further to corresponding components (to execute some command
     of fetch information about a specific thing, for example)
     """
-    def __init__(self, auth_manager: AuthManager):
+    def __init__(self, auth_manager: AuthManager, platform_manager: PlatformManager):
         self._am = auth_manager
+        self._pm = platform_manager
 
     def auth(self, username: str, password: str) -> str:
         """
@@ -62,7 +65,13 @@ class ApiGateway(object):
         """
         self._check_permission(token, None)
 
-        return DUMMY_THINGS_EXAMPLE
+        result = list()
+        things = self._pm.fetch_all_things()
+
+        for thing in things:
+            result.append(self._thing_to_dict(thing))
+
+        return result
 
     def get_thing(self, token: str, thing_id: str) -> Dict:
         """
@@ -73,12 +82,12 @@ class ApiGateway(object):
         """
         self._check_permission(token, None)
 
-        # FIXME: Remove brute-force search
-        for thing in self.get_things(token):
-            if thing.get('id') == thing_id:
-                return thing
+        try:
+            thing = self._pm.fetch_thing(thing_id)
+        except KeyError:
+            raise ValueError("Thing with the specified id is not found")
 
-        raise ValueError("Thing with the specified id is not found")
+        return self._thing_to_dict(thing)
 
     # FIXME: CC2: Make this method a coroutine?
     # FIXME: Specify a return value type

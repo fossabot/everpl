@@ -8,6 +8,8 @@ from aiohttp import web
 
 # Include DPL modules
 from dpl.api import ApiGateway
+from dpl.utils import JsonEnumEncoder
+
 
 # Declare constants:
 CONTENT_TYPE_JSON = "application/json"
@@ -53,7 +55,7 @@ def make_json_response(content: object) -> web.Response:
     :param content: content to serialize
     :return: created response
     """
-    serialized = json.dumps(obj=content)
+    serialized = json.dumps(obj=content, cls=JsonEnumEncoder)
     response = web.Response()
     response.content_type = CONTENT_TYPE_JSON
     response.body = serialized
