@@ -34,7 +34,11 @@ class PlatformManager(object):
         :return: None
         """
         for item in platform_names:
-            importlib.import_module(name='.'+item, package="dpl.platforms")
+            try:
+                importlib.import_module(name='.'+item, package="dpl.platforms")
+            except ImportError as e:
+                LOGGER.warning("Failed to load platform \"%s\": %s",
+                               item, e)
 
     def init_connections(self, config: List[Dict]) -> None:
         """
