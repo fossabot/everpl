@@ -1,6 +1,7 @@
 # Include standard modules
 import json
 import os
+from typing import List, Dict
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -71,9 +72,9 @@ class Configuration(object):
         """
         raise NotImplementedError
 
-    def get_by_subsystem(self, subsystem_name: str) -> dict:
+    def get_by_subsystem(self, subsystem_name: str) -> Dict or List[Dict]:
         """
-        Returns a dict of config values that is related to specific subsystem
+        Returns a dict or list of config values that is related to specific subsystem
         :param subsystem_name: subsystem name for request
         :return: configuration values that are related to specified subsystem
         """
