@@ -114,7 +114,10 @@ class PlatformManager(object):
             thing_instance = factory.build(  # type: Thing
                 con_instance=connection,
                 con_params=con_params,
-                metadata={"description": thing_description}
+                metadata={
+                    "description": thing_description,
+                    "type": thing_type
+                }
             )
 
             self._things[thing_id] = thing_instance
