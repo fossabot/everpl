@@ -26,7 +26,7 @@ class ConnectionRegistry(object):
         cls.__registry[connection_type] = factory
 
     @classmethod
-    def resolve_factory(cls, connection_type: str, default: ConnectionFactory or None = None) -> ConnectionFactory or None:
+    def resolve_factory(cls, connection_type: str, default: ConnectionFactory = None) -> ConnectionFactory:
         """
         Returns an instance of ConnectionFactory that must be used for building of
         specified type of connections.
