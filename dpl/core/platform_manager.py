@@ -116,7 +116,8 @@ class PlatformManager(object):
                 con_params=con_params,
                 metadata={
                     "description": thing_description,
-                    "type": thing_type
+                    "type": thing_type,
+                    "id": thing_id
                 }
             )
 
