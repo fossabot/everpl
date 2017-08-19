@@ -1,0 +1,32 @@
+[
+  {
+    "id": "D1",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "Entrance door",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[D1] "
+    }
+  },
+  {
+    "id": "D2",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "to bedroom",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[D2] "
+    }
+  },
+  {
+    "id": "D3",
+    "platform": "dummy",
+    "type": "slider",
+    "description": "to office",
+    "con_id": "DC1",
+    "con_params": {
+      "prefix": "[D3] "
+    }
+  }
+]
