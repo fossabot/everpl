@@ -1,0 +1,14 @@
+[
+  {
+    "id": "DC1",
+    "platform": "dummy",
+    "con_type": "dummy_connection",
+    "con_params": {}
+  },
+  {
+    "id": "DC2",
+    "platform": "dummy",
+    "con_type": "dummy_connection",
+    "con_params": {}
+  }
+]
