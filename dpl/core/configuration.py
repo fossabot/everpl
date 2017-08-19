@@ -55,6 +55,7 @@ class Configuration(object):
         Loads configuration from disk to memory
         :return: None
         """
+        # TODO: REWRITE
         conf_structure = get_dir_structure(self._path)
 
         for subsystem_name in conf_structure:
@@ -63,7 +64,14 @@ class Configuration(object):
 
             for file_path in conf_structure[subsystem_name]:
                 with open(file_path) as file:
-                    subsystem_elements.extend(json.load(file))
+                    content = json.load(file)
+
+                    if type(content) != type(subsystem_elements):
+                        assert isinstance(content, dict)
+                        self._conf_data[subsystem_name] = content
+                        continue
+
+                    subsystem_elements.extend(content)
 
     def save_config(self) -> None:
         """
