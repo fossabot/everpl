@@ -26,16 +26,43 @@ class ApiGateway(object):
         """
         return self._am.auth_user(username, password)
 
+    def _check_permission(self, token: str, requested_action):
+        """
+        Checks is specified action is permitted for this token
+        :param token: access token to be checked
+        :param requested_action: information about a requested action or permission
+        :return: None
+        :raises PermissionError: if this action is not permitted for this token
+        """
+        if not self._am.is_token_grants(token, requested_action):
+            raise PermissionError("Specified token doesn't permit this action")
+
+    def _thing_to_dict(self, thing: Thing) -> dict:
+        """
+        Just convert a thing object to a corresponding dict.
+
+        In addition to simple object -> dict serialization, the content "metadata"
+        property will be moved to resulting dict body.
+        :param thing: an instance of Thing to be converted
+        :return: a corresponding dict
+        """
+        thing_dict = obj_to_dict(thing)
+        metadata = thing_dict.pop("metadata")
+        assert isinstance(metadata, dict)
+
+        thing_dict.update(**metadata)
+
+        return thing_dict
+
     def get_things(self, token: str) -> List[Dict]:
         """
         Receive a full list of data about things
         :param token: access token
         :return: a list of things data
         """
-        if self._am.is_token_grants(token, None):
-            return DUMMY_THINGS_EXAMPLE
-        else:
-            raise PermissionError("Specified token doesn't permit this action")
+        self._check_permission(token, None)
+
+        return DUMMY_THINGS_EXAMPLE
 
     def get_thing(self, token: str, thing_id: str) -> Dict:
         """
@@ -44,6 +71,8 @@ class ApiGateway(object):
         :param thing_id: an ID of thing to be fetched
         :return: a dict with full information about the thing
         """
+        self._check_permission(token, None)
+
         # FIXME: Remove brute-force search
         for thing in self.get_things(token):
             if thing.get('id') == thing_id:
