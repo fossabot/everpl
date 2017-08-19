@@ -32,8 +32,6 @@ class DummySlider(Slider):
 
         self._con_instance = con_instance
         self._is_enabled = True
-        self._state = self.States.unknown
-        self._last_updated = time.time()
 
     @property
     def state(self) -> Slider.States:
