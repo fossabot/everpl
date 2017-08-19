@@ -3,7 +3,7 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Slider
+from dpl.things import Slider, ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -116,3 +116,19 @@ class DummySlider(Slider):
 
             self._con_instance.print(self._print_prefix, "Switch is closed")
             self._state = self.States.closed
+
+
+class DummySliderFactory(ThingFactory):
+    """
+    DummySliderFactory is a class that is responsible for building of DummySliders
+    """
+    @staticmethod
+    def build(*args, **kwargs) -> DummySlider:
+        return DummySlider(*args, **kwargs)
+
+
+ThingRegistry.register_factory(
+    platform_name="dummy",
+    thing_type="slider",
+    factory=DummySliderFactory()
+)

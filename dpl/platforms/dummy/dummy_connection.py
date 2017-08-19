@@ -4,7 +4,7 @@ import io
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.connections import Connection
+from dpl.connections import Connection, ConnectionFactory, ConnectionRegistry
 
 
 class DummyConnection(Connection):
@@ -28,3 +28,18 @@ class DummyConnection(Connection):
         :return: None
         """
         print(prefix + data, file=self._file)
+
+
+class DummyConnectionFactory(ConnectionFactory):
+    """
+    DummyConnectionFactory is a class that is responsible for building of DummyConnections
+    """
+    @staticmethod
+    def build(*args, **kwargs) -> DummyConnection:
+        return DummyConnection(*args, **kwargs)
+
+
+ConnectionRegistry.register_factory(
+    connection_type="dummy_connection",
+    factory=DummyConnectionFactory()
+)

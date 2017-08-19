@@ -3,7 +3,7 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Switch
+from dpl.things import Switch, ThingRegistry, ThingFactory
 from . import DummyConnection
 
 
@@ -91,3 +91,19 @@ class DummySwitch(Switch):
         self._check_is_available()
         self._con_instance.print(self._print_prefix, "Switch is turned off")
         self._state = self.States.off
+
+
+class DummySwitchFactory(ThingFactory):
+    """
+    DummySliderFactory is a class that is responsible for building of DummySliders
+    """
+    @staticmethod
+    def build(*args, **kwargs) -> DummySwitch:
+        return DummySwitch(*args, **kwargs)
+
+
+ThingRegistry.register_factory(
+    platform_name="dummy",
+    thing_type="switch",
+    factory=DummySwitchFactory()
+)

@@ -3,7 +3,7 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Player
+from dpl.things import Player, ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -105,3 +105,19 @@ class DummyPlayer(Player):
         self._check_is_available()
         self._con_instance.print(self._print_prefix, "Player is paused")
         self._state = self.States.paused
+
+
+class DummyPlayerFactory(ThingFactory):
+    """
+    DummyPlayerFactory is a class that is responsible for building of DummyPlayers
+    """
+    @staticmethod
+    def build(*args, **kwargs) -> DummyPlayer:
+        return DummyPlayer(*args, **kwargs)
+
+
+ThingRegistry.register_factory(
+    platform_name="dummy",
+    thing_type="player",
+    factory=DummyPlayerFactory()
+)
