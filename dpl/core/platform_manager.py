@@ -1,10 +1,14 @@
 # Include standard modules
-from typing import Dict, List
+from typing import Dict, List, ValuesView
+import logging
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.connections import Connection, ConnectionRegistry
-from dpl.things import Thing, ThingRegistry
+from dpl.connections import Connection, ConnectionRegistry, ConnectionFactory
+from dpl.things import Thing, ThingRegistry, ThingFactory
+
+# Get logger:
+LOGGER = logging.getLogger(__name__)
 
 
 # FIXME: CC11: Consider splitting of PlatformManager to ThingManager and ConnectionManager
@@ -27,7 +31,32 @@ class PlatformManager(object):
         :param config: configuration data
         :return: None
         """
-        raise NotImplementedError
+        for item in config:
+            con_id = item["id"]
+            platform_name = item["platform"]
+            con_type = item["con_type"]
+            con_params = item["con_params"]  # type: dict
+
+            assert isinstance(con_params, dict)
+
+            factory = ConnectionRegistry.resolve_factory(  # type: ConnectionFactory
+                connection_type=con_type,
+                default=None
+            )
+
+            if factory is None:
+                LOGGER.warning(
+                    "Failed to create connection \"%s\". Is platform \"%s\" enabled?",
+                    con_id, platform_name
+                )
+
+                continue
+
+            con_instance = factory.build(  # type: Connection
+                **con_params
+            )
+
+            self._connections[con_id] = con_instance
 
     def init_things(self, config: List[Dict]) -> None:
         """
@@ -35,14 +64,52 @@ class PlatformManager(object):
         :param config: configuration data
         :return: None
         """
-        raise NotImplementedError
+        for item in config:
+            thing_id = item["id"]
+            thing_platform = item["platform"]
+            thing_type = item["type"]
+            thing_description = item["description"]
+            con_id = item["con_id"]
+            con_params = item["con_params"]
 
-    def fetch_all_things(self):
+            factory = ThingRegistry.resolve_factory(  # type: ThingFactory
+                platform_name=thing_platform,
+                thing_type=thing_type,
+                default=None
+            )
+
+            connection = self._connections.get(con_id, None)  # type: Connection
+
+            if connection is None:
+                LOGGER.warning(
+                    "Failed to create thing \"%s\": Connection \"%s\" is not available",
+                    thing_id, thing_platform
+                )
+
+                continue
+
+            if factory is None:
+                LOGGER.warning(
+                    "Failed to create thing \"%s\". Is platform \"%s\" enabled?",
+                    thing_id, thing_platform
+                )
+
+                continue
+
+            thing_instance = factory.build(  # type: Thing
+                con_instance=connection,
+                con_params=con_params,
+                metadata={"description": thing_description}
+            )
+
+            self._things[thing_id] = thing_instance
+
+    def fetch_all_things(self) -> ValuesView[Thing]:
         """
         Fetch a collection of all things
-        :return: a collection of all things (type: ????)
+        :return: a set-like object containing all things
         """
-        raise NotImplementedError
+        return self._things.values()
 
     def fetch_thing(self, thing_id: str) -> Thing:
         """
@@ -50,19 +117,21 @@ class PlatformManager(object):
         :param thing_id: an ID of Thing to be fetched
         :return: an instance of Thing
         """
-        raise NotImplementedError
+        return self._things[thing_id]
 
     def enable_all_things(self) -> None:
         """
         Call Thing.enable method on all instances of things
         :return: None
         """
-        raise NotImplementedError
+        for thing in self._things.values():
+            thing.enable()
 
     def disable_all_things(self) -> None:
         """
         Call Thing.enable method on all instances of things
         :return: None
         """
-        raise NotImplementedError
+        for thing in self._things.values():
+            thing.disable()
 
