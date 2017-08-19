@@ -21,6 +21,7 @@ class Slider(Actuator):
         opened  = 0b11
         unknown = None
 
+    @property
     def commands(self) -> Tuple[str, ...]:
         """
         Returns a list of available commands. Must be overridden in derivative classes.

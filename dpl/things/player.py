@@ -19,6 +19,7 @@ class Player(Actuator):
         paused  = 2
         unknown = None
 
+    @property
     def commands(self) -> Tuple[str, ...]:
         """
         Returns a list of available commands. Must be overridden in derivative classes.
