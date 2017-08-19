@@ -94,7 +94,7 @@ class PlatformManager(object):
             if connection is None:
                 LOGGER.warning(
                     "Failed to create thing \"%s\": Connection \"%s\" is not available",
-                    thing_id, thing_platform
+                    thing_id, con_id
                 )
 
                 continue
