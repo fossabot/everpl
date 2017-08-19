@@ -34,7 +34,7 @@ class PlatformManager(object):
         :return: None
         """
         for item in platform_names:
-            importlib.import_module(name=item, package="dpl.platforms")
+            importlib.import_module(name='.'+item, package="dpl.platforms")
 
     def init_connections(self, config: List[Dict]) -> None:
         """
