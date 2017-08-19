@@ -6,21 +6,24 @@ import logging
 # Include DPL modules
 from dpl import api
 from dpl import auth
+from dpl.core import Configuration
 
 
 class Controller(object):
     def __init__(self):
-        am = auth.AuthManager()
+        self._conf = Configuration(path="../samples/config")
 
-        # FIXME: Only for testing purposes
-        am.create_root_user("admin", "admin")
-
-        self._auth_manager = am
+        self._auth_manager = auth.AuthManager()
 
         self._api_gateway = api.ApiGateway(self._auth_manager)
         self._rest_api = api.RestApi(self._api_gateway)
 
     async def start(self):
+        self._conf.load_config()
+
+        # FIXME: Only for testing purposes
+        self._auth_manager.create_root_user("admin", "admin")
+
         asyncio.ensure_future(
             self._rest_api.create_rest_server()
         )
