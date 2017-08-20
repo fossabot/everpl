@@ -7,7 +7,7 @@ from typing import Dict, List
 from dpl.auth import AuthManager
 from dpl.core.platform_manager import PlatformManager
 from dpl.utils import obj_to_dict
-from dpl.things import Thing
+from dpl.things import Thing, Actuator
 
 
 class ApiGateway(object):
@@ -101,7 +101,21 @@ class ApiGateway(object):
         :param kwargs: keyword-based arguments to send to command
         :return: an some ID or handler of planned task
         """
-        raise NotImplementedError
+        # FIXME: Check permission: Send commands to things
+        # FIXME: CC13: Add permission checking for specific things
+        self._check_permission(token, None)
+
+        thing = self.get_thing(token, thing_id)  # type: Actuator
+
+        if not isinstance(thing, Actuator):
+            raise ValueError("Unable to send command to {0}. Commands can be passed "
+                             "only to actuators.".format(thing_id))
+
+        # Send command on execution. It can raise an exception too!
+        thing.execute(command, *args, **kwargs)
+
+        # FIXME: Return Task, Task ID or just remove this line
+        return None
 
     # FIXME: Specify a return value type
     def get_task_status(self, token: str, task_id):
