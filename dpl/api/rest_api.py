@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import json
+import warnings
 
 # Include 3rd-party modules
 from aiohttp import web
@@ -9,6 +10,9 @@ from aiohttp import web
 # Include DPL modules
 from dpl.api import ApiGateway
 from dpl.utils import JsonEnumEncoder
+
+
+# FIXME: REFACTOR THIS MODULE
 
 
 # Declare constants:
@@ -97,6 +101,7 @@ class RestApi(object):
         dispatcher.add_post(path='/auth', handler=self.auth_post_handler)
         dispatcher.add_get(path='/things/', handler=self.things_get_handler)
         dispatcher.add_get(path='/things/{id}', handler=self.thing_get_handler)
+        dispatcher.add_post(path='/messages/', handler=self.messages_post_handler)
 
         dproxy = DispatcherProxy(dispatcher)
 
@@ -113,7 +118,8 @@ class RestApi(object):
         """
         return make_json_response(
             {"things": "/things/",
-             "auth": "/auth"}
+             "auth": "/auth",
+             "messages": "/messages/"}
         )
 
     async def auth_post_handler(self, request: web.Request) -> web.Response:
@@ -199,4 +205,107 @@ class RestApi(object):
             return make_json_response(thing)
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
+
+    async def messages_post_handler(self, request: web.Request) -> web.Response:
+        """
+        ONLY FOR COMPATIBILITY: Accept 'action requested' messages from clients.
+        Handle POST requests for /messages/ path.
+        :param request: request to be processed
+        :return: a response to request
+        """
+        warnings.warn(PendingDeprecationWarning)
+
+        headers = request.headers  # type: dict
+
+        token = headers.get("Authorization", None)
+
+        if token is None:
+            return make_error_response(status=401, message="Authorization header is not available or is null")
+
+        if request.content_type != CONTENT_TYPE_JSON:
+            return make_error_response(status=400, message="Invalid request content-type")
+
+        try:
+            request_body = await request.json()  # type: dict
+        except json.JSONDecodeError:
+            return make_error_response(
+                status=400,
+                message="Request body content must to be a valid JSON. But it wasn't"
+            )
+
+        msg_type = request_body.get("type", None)
+
+        if msg_type is None:
+            return make_error_response(status=400, message="Invalid message format: missing 'type' value")
+
+        if msg_type != "user_request":
+            return make_error_response(
+                status=400,
+                message="Unsupported message type: {0}. "
+                        "Only type='user_request' is supported".format(msg_type)
+            )
+
+        msg_event = request_body.get("event", None)
+
+        if msg_event != "action_requested":
+            return make_error_response(
+                status=400,
+                message="Unsupported event specified: {0}. "
+                        "Only event='action_requested' is supported".format(msg_event)
+            )
+
+        msg_body = request_body.get("body", None)  # type: dict
+
+        if not isinstance(msg_body, dict):
+            return make_error_response(
+                status=400,
+                message="Message body is invalid or absent."
+            )
+
+        # TODO: Consider consolidation of error messages and adding of link to knowledge base
+
+        thing_action = msg_body.get("action", None)  # type: str
+
+        if thing_action is None:
+            return make_error_response(
+                status=400,
+                message="Requested action is not specified in message body or is null."
+            )
+
+        thing_id = msg_body.get("obj_id", None)  # type: str
+
+        if thing_id is None:
+            return make_error_response(
+                status=400,
+                message="obj_id (unique identifier of specific Thing)"
+                        "is not specified or is null."
+            )
+
+        thing_action_params = msg_body.get("action_params", None)  # type: dict
+
+        if not isinstance(thing_action_params, dict):
+            return make_error_response(
+                status=400,
+                message="A value of action_params is invalid or absent."
+                        "It must be a dictionary that contains all parameters"
+                        "that need to be passed to thing to perform the specified action."
+            )
+
+        try:
+            self._gateway.send_command(token, thing_id, thing_action, **thing_action_params)
+        except PermissionError as e:
+            return make_error_response(
+                status=403,
+                message=str(e)
+            )
+        except ValueError as e:
+            return make_error_response(
+                status=400,
+                message=str(e)
+            )
+
+        return make_json_response(
+            content={"message": "accepted"},
+            status=201
+        )
 
