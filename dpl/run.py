@@ -3,7 +3,6 @@ import asyncio
 import logging
 
 # Include 3rd-party modules
-from aiohttp import web
 
 # Include DPL modules
 from dpl.core import Controller

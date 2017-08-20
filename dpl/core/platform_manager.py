@@ -7,7 +7,6 @@ import importlib
 # Include DPL modules
 from dpl.connections import Connection, ConnectionRegistry, ConnectionFactory
 from dpl.things import Thing, ThingRegistry, ThingFactory
-import dpl.platforms
 
 # Get logger:
 LOGGER = logging.getLogger(__name__)

@@ -3,7 +3,6 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.connections import Connection
 from dpl.things import Thing
 
 

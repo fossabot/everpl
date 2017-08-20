@@ -1,7 +1,5 @@
 # Include standard modules
 from typing import Dict, List
-import binascii
-import os
 import logging
 
 # Include 3rd-party modules

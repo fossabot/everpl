@@ -1,6 +1,5 @@
 # Include standard modules
 import asyncio
-import logging
 
 # Include 3rd-party modules
 # Include DPL modules

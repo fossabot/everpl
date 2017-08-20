@@ -5,7 +5,6 @@ from typing import Tuple
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.auth import User
 from dpl.auth import AuthManager
 
 
