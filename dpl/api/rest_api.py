@@ -88,10 +88,12 @@ class RestApi(object):
         else:
             self._loop = loop
 
-    async def create_rest_server(self) -> None:
+    async def create_server(self, host: str, port: int) -> None:
         """
         Factory function that creates fully-functional aiohttp server,
         setups its routes and request handlers.
+        :param host: a server hostname or address
+        :param port: a server port
         :return: None
         """
         dispatcher = web.UrlDispatcher()
@@ -106,7 +108,14 @@ class RestApi(object):
         server = web.Server(handler=dproxy.dispatch)
 
         # TODO: Make server params configurable
-        await self._loop.create_server(server, host='localhost', port='10800')
+        await self._loop.create_server(server, host, port)
+
+    async def shutdown_server(self) -> None:
+        """
+        Stop (shutdown) REST server gracefully
+        :return: None
+        """
+        pass
 
     async def root_get_handler(self, request: web.Request) -> web.Response:
         """
