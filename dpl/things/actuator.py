@@ -80,6 +80,6 @@ class Actuator(Thing):
         :return: None
         """
         if self.is_active:
-            return self.activate()
-        else:
             return self.deactivate()
+        else:
+            return self.activate()
