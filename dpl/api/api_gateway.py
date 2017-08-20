@@ -73,6 +73,23 @@ class ApiGateway(object):
 
         return result
 
+    def _get_thing(self, token: str, thing_id: str) -> Thing:
+        """
+        Private method. Receive an instance of a specific thing
+        :param token: access token
+        :param thing_id: an ID of thing to be fetched
+        :return: an instance of Thing that is related to the specified ID
+        """
+        # Check permission on viewing thing
+        self._check_permission(token, None)
+
+        try:
+            thing = self._pm.fetch_thing(thing_id)
+        except KeyError:
+            raise ValueError("Thing with the specified id is not found")
+
+        return thing
+
     def get_thing(self, token: str, thing_id: str) -> Dict:
         """
         Receive information about a specific thing
@@ -80,12 +97,10 @@ class ApiGateway(object):
         :param thing_id: an ID of thing to be fetched
         :return: a dict with full information about the thing
         """
-        self._check_permission(token, None)
+        # Permission on viewing of thing must be checked in '_get_thing' method
+        # self._check_permission(token, None)
 
-        try:
-            thing = self._pm.fetch_thing(thing_id)
-        except KeyError:
-            raise ValueError("Thing with the specified id is not found")
+        thing = self._get_thing(token, thing_id)
 
         return self._thing_to_dict(thing)
 
@@ -105,7 +120,7 @@ class ApiGateway(object):
         # FIXME: CC13: Add permission checking for specific things
         self._check_permission(token, None)
 
-        thing = self.get_thing(token, thing_id)  # type: Actuator
+        thing = self._get_thing(token, thing_id)  # type: Actuator
 
         if not isinstance(thing, Actuator):
             raise ValueError("Unable to send command to {0}. Commands can be passed "
