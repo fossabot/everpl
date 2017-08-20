@@ -54,9 +54,9 @@ class Actuator(Thing):
         if command not in self.commands:
             raise ValueError("Unsupported command passed: {0}".format(command))
 
-        command_method = self.__getattribute__(command)
+        command_method = getattr(self, command)
 
-        assert command_method is callable
+        assert callable(command_method)
 
         return command_method(*args, **kwargs)
 
