@@ -1,6 +1,7 @@
 # Include standard modules
 import asyncio
 import logging
+from typing import Set
 
 # Include 3rd-party modules
 
@@ -20,7 +21,7 @@ def shutdown(loop: asyncio.AbstractEventLoop = None):
     :param loop: EventLoop where tasks are running in
     :return: None
     """
-    all_tasks = asyncio.Task.all_tasks(loop)  # type: set[asyncio.Task]
+    all_tasks = asyncio.Task.all_tasks(loop)  # type: Set[asyncio.Task]
 
     for task in all_tasks:
         task.cancel()
