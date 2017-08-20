@@ -119,9 +119,12 @@ class RestApi(object):
         :return: a response to request
         """
         if request.content_type != CONTENT_TYPE_JSON:
-            return web.Response(body="400: Invalid request content-type", status=400)
+            return make_error_response(status=400, message="Invalid request content-type")
 
-        data = await request.json()  # type: dict
+        try:
+            data = await request.json()  # type: dict
+        except json.JSONDecodeError:
+            return make_error_response(status=400, message="Request body content must be a valid JSON")
 
         username = data.get("username", None)
         password = data.get("password", None)
@@ -161,6 +164,7 @@ class RestApi(object):
             return make_error_response(status=400, message=e.args)
 
     def _get_thing_id(self, request: web.Request) -> str:
+        # FIXME: Rewrite
         url = request.rel_url  # type: web.URL
         thing_id = url.path.replace('/things/', '')
 
