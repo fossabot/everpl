@@ -39,24 +39,28 @@ class DispatcherProxy(object):
         return await resolved.handler(request)
 
 
-def make_error_response(status: int, message: str) -> web.Response:
+def make_error_response(message: str, status: int = 400) -> web.Response:
     """
-    Creates a simple response with specified error code and explanatory message
-    :param status: status code of the response
+    Creates a simple JSON response with specified error code and explanatory message
     :param message: explanatory message
+    :param status: status code of the response
     :return: created response
     """
-    return web.Response(body="{0}: {1}".format(status, message), status=status)
+    return make_json_response(
+        content={"status": status, "message": message},
+        status=status
+    )
 
 
-def make_json_response(content: object) -> web.Response:
+def make_json_response(content: object, status: int = 200) -> web.Response:
     """
     Serialize given content to JSON and create corresponding response
     :param content: content to serialize
+    :param status: status code of the response
     :return: created response
     """
     serialized = json.dumps(obj=content, cls=JsonEnumEncoder)
-    response = web.Response()
+    response = web.Response(status=status)
     response.content_type = CONTENT_TYPE_JSON
     response.body = serialized
 
@@ -124,7 +128,10 @@ class RestApi(object):
         try:
             data = await request.json()  # type: dict
         except json.JSONDecodeError:
-            return make_error_response(status=400, message="Request body content must be a valid JSON")
+            return make_error_response(
+                status=400,
+                message="Request body content must to be a valid JSON. But it wasn't"
+            )
 
         username = data.get("username", None)
         password = data.get("password", None)
@@ -161,7 +168,7 @@ class RestApi(object):
 
             return make_json_response({"things": things})
         except PermissionError as e:
-            return make_error_response(status=400, message=e.args)
+            return make_error_response(status=400, message=str(e))
 
     def _get_thing_id(self, request: web.Request) -> str:
         # FIXME: Rewrite
@@ -191,5 +198,5 @@ class RestApi(object):
 
             return make_json_response(thing)
         except PermissionError as e:
-            return make_error_response(status=400, message=e.args)
+            return make_error_response(status=400, message=str(e))
 
