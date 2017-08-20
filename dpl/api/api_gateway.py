@@ -44,7 +44,7 @@ class ApiGateway(object):
         """
         Just convert a thing object to a corresponding dict.
 
-        In addition to simple object -> dict serialization, the content "metadata"
+        In addition to simple object -> dict serialization, the content of 'metadata'
         property will be moved to resulting dict body.
         :param thing: an instance of Thing to be converted
         :return: a corresponding dict
