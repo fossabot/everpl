@@ -306,6 +306,6 @@ class RestApi(object):
 
         return make_json_response(
             content={"message": "accepted"},
-            status=201
+            status=202
         )
 
