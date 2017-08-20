@@ -57,7 +57,12 @@ def make_error_response(message: str, status: int = 400) -> web.Response:
 
 def make_json_response(content: object, status: int = 200) -> web.Response:
     """
-    Serialize given content to JSON and create corresponding response
+    Serialize given content to JSON and create a corresponding response.
+
+    web.json_response() method was not used because it doesn't support usage of
+    custom JSON encoders by default (functools.partial() may be used to create a
+    corresponding callable which must to be passed into 'json_response' function
+    as 'dumps' keyword argument).
     :param content: content to serialize
     :param status: status code of the response
     :return: created response
