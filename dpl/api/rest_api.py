@@ -92,7 +92,6 @@ class RestApi(object):
         """
         Factory function that creates fully-functional aiohttp server,
         setups its routes and request handlers.
-        :param loop: EventLoop to create server in
         :return: None
         """
         dispatcher = web.UrlDispatcher()
