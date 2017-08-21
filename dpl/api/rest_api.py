@@ -107,7 +107,6 @@ class RestApi(object):
         dispatcher.add_get(path='/things/', handler=self.things_get_handler)
         dispatcher.add_get(path='/things/{id}', handler=self.thing_get_handler)
         dispatcher.add_post(path='/messages/', handler=self.messages_post_handler)
-        dispatcher.add_get(path='/placements/', handler=self.placements_get_handler)
 
         dproxy = DispatcherProxy(dispatcher)
 
@@ -132,8 +131,7 @@ class RestApi(object):
         return make_json_response(
             {"things": "/things/",
              "auth": "/auth",
-             "messages": "/messages/",
-             "placements": "/placements/"}
+             "messages": "/messages/"}
         )
 
     async def auth_post_handler(self, request: web.Request) -> web.Response:
@@ -219,54 +217,6 @@ class RestApi(object):
             return make_json_response(thing)
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
-
-    async def placements_get_handler(self, request: web.Request) -> web.Response:
-        """
-        A handler for GET requests for path /placements/
-        :param request: request to be processed
-        :return: a response to request
-        """
-        headers = request.headers  # type: dict
-
-        token = headers.get("Authorization", None)
-
-        if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
-
-        return make_json_response({
-            "placements": [
-                {
-                    "description": "Corridor",
-                    "id": "R1",
-                    "image": "http://test.ks-cube.tk/rooms/corridor.jpg"
-                },
-                {
-                    "description": "Kitchen",
-                    "id": "R2",
-                    "image": "http://test.ks-cube.tk/rooms/kitchen.jpg"
-                },
-                {
-                    "description": "Bathroom",
-                    "id": "R3",
-                    "image": "http://test.ks-cube.tk/rooms/bathroom.jpg"
-                },
-                {
-                    "description": "Bedroom",
-                    "id": "R4",
-                    "image": "http://test.ks-cube.tk/rooms/bedroom.jpg"
-                },
-                {
-                    "description": "Office",
-                    "id": "R5",
-                    "image": "http://test.ks-cube.tk/rooms/office.jpg"
-                },
-                {
-                    "description": "Living Room",
-                    "id": "R6",
-                    "image": "http://test.ks-cube.tk/rooms/living_room.jpg"
-                }
-            ]
-        })
 
     async def messages_post_handler(self, request: web.Request) -> web.Response:
         """
