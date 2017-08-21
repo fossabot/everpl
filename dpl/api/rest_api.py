@@ -178,7 +178,7 @@ class RestApi(object):
 
         token = headers.get("Authorization", None)
 
-        if token is None:
+        if (token is None) and (not self._gateway.is_insecure):
             return make_error_response(status=401, message="Authorization header is not available or is null")
 
         try:
@@ -205,7 +205,7 @@ class RestApi(object):
 
         token = headers.get("Authorization", None)
 
-        if token is None:
+        if (token is None) and (not self._gateway.is_insecure):
             return make_error_response(status=401, message="Authorization header is not available or is null")
 
         # thing_id = request.match_info['id']
@@ -231,7 +231,7 @@ class RestApi(object):
 
         token = headers.get("Authorization", None)
 
-        if token is None:
+        if (token is None) and (not self._gateway.is_insecure):
             return make_error_response(status=401, message="Authorization header is not available or is null")
 
         if request.content_type != CONTENT_TYPE_JSON:
