@@ -13,10 +13,41 @@ class AuthManager(object):
     AuthManager is a class that controls users and their access to different
     parts of the system
     """
-    def __init__(self):
+    def __init__(self, insecure: bool = False):
+        """
+        Constructor. Allows to disable token checking ALTOGETHER.
+        USE INSECURE MODE ONLY WHEN YOU KNOW WHAT YOU ARE DOING!
+        :param insecure: disable token checking
+        """
         self._users = dict()  # type: Dict[str, User]
         self._root_user = None  # type: User
         self._token_manager = TokenManager()
+        self._is_insecure = insecure
+
+    @property
+    def is_insecure(self) -> bool:
+        """
+        Indicates is AuthManager in insecure mode. Or, in other words, is token
+        checking disabled.
+        :return: True if insecure, False otherwise
+        """
+        return self._is_insecure
+
+    @is_insecure.setter
+    def is_insecure(self, new_value: bool):
+        """
+        Allows to enable secure mode. Only
+        :param new_value: new value of is_secure property
+        :return: None
+        """
+        if not isinstance(new_value, bool):
+            raise TypeError("The value of 'new_value' parameter must to boolean")
+
+        if new_value:  # if new_value == True:
+            raise ValueError("Insecure mode can't be enabled in runtime. Please, edit"
+                             "persistent configuration and restart this application.")
+
+        self._is_insecure = new_value
 
     @property
     def users(self) -> Set[str]:
@@ -157,5 +188,7 @@ class AuthManager(object):
         :return: true if permission is granted, false otherwise
         """
         # TODO: Implement permission checking
+        if self._is_insecure:
+            return True  # WARNING: all token values are accepted in insecure mode
 
         return self._token_manager.is_token_present(token)
