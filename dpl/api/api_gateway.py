@@ -29,6 +29,14 @@ class ApiGateway(object):
         """
         return self._am.auth_user(username, password)
 
+    @property
+    def is_insecure(self) -> bool:
+        """
+        Returns a value of 'is_insecure' property of AuthManager
+        :return: True if insecure mode is enabled, False otherwise
+        """
+        return self._am.is_insecure
+
     def _check_permission(self, token: str, requested_action):
         """
         Checks is specified action is permitted for this token
