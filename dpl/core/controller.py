@@ -7,11 +7,13 @@ from dpl import api
 from dpl import auth
 from dpl.core import Configuration
 from dpl.core.platform_manager import PlatformManager
+from dpl.core.placement_manager import PlacementManager
 
 
 class Controller(object):
     def __init__(self):
         self._conf = Configuration(path="../samples/config")
+        self._placements = PlacementManager()
         self._pm = PlatformManager()
 
         self._auth_manager = auth.AuthManager()
@@ -23,8 +25,11 @@ class Controller(object):
         self._conf.load_config()
 
         core_settings = self._conf.get_by_subsystem("core")
+        placement_settings = self._conf.get_by_subsystem("placements")
         connection_settings = self._conf.get_by_subsystem("connections")
         thing_settings = self._conf.get_by_subsystem("things")
+
+        self._placements.init_placements(placement_settings)
 
         enabled_platforms = core_settings["enabled_platforms"]
 
