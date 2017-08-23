@@ -18,7 +18,7 @@ class Controller(object):
 
         self._auth_manager = auth.AuthManager()
 
-        self._api_gateway = api.ApiGateway(self._auth_manager, self._pm)
+        self._api_gateway = api.ApiGateway(self._auth_manager, self._pm, self._placements)
         self._rest_api = api.RestApi(self._api_gateway)
 
     async def start(self):
