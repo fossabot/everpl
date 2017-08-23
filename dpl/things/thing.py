@@ -33,7 +33,10 @@ class Thing(object):
     - 'enabled' thing tries to keep thing state updated;
     - 'is_available' property indicates that a communication with this thing can be
       performed;
-    - 'is_available' is True **only** if thing is enabled **and** connection is not lost.
+    - 'is_available' is True **only** if thing is enabled **and** connection is not lost;
+    - additional (optional) information about the object can be placed in so-called 'metadata';
+    - usually the following metadata is saved: thing ID, user-friendly name, thing placement
+      (position) information and some description.
 
     Derived classes are allowed to define additional methods and properties like
     'current_track', 'play' and 'stop' for player. Or 'on'/'off' for lighting, etc.
