@@ -74,7 +74,7 @@ class DummyPlayer(Player):
         """
         self._is_enabled = True
 
-    def play(self, song_name: str) -> None:
+    def play(self, song_name: str = None) -> None:
         """
         Starts playing and switches the object to the 'playing' state. Additional parameters
         like track name or URL can be provided.
