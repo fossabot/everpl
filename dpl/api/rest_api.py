@@ -235,7 +235,9 @@ class RestApi(object):
             return make_error_response(status=401, message="Authorization header is not available or is null")
 
         try:
-            return make_json_response(self._gateway.get_placements(token))
+            return make_json_response(
+                {"placements": self._gateway.get_placements(token)}
+            )
         except PermissionError:
             return make_error_response(
                 message="This token doesn't permit viewing of placement data",
