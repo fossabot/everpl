@@ -108,6 +108,7 @@ class RestApi(object):
         dispatcher.add_get(path='/things/{id}', handler=self.thing_get_handler)
         dispatcher.add_post(path='/messages/', handler=self.messages_post_handler)
         dispatcher.add_get(path='/placements/', handler=self.placements_get_handler)
+        dispatcher.add_get(path='/placements/{id}', handler=self.placement_get_handler)
 
         dproxy = DispatcherProxy(dispatcher)
 
@@ -233,40 +234,48 @@ class RestApi(object):
         if token is None:
             return make_error_response(status=401, message="Authorization header is not available or is null")
 
-        return make_json_response({
-            "placements": [
-                {
-                    "description": "Corridor",
-                    "id": "R1",
-                    "image": "http://test.ks-cube.tk/rooms/corridor.jpg"
-                },
-                {
-                    "description": "Kitchen",
-                    "id": "R2",
-                    "image": "http://test.ks-cube.tk/rooms/kitchen.jpg"
-                },
-                {
-                    "description": "Bathroom",
-                    "id": "R3",
-                    "image": "http://test.ks-cube.tk/rooms/bathroom.jpg"
-                },
-                {
-                    "description": "Bedroom",
-                    "id": "R4",
-                    "image": "http://test.ks-cube.tk/rooms/bedroom.jpg"
-                },
-                {
-                    "description": "Office",
-                    "id": "R5",
-                    "image": "http://test.ks-cube.tk/rooms/office.jpg"
-                },
-                {
-                    "description": "Living Room",
-                    "id": "R6",
-                    "image": "http://test.ks-cube.tk/rooms/living_room.jpg"
-                }
-            ]
-        })
+        try:
+            return make_json_response(self._gateway.get_placements(token))
+        except PermissionError:
+            return make_error_response(
+                message="This token doesn't permit viewing of placement data",
+                status=403
+            )
+
+    def _get_placement_id(self, request: web.Request) -> str:
+        # FIXME: Rewrite
+        url = request.rel_url  # type: web.URL
+        placement_id = url.path.replace('/placements/', '')
+
+        return placement_id
+
+    async def placement_get_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for GET requests for path /placements/
+        :param request: request to be processed
+        :return: a response to request
+        """
+        headers = request.headers  # type: dict
+
+        token = headers.get("Authorization", None)
+
+        if token is None:
+            return make_error_response(status=401, message="Authorization header is not available or is null")
+
+        placement_id = self._get_placement_id(request)
+
+        try:
+            return make_json_response(self._gateway.get_placement(token, placement_id))
+        except KeyError:
+            return make_error_response(
+                message="Failed to find a placement with the specified ID",
+                status=404
+            )
+        except PermissionError:
+            return make_error_response(
+                message="This token doesn't permit viewing of placement data",
+                status=403
+            )
 
     async def messages_post_handler(self, request: web.Request) -> web.Response:
         """
