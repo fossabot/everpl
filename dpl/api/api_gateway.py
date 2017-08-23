@@ -2,10 +2,12 @@
 from typing import Dict, List
 
 # Include 3rd-party modules
+import warnings
 
 # Include DPL modules
 from dpl.auth import AuthManager
 from dpl.core.platform_manager import PlatformManager
+from dpl.core import Placement, PlacementManager
 from dpl.utils import obj_to_dict
 from dpl.things import Thing, Actuator
 
@@ -16,9 +18,10 @@ class ApiGateway(object):
     and pass requests further to corresponding components (to execute some command
     of fetch information about a specific thing, for example)
     """
-    def __init__(self, auth_manager: AuthManager, platform_manager: PlatformManager):
+    def __init__(self, auth_manager: AuthManager, platform_manager: PlatformManager, placement_manager: PlacementManager):
         self._am = auth_manager
         self._pm = platform_manager
+        self._placements = placement_manager
 
     def auth(self, username: str, password: str) -> str:
         """
@@ -141,6 +144,69 @@ class ApiGateway(object):
         :return: a status of the task
         """
         raise NotImplementedError
+
+    @classmethod
+    def _placement_to_dict(cls, placement: Placement) -> Dict:
+        """
+        Converts an instance of Placement to corresponding dictionary
+        :return: a dictionary with all properties of placement
+        """
+        # FIXME: CC14: Consider switching to direct usage of properties
+        return {
+            "id": placement.placement_id,
+            "friendly_name": placement.friendly_name,
+            "image_url": placement.image_url
+        }
+
+    @classmethod
+    def _placement_to_dict_legacy(cls, placement: Placement) -> Dict:
+        """
+        Converts an instance of Placement to corresponding dictionary that is compatible
+        with the legacy API ('description' field will be set to the value of 'friendly_name' field,
+        'image' field will be set to a value of 'image_url' field).
+        :return: a dictionary with all properties of placement
+        """
+        warnings.warn("Legacy representation of placements will be dropped in the next release"
+                      "of this platform. Please, switch to the '_placement_to_dict' method",
+                      PendingDeprecationWarning)
+
+        result = ApiGateway._placement_to_dict(placement)
+
+        result["description"] = placement.friendly_name
+        result["image"] = placement.image_url
+
+        return result
+
+    def get_placements(self, token: str) -> List[Dict]:
+        """
+        Returns a list of dict-like representations of all placements
+        :param token: access token
+        :return: a list of placements data
+        """
+        # FIXME: Check permission: View placements
+        self._check_permission(token, None)
+
+        result = list()
+
+        for placement in self._placements.fetch_all_placements():
+            result.append(self._placement_to_dict_legacy(placement))
+
+        return result
+
+    def get_placement(self, token: str, placement_id: str) -> Dict:
+        """
+        Returns a dict-like representation of placement with the specified ID
+        :param token: access token
+        :param placement_id: an ID of placement to be fetched
+        :return: a dict with full information about the placement
+        """
+        # FIXME: Check permission: View placements
+        self._check_permission(token, None)
+
+        placement = self._placements.fetch_placement(placement_id)
+
+        return self._placement_to_dict_legacy(placement)
+
 
     # TODO: Add a method to provide access to push-notifications on system events
     # like changed status of a thing (for example, but not limited to)
