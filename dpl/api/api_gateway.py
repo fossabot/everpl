@@ -5,6 +5,7 @@ from typing import Dict, List
 import warnings
 
 # Include DPL modules
+from . import exceptions
 from dpl.auth import AuthManager
 from dpl.core.platform_manager import PlatformManager
 from dpl.core import Placement, PlacementManager
@@ -41,7 +42,7 @@ class ApiGateway(object):
         :raises PermissionError: if this action is not permitted for this token
         """
         if not self._am.is_token_grants(token, requested_action):
-            raise PermissionError("Specified token doesn't permit this action")
+            raise exceptions.PermissionDeniedForTokenError("Specified token doesn't permit this action")
 
     def _thing_to_dict(self, thing: Thing) -> dict:
         """
@@ -89,7 +90,7 @@ class ApiGateway(object):
         try:
             thing = self._pm.fetch_thing(thing_id)
         except KeyError:
-            raise ValueError("Thing with the specified id is not found")
+            raise exceptions.ThingNotFoundError("Thing with the specified id was not found")
 
         return thing
 
@@ -126,11 +127,16 @@ class ApiGateway(object):
         thing = self._get_thing(token, thing_id)  # type: Actuator
 
         if not isinstance(thing, Actuator):
-            raise ValueError("Unable to send command to {0}. Commands can be passed "
-                             "only to actuators.".format(thing_id))
+            raise exceptions.CommandNotOnActuatorError(
+                "Unable to send command to {0}. Commands can be passed "
+                "only to actuators.".format(thing_id)
+            )
 
         # Send command on execution. It can raise an exception too!
-        thing.execute(command, *args, **kwargs)
+        try:
+            thing.execute(command, *args, **kwargs)
+        except Exception as e:
+            raise exceptions.CommandFailedError() from e
 
         # FIXME: Return Task, Task ID or just remove this line
         return None
@@ -203,7 +209,10 @@ class ApiGateway(object):
         # FIXME: Check permission: View placements
         self._check_permission(token, None)
 
-        placement = self._placements.fetch_placement(placement_id)
+        try:
+            placement = self._placements.fetch_placement(placement_id)
+        except KeyError:
+            raise exceptions.PlacementNotFoundError("The placement with the specified ID was not found")
 
         return self._placement_to_dict_legacy(placement)
 
