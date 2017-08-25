@@ -1,0 +1,32 @@
+[
+  {
+    "id": "R1",
+    "friendly_name": "Corridor",
+    "image_url": "http://www.gesundheittipps.net/wp-content/uploads/2016/02/Flur_547-1024x610.jpg"
+  },
+  {
+    "id": "R2",
+    "friendly_name": "Kitchen",
+    "image_url": "https://cdn.pixabay.com/photo/2016/05/26/04/17/home-1416381_960_720.jpg"
+  },
+  {
+    "id": "R3",
+    "friendly_name": "Bathroom",
+    "image_url": "https://c1.staticflickr.com/3/2310/5788748100_61268372cc_b.jpg"
+  },
+  {
+    "id": "R4",
+    "friendly_name": "Bedroom",
+    "image_url": "https://cdn.pixabay.com/photo/2015/08/09/00/31/bedroom-881123_960_720.jpg"
+  },
+  {
+    "id": "R5",
+    "friendly_name": "Office",
+    "image_url": "https://c1.staticflickr.com/3/2350/5824776984_221bb97cba_b.jpg"
+  },
+  {
+    "id": "R6",
+    "friendly_name": "Living Room",
+    "image_url": "https://c1.staticflickr.com/1/609/32340540255_764f07c2ec_b.jpg"
+  }
+]
