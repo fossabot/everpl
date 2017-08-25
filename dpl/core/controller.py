@@ -16,14 +16,16 @@ class Controller(object):
         self._placements = PlacementManager()
         self._pm = PlatformManager()
 
-        self._auth_manager = auth.AuthManager()
+        self._conf.load_config()
+        core_settings = self._conf.get_by_subsystem('core')  # type: dict
+        insecure_enabled = core_settings.get('insecure_enabled', False)
+
+        self._auth_manager = auth.AuthManager(insecure=insecure_enabled)
 
         self._api_gateway = api.ApiGateway(self._auth_manager, self._pm, self._placements)
         self._rest_api = api.RestApi(self._api_gateway)
 
     async def start(self):
-        self._conf.load_config()
-
         core_settings = self._conf.get_by_subsystem("core")
         placement_settings = self._conf.get_by_subsystem("placements")
         connection_settings = self._conf.get_by_subsystem("connections")

@@ -1,4 +1,5 @@
 {
   "enabled_platforms": ["dummy"],
-  "debug": true
+  "debug": true,
+  "insecure_enabled": true
 }
