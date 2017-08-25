@@ -89,8 +89,8 @@ class ApiGateway(object):
 
         try:
             thing = self._pm.fetch_thing(thing_id)
-        except KeyError:
-            raise exceptions.ThingNotFoundError("Thing with the specified id was not found")
+        except KeyError as e:
+            raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
 
         return thing
 
@@ -211,8 +211,8 @@ class ApiGateway(object):
 
         try:
             placement = self._placements.fetch_placement(placement_id)
-        except KeyError:
-            raise exceptions.PlacementNotFoundError("The placement with the specified ID was not found")
+        except KeyError as e:
+            raise exceptions.PlacementNotFoundError("The placement with the specified ID was not found") from e
 
         return self._placement_to_dict_legacy(placement)
 
