@@ -4,6 +4,7 @@
     "platform": "dummy",
     "type": "switch",
     "description": "",
+    "placement": "R2",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[F1] "
