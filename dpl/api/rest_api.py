@@ -2,6 +2,8 @@
 import asyncio
 import json
 import warnings
+import logging
+import traceback
 
 # Include 3rd-party modules
 from aiohttp import web
@@ -11,35 +13,12 @@ from dpl.api import ApiGateway
 from dpl.utils import JsonEnumEncoder
 
 
-# FIXME: REFACTOR THIS MODULE
-
-
 # Declare constants:
 CONTENT_TYPE_JSON = "application/json"
 
 
-class DispatcherProxy(object):
-    """
-    Support class that allows web.AbstractRouter usage with plain web.Server objects.
-
-    Has one coroutine 'dispatch' that receives request, resolve corresponding
-    handler from web.AbstractRouter and calls found handler.
-    """
-    def __init__(self, router: web.AbstractRouter):
-        """
-        Constructor
-        :param router: an instance for web.AbstractRouter that need to be wrapped.
-        """
-        self._router = router
-
-    async def dispatch(self, request: web.Request) -> web.Response:
-        """
-        Dispatch: pre-handle request and pass it to corresponding handler
-        :param request: request to be processed
-        :return: a response to request
-        """
-        resolved = await self._router.resolve(request)  # type: web.AbstractMatchInfo
-        return await resolved.handler(request)
+# Init logger
+LOGGER = logging.getLogger(__name__)
 
 
 def make_error_response(message: str, status: int = 400) -> web.Response:
@@ -110,51 +89,98 @@ def json_decode_decorator(decorated_callable):
 class RestApi(object):
     """
     RestApi is a provider of REST API implementation which receives
-    REST requests from clients and passes them to ApiGateway
+    REST requests from clients and passes them to ApiGateway.
     """
     def __init__(self, gateway: ApiGateway, loop=None):
         """
         Constructor. Receives a reference to API Gateway that will receive and process all
-        command and data requests
+        command and data requests. Setups API routes and request handlers.
         :param gateway: an instance of ApiGateway
         """
         self._gateway = gateway
+        self._handler = None  # callable that returns a Protocol instance
+        self._server = None  # type: asyncio.AbstractServer
+
+        self._app = web.Application(
+            middlewares=(self._middleware_process_exceptions,)
+        )
 
         if loop is None:
             self._loop = asyncio.get_event_loop()
         else:
             self._loop = loop
 
+        router = self._app.router
+
+        router.add_get(path='/', handler=self.root_get_handler)
+        router.add_post(path='/auth', handler=self.auth_post_handler)
+        router.add_get(path='/things/', handler=self.things_get_handler)
+        router.add_get(path='/things/{id}', handler=self.thing_get_handler)
+        router.add_post(path='/messages/', handler=self.messages_post_handler)
+        router.add_get(path='/placements/', handler=self.placements_get_handler)
+        router.add_get(path='/placements/{id}', handler=self.placement_get_handler)
+
     async def create_server(self, host: str, port: int) -> None:
         """
-        Factory function that creates fully-functional aiohttp server,
-        setups its routes and request handlers.
+        Factory function that creates fully-functional aiohttp server
         :param host: a server hostname or address
         :param port: a server port
         :return: None
         """
-        dispatcher = web.UrlDispatcher()
-        dispatcher.add_get(path='/', handler=self.root_get_handler)
-        dispatcher.add_post(path='/auth', handler=self.auth_post_handler)
-        dispatcher.add_get(path='/things/', handler=self.things_get_handler)
-        dispatcher.add_get(path='/things/{id}', handler=self.thing_get_handler)
-        dispatcher.add_post(path='/messages/', handler=self.messages_post_handler)
-        dispatcher.add_get(path='/placements/', handler=self.placements_get_handler)
-        dispatcher.add_get(path='/placements/{id}', handler=self.placement_get_handler)
-
-        dproxy = DispatcherProxy(dispatcher)
-
-        server = web.Server(handler=dproxy.dispatch)
-
-        # TODO: Make server params configurable
-        await self._loop.create_server(server, host, port)
+        self._handler = self._app.make_handler(loop=self._loop)
+        self._server = await self._loop.create_server(self._handler, host, port)
 
     async def shutdown_server(self) -> None:
         """
-        Stop (shutdown) REST server gracefully
+        Stop (shutdown) REST server gracefully.
+        More info is available here: http://aiohttp.readthedocs.io/en/stable/web.html#aiohttp-web-graceful-shutdown
         :return: None
         """
-        pass
+        self._server.close()
+        await self._server.wait_closed()
+        await self._app.shutdown()  # fires on_shutdown signal (so does nothing now)
+        await self._handler.shutdown(60.0)
+        await self._app.cleanup()  # fires on_cleanup signal (so does nothing now)
+
+    @staticmethod
+    async def _middleware_process_exceptions(app, handler):
+        """
+        Factory method that returns a handler coroutine for all unprocessed exceptions
+        :param app: application that is related to this middleware
+        :param handler: a handler to be wrapped; original request handler
+        :return: a coroutine, middleware handler
+        """
+        async def middleware_handler(request: web.Request) -> web.Response:
+            """
+            A function that wraps original request handler called 'handler' and processes
+            any unhandled exceptions.
+            :param request: request to be handled
+            :return: a response to request
+            """
+            try:
+                return await handler(request)
+
+            except web.HTTPMethodNotAllowed:
+                return make_error_response(
+                    status=405,
+                    message="Method {0} is now allowed for this resource".format(request.method)
+                )
+
+            except web.HTTPNotFound:
+                return make_error_response(
+                    status=404,
+                    message="Resource {0} was not found".format(request.path)
+                )
+
+            except Exception as e:
+                LOGGER.error("Unhandled exception in request handling: %s %s\n%s", type(e), e, traceback.format_exc())
+
+                return make_error_response(
+                    status=500,
+                    message="Server got itself into trouble."
+                )
+
+        return middleware_handler
 
     async def root_get_handler(self, request: web.Request) -> web.Response:
         """
@@ -212,9 +238,7 @@ class RestApi(object):
             return make_error_response(status=400, message=str(e))
 
     def _get_thing_id(self, request: web.Request) -> str:
-        # FIXME: Rewrite
-        url = request.rel_url  # type: web.URL
-        thing_id = url.path.replace('/things/', '')
+        thing_id = request.match_info['id']
 
         return thing_id
 
@@ -226,7 +250,6 @@ class RestApi(object):
         :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
-        # thing_id = request.match_info['id']
         thing_id = self._get_thing_id(request)
 
         try:
@@ -255,9 +278,7 @@ class RestApi(object):
             )
 
     def _get_placement_id(self, request: web.Request) -> str:
-        # FIXME: Rewrite
-        url = request.rel_url  # type: web.URL
-        placement_id = url.path.replace('/placements/', '')
+        placement_id = request.match_info['id']
 
         return placement_id
 
