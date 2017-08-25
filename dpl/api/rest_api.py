@@ -75,6 +75,38 @@ def make_json_response(content: object, status: int = 200) -> web.Response:
     return response
 
 
+def restricted_access_decorator(decorated_callable):
+    async def proxy(self, request, *args, **kwargs):
+        headers = request.headers  # type: dict
+
+        token = headers.get("Authorization", None)
+
+        if token is None:
+            return make_error_response(status=401, message="Authorization header is not available or is null")
+
+        return await decorated_callable(self, request, *args, **kwargs, token=token)
+
+    return proxy
+
+
+def json_decode_decorator(decorated_callable):
+    async def proxy(self, request, *args, **kwargs):
+        if request.content_type != CONTENT_TYPE_JSON:
+            return make_error_response(status=400, message="Invalid request content-type")
+
+        try:
+            json_data = await request.json()  # type: dict
+        except json.JSONDecodeError:
+            return make_error_response(
+                status=400,
+                message="Request body content must to be a valid JSON. But it wasn't"
+            )
+
+        return await decorated_callable(self, request, *args, **kwargs, json_data=json_data)
+
+    return proxy
+
+
 class RestApi(object):
     """
     RestApi is a provider of REST API implementation which receives
@@ -137,22 +169,15 @@ class RestApi(object):
              "placements": "/placements/"}
         )
 
-    async def auth_post_handler(self, request: web.Request) -> web.Response:
+    @json_decode_decorator
+    async def auth_post_handler(self, request: web.Request, json_data: dict = None) -> web.Response:
         """
         Primitive username and password validator
         :param request: request to be processed
+        :param json_data: a content of request body
         :return: a response to request
         """
-        if request.content_type != CONTENT_TYPE_JSON:
-            return make_error_response(status=400, message="Invalid request content-type")
-
-        try:
-            data = await request.json()  # type: dict
-        except json.JSONDecodeError:
-            return make_error_response(
-                status=400,
-                message="Request body content must to be a valid JSON. But it wasn't"
-            )
+        data = json_data
 
         username = data.get("username", None)
         password = data.get("password", None)
@@ -171,19 +196,14 @@ class RestApi(object):
             return make_error_response(status=401, message="Access is forbidden. Please, "
                                                            "check your username and password combination")
 
-    async def things_get_handler(self, request: web.Request) -> web.Response:
+    @restricted_access_decorator
+    async def things_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /things/
         :param request: request to be processed
+        :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
-        headers = request.headers  # type: dict
-
-        token = headers.get("Authorization", None)
-
-        if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
-
         try:
             things = self._gateway.get_things(token)
 
@@ -198,19 +218,14 @@ class RestApi(object):
 
         return thing_id
 
-    async def thing_get_handler(self, request: web.Request) -> web.Response:
+    @restricted_access_decorator
+    async def thing_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /things/
         :param request: request to be processed
+        :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
-        headers = request.headers  # type: dict
-
-        token = headers.get("Authorization", None)
-
-        if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
-
         # thing_id = request.match_info['id']
         thing_id = self._get_thing_id(request)
 
@@ -221,19 +236,14 @@ class RestApi(object):
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
 
-    async def placements_get_handler(self, request: web.Request) -> web.Response:
+    @restricted_access_decorator
+    async def placements_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /placements/
         :param request: request to be processed
+        :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
-        headers = request.headers  # type: dict
-
-        token = headers.get("Authorization", None)
-
-        if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
-
         try:
             return make_json_response(
                 {"placements": self._gateway.get_placements(token)}
@@ -251,19 +261,14 @@ class RestApi(object):
 
         return placement_id
 
-    async def placement_get_handler(self, request: web.Request) -> web.Response:
+    @restricted_access_decorator
+    async def placement_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /placements/
         :param request: request to be processed
+        :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
-        headers = request.headers  # type: dict
-
-        token = headers.get("Authorization", None)
-
-        if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
-
         placement_id = self._get_placement_id(request)
 
         try:
@@ -279,32 +284,19 @@ class RestApi(object):
                 status=403
             )
 
-    async def messages_post_handler(self, request: web.Request) -> web.Response:
+    @restricted_access_decorator
+    @json_decode_decorator
+    async def messages_post_handler(self, request: web.Request, token: str = None, json_data: dict = None) -> web.Response:
         """
         ONLY FOR COMPATIBILITY: Accept 'action requested' messages from clients.
         Handle POST requests for /messages/ path.
         :param request: request to be processed
+        :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
         warnings.warn(PendingDeprecationWarning)
 
-        headers = request.headers  # type: dict
-
-        token = headers.get("Authorization", None)
-
-        if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
-
-        if request.content_type != CONTENT_TYPE_JSON:
-            return make_error_response(status=400, message="Invalid request content-type")
-
-        try:
-            request_body = await request.json()  # type: dict
-        except json.JSONDecodeError:
-            return make_error_response(
-                status=400,
-                message="Request body content must to be a valid JSON. But it wasn't"
-            )
+        request_body = json_data
 
         msg_type = request_body.get("type", None)
 
