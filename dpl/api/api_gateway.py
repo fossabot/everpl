@@ -77,34 +77,36 @@ class ApiGateway(object):
 
         return result
 
-    def _get_thing(self, token: str, thing_id: str) -> Thing:
+    def _get_thing(self, token: str, thing_id: str, default=None) -> Thing:
         """
         Private method. Receive an instance of a specific thing
         :param token: access token
         :param thing_id: an ID of thing to be fetched
-        :return: an instance of Thing that is related to the specified ID
+        :param default: default value to be returned if the specified thing is not found
+        :return: an instance of Thing that is related to the specified ID or default value
         """
         # Check permission on viewing thing
         self._check_permission(token, None)
 
-        try:
-            thing = self._pm.fetch_thing(thing_id)
-        except KeyError as e:
-            raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
+        thing = self._pm.fetch_thing(thing_id, default)
 
         return thing
 
-    def get_thing(self, token: str, thing_id: str) -> Dict:
+    def get_thing(self, token: str, thing_id: str, default=None) -> Dict:
         """
         Receive information about a specific thing
         :param token: access token
         :param thing_id: an ID of thing to be fetched
-        :return: a dict with full information about the thing
+        :param default: default value to be returned if the specified thing is not found
+        :return: a dict with full information about the thing or default value
         """
         # Permission on viewing of thing must be checked in '_get_thing' method
         # self._check_permission(token, None)
 
-        thing = self._get_thing(token, thing_id)
+        thing = self._get_thing(token, thing_id, None)
+
+        if thing is None:
+            return default
 
         return self._thing_to_dict(thing)
 
@@ -199,20 +201,21 @@ class ApiGateway(object):
 
         return result
 
-    def get_placement(self, token: str, placement_id: str) -> Dict:
+    def get_placement(self, token: str, placement_id: str, default=None) -> Dict:
         """
         Returns a dict-like representation of placement with the specified ID
         :param token: access token
         :param placement_id: an ID of placement to be fetched
-        :return: a dict with full information about the placement
+        :param default: default value to be returned if the specified placement is not found
+        :return: a dict with full information about the placement or default value
         """
         # FIXME: Check permission: View placements
         self._check_permission(token, None)
 
-        try:
-            placement = self._placements.fetch_placement(placement_id)
-        except KeyError as e:
-            raise exceptions.PlacementNotFoundError("The placement with the specified ID was not found") from e
+        placement = self._placements.fetch_placement(placement_id, None)
+
+        if placement is None:
+            return default
 
         return self._placement_to_dict_legacy(placement)
 
