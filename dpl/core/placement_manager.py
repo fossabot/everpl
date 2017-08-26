@@ -39,11 +39,11 @@ class PlacementManager(object):
         """
         return self._placements.values()
 
-    def fetch_placement(self, placement_id: str) -> Placement:
+    def fetch_placement(self, placement_id: str, default=None) -> Placement:
         """
         Find specific placement by id
-        :param placement_id:
-        :return: an instance of Placement with the corresponding ID
-        :raises KeyValue: if the Placement with the specified ID was not found
+        :param placement_id: an ID of placement to be fetched
+        :param default: default value to be returned if the specified placement is not found
+        :return: an instance of Placement with the corresponding ID or default value
         """
-        return self._placements[placement_id]
+        return self._placements.get(placement_id, default)
