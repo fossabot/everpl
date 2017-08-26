@@ -134,13 +134,14 @@ class PlatformManager(object):
         """
         return self._things.values()
 
-    def fetch_thing(self, thing_id: str) -> Thing:
+    def fetch_thing(self, thing_id: str, default=None) -> Thing:
         """
         Fetch an instance of Thing by its ID
         :param thing_id: an ID of Thing to be fetched
-        :return: an instance of Thing
+        :param default: default value to be returned if the specified thing is not found
+        :return: an instance of Thing or default value
         """
-        return self._things[thing_id]
+        return self._things.get(thing_id, default)
 
     def enable_all_things(self) -> None:
         """
