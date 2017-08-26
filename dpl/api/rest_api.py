@@ -110,13 +110,15 @@ class RestApi(object):
         else:
             self._loop = loop
 
-        router = self._app.router
+        router = self._app.router  # type: web.UrlDispatcher
 
         router.add_get(path='/', handler=self.root_get_handler)
         router.add_post(path='/auth', handler=self.auth_post_handler)
+        router.add_route(method='OPTIONS', path='/auth', handler=self.auth_options_handler)
         router.add_get(path='/things/', handler=self.things_get_handler)
         router.add_get(path='/things/{id}', handler=self.thing_get_handler)
         router.add_post(path='/messages/', handler=self.messages_post_handler)
+        router.add_route(method='OPTIONS', path='/messages/', handler=self.messages_options_handler)
         router.add_get(path='/placements/', handler=self.placements_get_handler)
         router.add_get(path='/placements/{id}', handler=self.placement_get_handler)
 
@@ -221,6 +223,20 @@ class RestApi(object):
         except ValueError:
             return make_error_response(status=401, message="Access is forbidden. Please, "
                                                            "check your username and password combination")
+
+    async def auth_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /auth.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'POST, HEAD, OPTIONS'}
+        )
 
     @restricted_access_decorator
     async def things_get_handler(self, request: web.Request, token: str = None) -> web.Response:
@@ -393,5 +409,19 @@ class RestApi(object):
         return make_json_response(
             content={"message": "accepted"},
             status=202
+        )
+
+    async def messages_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /messages/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'POST, HEAD, OPTIONS'}
         )
 
