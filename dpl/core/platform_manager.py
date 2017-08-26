@@ -85,7 +85,7 @@ class PlatformManager(object):
             thing_id = item["id"]
             thing_platform = item["platform"]
             thing_type = item["type"]
-            thing_description = item["description"]
+            thing_friendly_name = item.get("friendly_name", None)
             con_id = item["con_id"]
             con_params = item["con_params"]
 
@@ -117,7 +117,7 @@ class PlatformManager(object):
                 con_instance=connection,
                 con_params=con_params,
                 metadata={
-                    "description": thing_description,
+                    "friendly_name": thing_friendly_name,
                     "type": thing_type,
                     "id": thing_id
                 }

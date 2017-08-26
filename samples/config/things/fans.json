@@ -3,7 +3,7 @@
     "id": "F1",
     "platform": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "Kitchen cooker hood",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[F1] "

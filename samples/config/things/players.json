@@ -3,7 +3,7 @@
     "id": "PLAY1",
     "platform": "dummy",
     "type": "player",
-    "description": "Default player",
+    "friendly_name": "Living room default player",
     "con_id": "DC2",
     "con_params": {
       "prefix": "[PLAY1] "

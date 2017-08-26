@@ -3,7 +3,7 @@
     "id": "D1",
     "platform": "dummy",
     "type": "slider",
-    "description": "Entrance door",
+    "friendly_name": "Entrance door",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D1] "
@@ -13,7 +13,7 @@
     "id": "D2",
     "platform": "dummy",
     "type": "slider",
-    "description": "to bedroom",
+    "friendly_name": "Bedroom door",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D2] "
@@ -23,7 +23,7 @@
     "id": "D3",
     "platform": "dummy",
     "type": "slider",
-    "description": "to office",
+    "friendly_name": "Office door",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D3] "
