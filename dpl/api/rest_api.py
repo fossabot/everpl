@@ -269,11 +269,15 @@ class RestApi(object):
         thing_id = self._get_thing_id(request)
 
         try:
-            thing = self._gateway.get_thing(token, thing_id)
+            thing = self._gateway.get_thing(token, thing_id, default=None)
 
-            return make_json_response(thing)
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
+
+        if thing is None:
+            return make_error_response(status=404, message="A thing with the specified ID was not found")
+
+        return make_json_response(thing)
 
     @restricted_access_decorator
     async def placements_get_handler(self, request: web.Request, token: str = None) -> web.Response:
@@ -309,17 +313,18 @@ class RestApi(object):
         placement_id = self._get_placement_id(request)
 
         try:
-            return make_json_response(self._gateway.get_placement(token, placement_id))
-        except KeyError:
-            return make_error_response(
-                message="Failed to find a placement with the specified ID",
-                status=404
-            )
+            placement = self._gateway.get_placement(token, placement_id, default=None)
+
         except PermissionError:
             return make_error_response(
                 message="This token doesn't permit viewing of placement data",
                 status=403
             )
+
+        if placement is None:
+            return make_error_response(status=404, message="A placement with the specified ID was not found")
+
+        return make_json_response(placement)
 
     @restricted_access_decorator
     @json_decode_decorator
