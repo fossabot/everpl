@@ -11,6 +11,7 @@ from aiohttp import web
 # Include DPL modules
 from dpl.api import ApiGateway
 from dpl.utils import JsonEnumEncoder
+from . import exceptions
 
 
 # Declare constants:
@@ -272,6 +273,13 @@ class RestApi(object):
             thing = self._gateway.get_thing(token, thing_id)
 
             return make_json_response(thing)
+
+        except exceptions.ThingNotFoundError:
+            return make_error_response(
+                message="Failed to find a thing with the specified ID",
+                status=404
+            )
+
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
 
@@ -310,11 +318,13 @@ class RestApi(object):
 
         try:
             return make_json_response(self._gateway.get_placement(token, placement_id))
-        except KeyError:
+
+        except exceptions.PlacementNotFoundError:
             return make_error_response(
                 message="Failed to find a placement with the specified ID",
                 status=404
             )
+
         except PermissionError:
             return make_error_response(
                 message="This token doesn't permit viewing of placement data",
