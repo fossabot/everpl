@@ -11,6 +11,7 @@ from aiohttp import web
 # Include DPL modules
 from dpl.api import ApiGateway
 from dpl.utils import JsonEnumEncoder
+from . import exceptions
 
 
 # Declare constants:
@@ -110,13 +111,15 @@ class RestApi(object):
         else:
             self._loop = loop
 
-        router = self._app.router
+        router = self._app.router  # type: web.UrlDispatcher
 
         router.add_get(path='/', handler=self.root_get_handler)
         router.add_post(path='/auth', handler=self.auth_post_handler)
+        router.add_route(method='OPTIONS', path='/auth', handler=self.auth_options_handler)
         router.add_get(path='/things/', handler=self.things_get_handler)
         router.add_get(path='/things/{id}', handler=self.thing_get_handler)
         router.add_post(path='/messages/', handler=self.messages_post_handler)
+        router.add_route(method='OPTIONS', path='/messages/', handler=self.messages_options_handler)
         router.add_get(path='/placements/', handler=self.placements_get_handler)
         router.add_get(path='/placements/{id}', handler=self.placement_get_handler)
 
@@ -222,6 +225,20 @@ class RestApi(object):
             return make_error_response(status=401, message="Access is forbidden. Please, "
                                                            "check your username and password combination")
 
+    async def auth_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /auth.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'POST, HEAD, OPTIONS'}
+        )
+
     @restricted_access_decorator
     async def things_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
@@ -256,6 +273,13 @@ class RestApi(object):
             thing = self._gateway.get_thing(token, thing_id)
 
             return make_json_response(thing)
+
+        except exceptions.ThingNotFoundError:
+            return make_error_response(
+                message="Failed to find a thing with the specified ID",
+                status=404
+            )
+
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
 
@@ -294,11 +318,13 @@ class RestApi(object):
 
         try:
             return make_json_response(self._gateway.get_placement(token, placement_id))
-        except KeyError:
+
+        except exceptions.PlacementNotFoundError:
             return make_error_response(
                 message="Failed to find a placement with the specified ID",
                 status=404
             )
+
         except PermissionError:
             return make_error_response(
                 message="This token doesn't permit viewing of placement data",
@@ -393,5 +419,19 @@ class RestApi(object):
         return make_json_response(
             content={"message": "accepted"},
             status=202
+        )
+
+    async def messages_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /messages/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'POST, HEAD, OPTIONS'}
         )
 

@@ -4,6 +4,7 @@
     "platform": "dummy",
     "type": "slider",
     "friendly_name": "Entrance door",
+    "placement": "R1",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D1] "
@@ -14,6 +15,7 @@
     "platform": "dummy",
     "type": "slider",
     "friendly_name": "Bedroom door",
+    "placement": "R4",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D2] "
@@ -24,6 +26,7 @@
     "platform": "dummy",
     "type": "slider",
     "friendly_name": "Office door",
+    "placement": "R5",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D3] "
