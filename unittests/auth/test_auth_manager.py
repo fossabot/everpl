@@ -47,6 +47,7 @@ class TestAuthManager(unittest.TestCase):
         am = AuthManager()
 
         self.assertFalse(am.users)  # Assert that there is no users after creation
+        self.assertFalse(am.is_insecure)  # Assert that insecure mode is disabled by default
 
     def test_root_user_creation(self):
         am = AuthManager()
@@ -239,6 +240,38 @@ class TestAuthManager(unittest.TestCase):
         )
 
         self.assertFalse(am.is_token_grants(old_root_token, None))
+
+    def test_insecure_mode_token_not_checked(self):
+        am = AuthManager(insecure=True)
+
+        self.assertTrue(am.is_token_grants('abcdefgh', None))
+
+    def test_insecure_mode_runtime_disable(self):
+        am = AuthManager(insecure=True)
+        self.assertTrue(am.is_insecure)
+        self.assertTrue(am.is_token_grants('abcdefgh', None))
+
+        am.is_insecure = False
+        self.assertFalse(am.is_insecure)
+        self.assertFalse(am.is_token_grants('abcdefgh', None))
+
+    def test_insecure_mode_setter_only_bool(self):
+        am = AuthManager(insecure=True)
+
+        with self.assertRaises(TypeError):
+            am.is_insecure = 'foo'
+
+        with self.assertRaises(TypeError):
+            am.is_insecure = None
+
+        with self.assertRaises(TypeError):
+            am.is_insecure = self
+
+    def test_insecure_mode_runtime_enable(self):
+        am = AuthManager()
+
+        with self.assertRaises(ValueError):
+            am.is_insecure = True
 
 
 if __name__ == '__main__':
