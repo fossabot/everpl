@@ -2,7 +2,8 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.things import Switch, ThingRegistry, ThingFactory
+from dpl.things import Switch
+from dpl.platforms import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 

@@ -1,7 +1,7 @@
 # Include standard modules
 # Include 3rd-party modules
 # Include DPL modules
-from . import Thing
+from dpl.things import Thing
 
 
 class ThingFactory(object):

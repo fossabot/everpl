@@ -1,7 +1,7 @@
 # Include standard modules
 # Include 3rd-party modules
 # Include DPL modules
-from . import Connection
+from dpl.connections import Connection
 
 
 class ConnectionFactory(object):
