@@ -5,11 +5,9 @@ import importlib
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.connections import Connection, ConnectionRegistry, ConnectionFactory
-from dpl.things import Thing, ThingRegistry, ThingFactory
-
-# noinspection PyUnresolvedReferences
-import dpl.platforms
+from dpl.connections import Connection
+from dpl.things import Thing
+from . import ConnectionFactory, ConnectionRegistry, ThingFactory, ThingRegistry
 
 # Get logger:
 LOGGER = logging.getLogger(__name__)

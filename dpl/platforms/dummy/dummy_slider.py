@@ -3,7 +3,8 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Slider, ThingFactory, ThingRegistry
+from dpl.things import Slider
+from dpl.platforms import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 

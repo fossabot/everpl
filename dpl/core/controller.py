@@ -6,7 +6,7 @@ import asyncio
 from dpl import api
 from dpl import auth
 from dpl.core import Configuration
-from dpl.core.platform_manager import PlatformManager
+from dpl.platforms import PlatformManager
 from dpl.core.placement_manager import PlacementManager
 
 

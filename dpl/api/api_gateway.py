@@ -7,7 +7,7 @@ import warnings
 # Include DPL modules
 from . import exceptions
 from dpl.auth import AuthManager
-from dpl.core.platform_manager import PlatformManager
+from dpl.platforms import PlatformManager
 from dpl.core import Placement, PlacementManager
 from dpl.utils import obj_to_dict
 from dpl.things import Thing, Actuator
