@@ -13,6 +13,7 @@ class JsonEnumEncoder(json.JSONEncoder):
         Redefine 'default' method of JSONEncoder:
             if object is enum variable - use it's name as value
             else - try to serialize with default json encoder
+
         :param obj: object to be serialized
         :return: a string representation of specified object
         """
