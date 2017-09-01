@@ -12,6 +12,7 @@ class DummySwitch(Switch):
         """
         Constructor. Receives an instance of DummyConnection and a prefix to be printed
         in con_params.
+
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
         :param metadata: some additional data that will be saved to 'metadata' property
@@ -32,6 +33,7 @@ class DummySwitch(Switch):
     def state(self) -> Switch.States:
         """
         Return a current state of the Thing
+
         :return: an instance of self.State
         """
         return self._state
@@ -40,6 +42,7 @@ class DummySwitch(Switch):
     def is_available(self) -> bool:
         """
         Availability of thing for usage and communication
+
         :return: True if Thing is available, False otherwise
         """
         return self._is_enabled  # and self._connection.is_connected
@@ -48,6 +51,7 @@ class DummySwitch(Switch):
     def last_updated(self) -> float:
         """
         Returns a timestamp of the last thing state update
+
         :return: float, UNIX time
         """
         return self._last_updated
@@ -59,6 +63,7 @@ class DummySwitch(Switch):
         everything on its own. Devices are allowed to switch to standby
         or power-saving mode. Thing 'state' property reflects only last
         known state of the physical object.
+
         :return: None
         """
         self._is_enabled = False
@@ -68,6 +73,7 @@ class DummySwitch(Switch):
         Allows communication with a physical object. Initiates a process
         of establishing connection to the physical device. Makes physical
         device to "wake up", to start receiving commands and sending of data.
+
         :return: None
         """
         self._is_enabled = True
@@ -75,6 +81,7 @@ class DummySwitch(Switch):
     def on(self) -> None:
         """
         Switches an object to the 'on' state
+
         :return: None
         """
         self._check_is_available()
@@ -84,6 +91,7 @@ class DummySwitch(Switch):
     def off(self) -> None:
         """
         Switches an object to the 'off' state
+
         :return: None
         """
         self._check_is_available()
