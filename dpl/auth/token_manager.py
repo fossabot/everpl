@@ -25,6 +25,7 @@ class TokenManager(object):
     def generate_token(self, token_owner) -> str:
         """
         Generates a new token for some User (or Client)
+
         :param token_owner: User or Client which is associated with token
         :return: a new token
         """
@@ -41,6 +42,7 @@ class TokenManager(object):
     def remove_token(self, token: str):
         """
         Revoke generated token
+
         :param token: a token to be revoked
         :return: None
         """
@@ -52,6 +54,7 @@ class TokenManager(object):
     def remove_all_tokens(self, token_owner):
         """
         Revoke all generated tokens for specific User or Client
+
         :param token_owner: User or Client which is associated with tokens to be revoked
         :return: None
         """
@@ -74,6 +77,7 @@ class TokenManager(object):
     def resolve_token_owner(self, token: str):
         """
         Determine an owner of specified token
+
         :param token: token to be resolved
         :return: an object of User or Client that owns the token
         """
@@ -82,6 +86,7 @@ class TokenManager(object):
     def is_token_present(self, token: str) -> bool:
         """
         Checks if the specified token is registered in the system
+
         :param token: token to be checked
         :return: true if token is registered, false otherwise
         """
