@@ -53,6 +53,7 @@ class Thing(object):
         Constructor of a Thing. Receives an instance of Connection and some specific
         parameters to use it properly. Also can receive some metadata to be stored like
         object placement, description or user-friendly name.
+
         :param con_instance: an instance of connection to be used
         :param con_params: parameters to access connection
         :param metadata: metadata to be stored
@@ -67,6 +68,7 @@ class Thing(object):
     def metadata(self) -> dict:
         """
         Returns a stored metadata
+
         :return: metadata of objects
         """
         return self._metadata
@@ -75,6 +77,7 @@ class Thing(object):
     def state(self) -> States:
         """
         Return a current state of the Thing
+
         :return: an instance of self.State
         """
         raise NotImplementedError
@@ -83,6 +86,7 @@ class Thing(object):
     def _state(self) -> States:
         """
         Return a really_internal_state_value
+
         :return: an instance of self.State
         """
         return self._really_internal_state_value
@@ -92,6 +96,7 @@ class Thing(object):
         """
         Internal setter for a really_internal_state_value that can be used to
         set a new state value and update last_updated time
+
         :param new_value: new state value to be set
         :return: None
         """
@@ -102,6 +107,7 @@ class Thing(object):
     def is_available(self) -> bool:
         """
         Availability of thing for usage and communication
+
         :return: True if Thing is available, False otherwise
         """
         raise NotImplementedError
@@ -110,6 +116,7 @@ class Thing(object):
     def last_updated(self) -> float:
         """
         Returns a timestamp of the last thing state update
+
         :return: float, UNIX time
         """
         return self._last_updated
@@ -121,6 +128,7 @@ class Thing(object):
         everything on its own. Devices are allowed to switch to standby
         or power-saving mode. Thing 'state' property reflects only last
         known state of the physical object.
+
         :return: None
         """
         raise NotImplementedError
@@ -130,6 +138,7 @@ class Thing(object):
         Allows communication with a physical object. Initiates a process
         of establishing connection to the physical device. Makes physical
         device to "wake up", to start receiving commands and sending of data.
+
         :return: None
         """
         raise NotImplementedError
@@ -137,6 +146,7 @@ class Thing(object):
     def _check_is_available(self) -> None:
         """
         Checks if this thing is available and raises and exception otherwise
+
         :return: None
         """
         if not self.is_available:
