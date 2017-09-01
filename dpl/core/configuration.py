@@ -42,6 +42,7 @@ class Configuration(object):
     def __init__(self, path: str):
         """
         Constructor which saves a path to configuration directory
+
         :param path: a path to configuration directory
         """
         check_dir_path(path)
@@ -53,6 +54,7 @@ class Configuration(object):
     def load_config(self) -> None:
         """
         Loads configuration from disk to memory
+
         :return: None
         """
         # TODO: REWRITE
@@ -76,6 +78,7 @@ class Configuration(object):
     def save_config(self) -> None:
         """
         Saves configuration on disk
+
         :return: None
         """
         raise NotImplementedError
@@ -83,6 +86,7 @@ class Configuration(object):
     def get_by_subsystem(self, subsystem_name: str) -> Dict or List[Dict]:
         """
         Returns a dict or list of config values that is related to specific subsystem
+
         :param subsystem_name: subsystem name for request
         :return: configuration values that are related to specified subsystem
         """

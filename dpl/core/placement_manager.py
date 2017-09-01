@@ -20,6 +20,7 @@ class PlacementManager(object):
     def init_placements(self, config: List[Dict]) -> None:
         """
         Init all placements by a specified configuration data
+
         :param config: configuration data that will be used for building of Placements
         :return: None
         """
@@ -35,6 +36,7 @@ class PlacementManager(object):
     def fetch_all_placements(self) -> ValuesView[Placement]:
         """
         Fetch a set-like collection of all stored Placements
+
         :return: a set-like collection of Placements
         """
         return self._placements.values()
@@ -42,6 +44,7 @@ class PlacementManager(object):
     def fetch_placement(self, placement_id: str) -> Placement:
         """
         Find specific placement by id
+
         :param placement_id:
         :return: an instance of Placement with the corresponding ID
         :raises KeyValue: if the Placement with the specified ID was not found
