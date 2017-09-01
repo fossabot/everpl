@@ -8,6 +8,7 @@ class Placement(object):
     def __init__(self, placement_id: str, friendly_name: str = None, image_url: str = None):
         """
         Constructor
+
         :param placement_id: some unique identifier of this entity
         :param friendly_name: human-friendly name of this placement
         :param image_url: an URL to the illustration image
@@ -21,6 +22,7 @@ class Placement(object):
     def placement_id(self) -> str:
         """
         Contains an unique identifier of this entity. Can't be changed after init.
+
         :return: string, system-internal identifier
         """
         return self._placement_id
@@ -29,6 +31,7 @@ class Placement(object):
     def friendly_name(self) -> str:
         """
         Contains some short meaningful human-readable naming of this placement
+
         :return: string, placement's name
         """
         return self._friendly_name
@@ -37,6 +40,7 @@ class Placement(object):
     def friendly_name(self, new_value: str):
         """
         A setter for friendly_name property
+
         :param new_value: new value of name to be set
         :return: None
         """
@@ -47,6 +51,7 @@ class Placement(object):
     def image_url(self) -> str:
         """
         Stores an URL to the illustration image for this placement
+
         :return: string representation of URL
         """
         return self._image_url
@@ -55,6 +60,7 @@ class Placement(object):
     def image_url(self, new_value: str):
         """
         A setter for image_url property
+
         :param new_value: new value to be set
         :return: None
         """

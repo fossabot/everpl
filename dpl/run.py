@@ -18,6 +18,7 @@ LOGGER = logging.getLogger(__name__)
 def shutdown(loop: asyncio.AbstractEventLoop = None):
     """
     Shutdown: Cancel all pending tasks and wait for them to complete
+
     :param loop: EventLoop where tasks are running in
     :return: None
     """
@@ -37,6 +38,7 @@ def shutdown(loop: asyncio.AbstractEventLoop = None):
 def main():
     """
     Main function of the application
+
     :return: None
     """
     loop = asyncio.get_event_loop()
