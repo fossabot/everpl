@@ -19,6 +19,7 @@ class ThingRegistry(object):
     def register_factory(cls, platform_name: str, thing_type: str, factory: ThingFactory) -> None:
         """
         Register a factory for building of instance of corresponding thing type
+
         :param platform_name: a name of platform to which this ThingFactory belongs
         :param thing_type: a name of thing type, for which thing factory is registered.
         :param factory: an instance of thing factory that will be used for building
@@ -35,6 +36,7 @@ class ThingRegistry(object):
         """
         Returns an instance of ThingFactory that must be used for building of
         specified type of things.
+
         :param platform_name: a name of platform to which this ThingFactory belongs
         :param thing_type: a type of thing that ThingFactory is responsible for
         :param default: object to be returned if related ThingFactory is not found
@@ -48,6 +50,7 @@ class ThingRegistry(object):
     def remove_factory(cls, platform_name: str, thing_type: str) -> None:
         """
         Removes an instance of thing factory, that is associated with specified thing type
+
         :param platform_name: a name of platform to which this ThingFactory belongs
         :param thing_type: a type of thing that ThingFactory was responsible for
         :return: None

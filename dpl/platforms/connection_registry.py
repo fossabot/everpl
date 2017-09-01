@@ -17,6 +17,7 @@ class ConnectionRegistry(object):
         # FIXME: CC10: Add additional platform argument?
         """
         Register a factory for building of instance of corresponding connection type
+
         :param connection_type: a name of connection type, for which connection factory
             is registered.
         :param factory: an instance of connection factory that will be used for building
@@ -30,6 +31,7 @@ class ConnectionRegistry(object):
         """
         Returns an instance of ConnectionFactory that must be used for building of
         specified type of connections.
+
         :param connection_type: a type of connection that ConnectionFactory is responsible for.
         :param default: object to be returned if related ConnectionFactory is not found
         :return: an instance of ConnectionFactory or None if it's not found
@@ -40,6 +42,7 @@ class ConnectionRegistry(object):
     def remove_factory(cls, connection_type: str) -> None:
         """
         Removes an instance of connection factory, that is associated with specified connection type
+
         :param connection_type: a type of connection that ConnectionFactory was responsible for
         :return: None
         """
