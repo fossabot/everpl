@@ -9,6 +9,7 @@ def obj_to_dict(o: object) -> Dict[str, Any]:
     """
     Serialize any python object to dictionary. It walks across all public properties
     of an object and saves their values into dictionary
+
     :param o: an object to be serialized
     :return: a dictionary where keys = property names and values = property values
     """

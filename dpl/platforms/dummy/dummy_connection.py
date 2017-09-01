@@ -17,6 +17,7 @@ class DummyConnection(Connection):
         """
         Constructor receives a file or file-like object that will be used for printing.
         sys.stdout will be used by default
+
         :param file: file-like object (stream) that will be used for printing
         """
         self._file = file
@@ -24,6 +25,7 @@ class DummyConnection(Connection):
     def print(self, prefix: str, data: Any) -> None:
         """
         Print some data to file/console with a specified prefix
+
         :param data: data to be printed
         :param prefix: prefix to be printed before the specified data
         :return: None
