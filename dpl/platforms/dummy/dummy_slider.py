@@ -3,7 +3,8 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Slider, ThingFactory, ThingRegistry
+from dpl.things import Slider
+from dpl.platforms import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -17,6 +18,7 @@ class DummySlider(Slider):
         """
         Constructor. Receives an instance of DummyConnection and a prefix to be printed
         in con_params.
+
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
         :param metadata: some additional data that will be saved to 'metadata' property
@@ -37,6 +39,7 @@ class DummySlider(Slider):
     def state(self) -> Slider.States:
         """
         Return a current state of the Thing
+
         :return: an instance of self.State
         """
         return self._state
@@ -45,6 +48,7 @@ class DummySlider(Slider):
     def is_available(self) -> bool:
         """
         Availability of thing for usage and communication
+
         :return: True if Thing is available, False otherwise
         """
         return self._is_enabled  # and self._connection.is_connected
@@ -53,6 +57,7 @@ class DummySlider(Slider):
     def last_updated(self) -> float:
         """
         Returns a timestamp of the last thing state update
+
         :return: float, UNIX time
         """
         return self._last_updated
@@ -64,6 +69,7 @@ class DummySlider(Slider):
         everything on its own. Devices are allowed to switch to standby
         or power-saving mode. Thing 'state' property reflects only last
         known state of the physical object.
+
         :return: None
         """
         self._is_enabled = False
@@ -73,6 +79,7 @@ class DummySlider(Slider):
         Allows communication with a physical object. Initiates a process
         of establishing connection to the physical device. Makes physical
         device to "wake up", to start receiving commands and sending of data.
+
         :return: None
         """
         self._is_enabled = True
@@ -81,6 +88,7 @@ class DummySlider(Slider):
         """
         Switches an object to the 'opening' and then 'opened' state if its current state
         is 'undefined', 'closed' or 'closing'. Command must be ignored otherwise.
+
         :return: None
         """
         self._check_is_available()
@@ -100,6 +108,7 @@ class DummySlider(Slider):
         """
         Switches an object to the 'closing' and then 'closed' state if its current state
         is 'undefined', 'opened' or 'opening'. Command must be ignored otherwise.
+
         :return: None
         """
         self._check_is_available()
