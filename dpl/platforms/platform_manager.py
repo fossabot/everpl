@@ -5,11 +5,9 @@ import importlib
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.connections import Connection, ConnectionRegistry, ConnectionFactory
-from dpl.things import Thing, ThingRegistry, ThingFactory
-
-# noinspection PyUnresolvedReferences
-import dpl.platforms
+from dpl.connections import Connection
+from dpl.things import Thing
+from . import ConnectionFactory, ConnectionRegistry, ThingFactory, ThingRegistry
 
 # Get logger:
 LOGGER = logging.getLogger(__name__)
@@ -32,6 +30,7 @@ class PlatformManager(object):
     def init_platforms(self, platform_names: List[str]) -> None:
         """
         Load all enabled platforms from the specified list
+
         :param platform_names: a name of platforms to be loaded
         :return: None
         """
@@ -45,6 +44,7 @@ class PlatformManager(object):
     def init_connections(self, config: List[Dict]) -> None:
         """
         Initialize all connections by configuration data
+
         :param config: configuration data
         :return: None
         """
@@ -78,6 +78,7 @@ class PlatformManager(object):
     def init_things(self, config: List[Dict]) -> None:
         """
         Initialize all things by configuration data
+
         :param config: configuration data
         :return: None
         """
@@ -130,6 +131,7 @@ class PlatformManager(object):
     def fetch_all_things(self) -> ValuesView[Thing]:
         """
         Fetch a collection of all things
+
         :return: a set-like object containing all things
         """
         return self._things.values()
@@ -137,6 +139,7 @@ class PlatformManager(object):
     def fetch_thing(self, thing_id: str, default=None) -> Thing:
         """
         Fetch an instance of Thing by its ID
+
         :param thing_id: an ID of Thing to be fetched
         :param default: default value to be returned if the specified thing is not found
         :return: an instance of Thing or default value
@@ -146,6 +149,7 @@ class PlatformManager(object):
     def enable_all_things(self) -> None:
         """
         Call Thing.enable method on all instances of things
+
         :return: None
         """
         for thing in self._things.values():
@@ -154,6 +158,7 @@ class PlatformManager(object):
     def disable_all_things(self) -> None:
         """
         Call Thing.enable method on all instances of things
+
         :return: None
         """
         for thing in self._things.values():

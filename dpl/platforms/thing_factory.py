@@ -1,7 +1,7 @@
 # Include standard modules
 # Include 3rd-party modules
 # Include DPL modules
-from . import Thing
+from dpl.things import Thing
 
 
 class ThingFactory(object):
@@ -13,6 +13,7 @@ class ThingFactory(object):
     def build(*args, **kwargs) -> Thing:
         """
         Build: create a specific instance of thing by specified params
+
         :param args: positional arguments
         :param kwargs: keyword arguments
         :return: an instance of Thing

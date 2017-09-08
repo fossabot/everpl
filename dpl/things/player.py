@@ -22,6 +22,7 @@ class Player(Actuator):
     def commands(self) -> Tuple[str, ...]:
         """
         Returns a list of available commands. Must be overridden in derivative classes.
+
         :return: a tuple of command names (strings)
         """
         return super().commands + ('stop', 'play', 'pause')
@@ -30,6 +31,7 @@ class Player(Actuator):
     def is_active(self):
         """
         Indicates if the object is in active state
+
         :return: True if state == 'on', false otherwise
         """
         return self.state == self.States.playing
@@ -37,6 +39,7 @@ class Player(Actuator):
     def activate(self) -> None:
         """
         Switches an object to the active ('playing') state
+
         :return: None
         """
         return self.play()
@@ -44,6 +47,7 @@ class Player(Actuator):
     def deactivate(self) -> None:
         """
         Switches an object to the inactive ('paused') state
+
         :return: None
         """
         return self.pause()
@@ -52,6 +56,7 @@ class Player(Actuator):
         """
         Starts playing and switches the object to the 'playing' state. Additional parameters
         like track name or URL can be provided.
+
         :param args: positional parameters
         :param kwargs: keyword parameters
         :return: None
@@ -61,6 +66,7 @@ class Player(Actuator):
     def stop(self) -> None:
         """
         Stops playing and switches the object to the 'stopped' state.
+
         :return: None
         """
         raise NotImplementedError
@@ -68,6 +74,7 @@ class Player(Actuator):
     def pause(self) -> None:
         """
         Pause playing and switches the object to the 'paused' state.
+
         :return: None
         """
         raise NotImplementedError

@@ -7,7 +7,7 @@ import warnings
 # Include DPL modules
 from . import exceptions
 from dpl.auth import AuthManager
-from dpl.core.platform_manager import PlatformManager
+from dpl.platforms import PlatformManager
 from dpl.core import Placement, PlacementManager
 from dpl.utils import obj_to_dict
 from dpl.things import Thing, Actuator
@@ -27,6 +27,7 @@ class ApiGateway(object):
     def auth(self, username: str, password: str) -> str:
         """
         Authenticate user and receive corresponding access token
+
         :param username: username of the user
         :param password: password of the user
         :return: an access token to be used
@@ -36,6 +37,7 @@ class ApiGateway(object):
     def _check_permission(self, token: str, requested_action):
         """
         Checks is specified action is permitted for this token
+
         :param token: access token to be checked
         :param requested_action: information about a requested action or permission
         :return: None
@@ -50,6 +52,7 @@ class ApiGateway(object):
 
         In addition to simple object -> dict serialization, the content of 'metadata'
         property will be moved to resulting dict body.
+
         :param thing: an instance of Thing to be converted
         :return: a corresponding dict
         """
@@ -64,6 +67,7 @@ class ApiGateway(object):
     def get_things(self, token: str) -> List[Dict]:
         """
         Receive a full list of data about things
+
         :param token: access token
         :return: a list of things data
         """
@@ -80,6 +84,7 @@ class ApiGateway(object):
     def _get_thing(self, token: str, thing_id: str, default=None) -> Thing:
         """
         Private method. Receive an instance of a specific thing
+
         :param token: access token
         :param thing_id: an ID of thing to be fetched
         :param default: default value to be returned if the specified thing is not found
@@ -95,6 +100,7 @@ class ApiGateway(object):
     def get_thing(self, token: str, thing_id: str, default=None) -> Dict:
         """
         Receive information about a specific thing
+
         :param token: access token
         :param thing_id: an ID of thing to be fetched
         :param default: default value to be returned if the specified thing is not found
@@ -115,6 +121,7 @@ class ApiGateway(object):
     def send_command(self, token: str, thing_id: str, command: str, *args, **kwargs):
         """
         Sends a command to specific thing with specified arguments
+
         :param token: access token
         :param thing_id: and ID of thing that must receive a specified command
         :param command: command to execute
@@ -147,6 +154,7 @@ class ApiGateway(object):
     def get_task_status(self, token: str, task_id):
         """
         Get a status of a planned task
+
         :param token: an access token
         :param task_id: some id or handler of task to be fetched
         :return: a status of the task
@@ -157,6 +165,7 @@ class ApiGateway(object):
     def _placement_to_dict(cls, placement: Placement) -> Dict:
         """
         Converts an instance of Placement to corresponding dictionary
+
         :return: a dictionary with all properties of placement
         """
         # FIXME: CC14: Consider switching to direct usage of properties
@@ -172,6 +181,7 @@ class ApiGateway(object):
         Converts an instance of Placement to corresponding dictionary that is compatible
         with the legacy API ('description' field will be set to the value of 'friendly_name' field,
         'image' field will be set to a value of 'image_url' field).
+
         :return: a dictionary with all properties of placement
         """
         warnings.warn("Legacy representation of placements will be dropped in the next release"
@@ -188,6 +198,7 @@ class ApiGateway(object):
     def get_placements(self, token: str) -> List[Dict]:
         """
         Returns a list of dict-like representations of all placements
+
         :param token: access token
         :return: a list of placements data
         """
@@ -204,6 +215,7 @@ class ApiGateway(object):
     def get_placement(self, token: str, placement_id: str, default=None) -> Dict:
         """
         Returns a dict-like representation of placement with the specified ID
+
         :param token: access token
         :param placement_id: an ID of placement to be fetched
         :param default: default value to be returned if the specified placement is not found
