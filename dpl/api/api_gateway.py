@@ -68,6 +68,7 @@ class ApiGateway(object):
         """
         Convert a thing object to a corresponding dict representation that is compatible
         to the legacy API
+
         :param thing: an instance of Thing to be converted
         :return: a corresponding dict
         """
