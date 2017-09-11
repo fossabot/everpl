@@ -6,7 +6,7 @@ import asyncio
 from dpl import api
 from dpl import auth
 from dpl.core import Configuration
-from dpl.platforms import PlatformManager
+from dpl.integrations import IntegrationManager
 from dpl.core.placement_manager import PlacementManager
 
 
@@ -14,7 +14,7 @@ class Controller(object):
     def __init__(self):
         self._conf = Configuration(path="../samples/config")
         self._placements = PlacementManager()
-        self._pm = PlatformManager()
+        self._pm = IntegrationManager()
 
         self._auth_manager = auth.AuthManager()
 
@@ -31,9 +31,9 @@ class Controller(object):
 
         self._placements.init_placements(placement_settings)
 
-        enabled_platforms = core_settings["enabled_platforms"]
+        enabled_integrations = core_settings["enabled_integrations"]
 
-        self._pm.init_platforms(enabled_platforms)
+        self._pm.init_integrations(enabled_integrations)
         self._pm.init_connections(connection_settings)
         self._pm.init_things(thing_settings)
 
