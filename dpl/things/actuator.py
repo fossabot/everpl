@@ -12,6 +12,7 @@ class Actuator(Thing):
     and change their states after that.
 
     Every actuator implementation must guarantee that:
+
     - it can be in one of two states: 'activated' or 'deactivated';
     - 'activation' is a switching of a device to some specific active state
       (like 'on' for LightBulb, 'opened' for Door and 'capturing' for Camera and
