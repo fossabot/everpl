@@ -18,6 +18,7 @@ class Thing(object):
     Specific implementations of things are grouped into 'platforms'.
 
     Every thing implementation must guarantee that:
+    
     - a current state of thing is cached in internal buffer;
     - a current state of thing is always updated and corresponds to the current
       state of real object at the moment;
