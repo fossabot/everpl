@@ -64,6 +64,23 @@ class ApiGateway(object):
 
         return thing_dict
 
+    def _thing_to_dict_legacy(self, thing: Thing) -> dict:
+        """
+        Convert a thing object to a corresponding dict representation that is compatible
+        to the legacy API
+
+        :param thing: an instance of Thing to be converted
+        :return: a corresponding dict
+        """
+        warnings.warn("Legacy representation of things will be dropped in the next release"
+                      "of this platform. Please, switch to the '_thing_to_dict' method usage",
+                      PendingDeprecationWarning)
+
+        thing_dict = self._thing_to_dict(thing)
+        thing_dict['description'] = thing_dict['friendly_name']
+
+        return thing_dict
+
     def get_things(self, token: str) -> List[Dict]:
         """
         Receive a full list of data about things
@@ -77,7 +94,7 @@ class ApiGateway(object):
         things = self._pm.fetch_all_things()
 
         for thing in things:
-            result.append(self._thing_to_dict(thing))
+            result.append(self._thing_to_dict_legacy(thing))
 
         return result
 
@@ -112,7 +129,7 @@ class ApiGateway(object):
 
         thing = self._get_thing(token, thing_id)
 
-        return self._thing_to_dict(thing)
+        return self._thing_to_dict_legacy(thing)
 
     # FIXME: CC2: Make this method a coroutine?
     # FIXME: Specify a return value type
