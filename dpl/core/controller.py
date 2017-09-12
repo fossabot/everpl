@@ -1,8 +1,10 @@
 # Include standard modules
 import asyncio
+import os
 
 # Include 3rd-party modules
 # Include DPL modules
+from dpl import DPL_INSTALL_PATH
 from dpl import api
 from dpl import auth
 from dpl.core import Configuration
@@ -12,7 +14,9 @@ from dpl.core.placement_manager import PlacementManager
 
 class Controller(object):
     def __init__(self):
-        self._conf = Configuration(path="../samples/config")
+        os.path.abspath(__file__)
+
+        self._conf = Configuration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
         self._placements = PlacementManager()
         self._bm = BindingManager()
 
