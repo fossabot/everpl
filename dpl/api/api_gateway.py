@@ -7,7 +7,7 @@ import warnings
 # Include DPL modules
 from . import exceptions
 from dpl.auth import AuthManager
-from dpl.platforms import PlatformManager
+from dpl.integrations import BindingManager
 from dpl.core import Placement, PlacementManager
 from dpl.utils import obj_to_dict
 from dpl.things import Thing, Actuator
@@ -19,9 +19,9 @@ class ApiGateway(object):
     and pass requests further to corresponding components (to execute some command
     of fetch information about a specific thing, for example)
     """
-    def __init__(self, auth_manager: AuthManager, platform_manager: PlatformManager, placement_manager: PlacementManager):
+    def __init__(self, auth_manager: AuthManager, binding_manager: BindingManager, placement_manager: PlacementManager):
         self._am = auth_manager
-        self._pm = platform_manager
+        self._bm = binding_manager
         self._placements = placement_manager
 
     def auth(self, username: str, password: str) -> str:
@@ -64,6 +64,23 @@ class ApiGateway(object):
 
         return thing_dict
 
+    def _thing_to_dict_legacy(self, thing: Thing) -> dict:
+        """
+        Convert a thing object to a corresponding dict representation that is compatible
+        to the legacy API
+
+        :param thing: an instance of Thing to be converted
+        :return: a corresponding dict
+        """
+        warnings.warn("Legacy representation of things will be dropped in the next release"
+                      "of this platform. Please, switch to the '_thing_to_dict' method usage",
+                      PendingDeprecationWarning)
+
+        thing_dict = self._thing_to_dict(thing)
+        thing_dict['description'] = thing_dict['friendly_name']
+
+        return thing_dict
+
     def get_things(self, token: str) -> List[Dict]:
         """
         Receive a full list of data about things
@@ -74,10 +91,10 @@ class ApiGateway(object):
         self._check_permission(token, None)
 
         result = list()
-        things = self._pm.fetch_all_things()
+        things = self._bm.fetch_all_things()
 
         for thing in things:
-            result.append(self._thing_to_dict(thing))
+            result.append(self._thing_to_dict_legacy(thing))
 
         return result
 
@@ -93,7 +110,7 @@ class ApiGateway(object):
         # Check permission on viewing thing
         self._check_permission(token, None)
 
-        thing = self._pm.fetch_thing(thing_id, default)
+        thing = self._bm.fetch_thing(thing_id, default)
 
         return thing
 
@@ -114,7 +131,7 @@ class ApiGateway(object):
         if thing is None:
             return default
 
-        return self._thing_to_dict(thing)
+        return self._thing_to_dict_legacy(thing)
 
     # FIXME: CC2: Make this method a coroutine?
     # FIXME: Specify a return value type

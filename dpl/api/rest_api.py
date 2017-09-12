@@ -10,7 +10,7 @@ from aiohttp import web
 
 # Include DPL modules
 from dpl.api import ApiGateway
-from dpl.utils import JsonEnumEncoder
+from dpl.utils import JsonEnumEncoder, filtering
 
 
 # Declare constants:
@@ -246,6 +246,28 @@ class RestApi(object):
             headers={'Allow': 'POST, HEAD, OPTIONS'}
         )
 
+    @staticmethod
+    def _params_to_thing_filter_pattern(request: web.Request) -> dict:
+        """
+        Fetch field names and their values from HTTP request query parameters
+        and save them to new dictionary object that can be used for filtering of things.
+
+        :param request: request to be processed
+        :return: a dict, filter pattern
+        """
+        # Specified a set of fields that are allowed for filtering
+        # (like here: https://goo.gl/KUBHTZ)
+        filter_fields = ('placement', 'type')
+
+        result = dict()
+        query_params = request.query
+
+        for field_name in filter_fields:
+            if field_name in query_params:
+                result[field_name] = query_params[field_name]
+
+        return result
+
     @restricted_access_decorator
     async def things_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
@@ -257,8 +279,11 @@ class RestApi(object):
         """
         try:
             things = self._gateway.get_things(token)
+            pattern = self._params_to_thing_filter_pattern(request)
 
-            return make_json_response({"things": things})
+            filtered = filtering.filter_items(things, pattern)
+
+            return make_json_response({"things": filtered})
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
 

@@ -15,9 +15,10 @@ class Thing(object):
     items, things that uses some specific protocol (connection) and can communicate
     with the system in any way.
 
-    Specific implementations of things are grouped into 'platforms'.
+    Specific implementations of things are grouped into 'integrations'.
 
     Every thing implementation must guarantee that:
+    
     - a current state of thing is cached in internal buffer;
     - a current state of thing is always updated and corresponds to the current
       state of real object at the moment;

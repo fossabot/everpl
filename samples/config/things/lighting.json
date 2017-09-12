@@ -1,9 +1,9 @@
 [
   {
     "id": "Li1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
     "placement": "R1",
     "con_id": "DC1",
     "con_params": {
@@ -12,9 +12,9 @@
   },
   {
     "id": "Li2",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
     "placement": "R2",
     "con_id": "DC1",
     "con_params": {
@@ -23,9 +23,9 @@
   },
   {
     "id": "Li3",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
     "placement": "R3",
     "con_id": "DC1",
     "con_params": {
@@ -34,9 +34,9 @@
   },
   {
     "id": "Li4",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
     "placement": "R4",
     "con_id": "DC1",
     "con_params": {
@@ -45,9 +45,9 @@
   },
   {
     "id": "Li5",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
     "placement": "R4",
     "con_id": "DC1",
     "con_params": {
@@ -56,9 +56,9 @@
   },
   {
     "id": "Li6",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
     "placement": "R6",
     "con_id": "DC1",
     "con_params": {

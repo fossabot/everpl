@@ -1,9 +1,9 @@
 [
   {
     "id": "SB1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "Kitchen",
+    "friendly_name": "Kitchen sunblind",
     "placement": "R2",
     "con_id": "DC1",
     "con_params": {
@@ -12,9 +12,9 @@
   },
   {
     "id": "SB2",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "Bedroom",
+    "friendly_name": "Bedroom sunblind",
     "placement": "R4",
     "con_id": "DC1",
     "con_params": {
@@ -23,9 +23,9 @@
   },
   {
     "id": "SB3",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "Office",
+    "friendly_name": "Office sunblind",
     "placement": "R5",
     "con_id": "DC1",
     "con_params": {
@@ -34,9 +34,9 @@
   },
   {
     "id": "SB4",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "Living Room",
+    "friendly_name": "Living Room sunblind",
     "placement": "R6",
     "con_id": "DC1",
     "con_params": {
