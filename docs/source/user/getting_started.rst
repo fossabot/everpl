@@ -17,8 +17,12 @@ Client application is a some software that makes interaction with the
 platform and end-user itself possible. It is connected to the platform
 and allows to use all its features via some user-friendly interface.
 
-In the next chapters you will find how to install [#f1]_ all the software
-needed and how to run it [#f2]_ for the first time. Just click 'next'
+If you are a developer, you can develop own client application based
+on API section of this documentation. Otherwise, you can choose one
+on the :doc:`./client_applications` page.
+
+In the next chapters you will find how to install [#f1]_ Everthing
+Platform and how to run it [#f2]_ for the first time. Just click 'next'
 button to continue.
 
 .. rubric:: Footnotes
