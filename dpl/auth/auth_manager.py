@@ -53,6 +53,7 @@ class AuthManager(object):
     def users(self) -> Set[str]:
         """
         Returns a set of registered usernames
+
         :return: usernames of all registered users
         """
         # FIXME: CC7: Return just plain keys(), as is
@@ -62,6 +63,7 @@ class AuthManager(object):
     def create_root_user(self, username: str, password: str):
         """
         Create a root user if there is no users registered
+
         :param username: a username of root user
         :param password: a password of root user
         :return: None
@@ -81,6 +83,7 @@ class AuthManager(object):
     def create_user(self, token: str, username: str, password: str):
         """
         Create a user with specified username and password values
+
         :param token: an access token of a user that is trying to create a new one
         :param username: username of the user to be created
         :param password: password of the user to be created
@@ -100,6 +103,7 @@ class AuthManager(object):
         """
         Checks if user with specified token is authorized to create or remove users.
         Otherwise raises an exception.
+
         :param token: an access token of a user that is trying to create or remove another one
         :return: None
         """
@@ -115,6 +119,7 @@ class AuthManager(object):
     def remove_user(self, token: str, username: str):
         """
         Remove a user from the system
+
         :param token: an access token of a user that is trying to remove someone
         :param username: a username of the user to be removed
         :return: None
@@ -136,6 +141,7 @@ class AuthManager(object):
     def change_password(self, username: str, old_password: str, new_password: str):
         """
         Change a password of specific user
+
         :param username: a username of user whose password must be changed
         :param old_password: an old password of this user
         :param new_password: a new password of this user
@@ -154,6 +160,7 @@ class AuthManager(object):
     def _check_user_registered(self, username):
         """
         Checks if the user is registered in the system. Otherwise raises an exception
+
         :param username: username of user to be checked
         :return: None
         """
@@ -163,6 +170,7 @@ class AuthManager(object):
     def auth_user(self, username: str, password: str) -> str:
         """
         Authenticate the user and receive an access token for future usages
+
         :param username: username of user to be authenticated
         :param password: password of user to be authenticated
         :return: an access token
@@ -183,6 +191,7 @@ class AuthManager(object):
     def is_token_grants(self, token: str, requested_action: object) -> bool:
         """
         Check if specified token grants to perform the requested action
+
         :param token: an access token
         :param requested_action: an info about the requested action
         :return: true if permission is granted, false otherwise

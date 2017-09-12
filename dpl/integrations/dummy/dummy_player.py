@@ -2,7 +2,8 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.things import Player, ThingFactory, ThingRegistry
+from dpl.things import Player
+from dpl.integrations import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -14,6 +15,7 @@ class DummyPlayer(Player):
         """
         Constructor. Receives an instance of DummyConnection and a prefix to be printed
         in con_params.
+
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
         :param metadata: some additional data that will be saved to 'metadata' property
@@ -34,6 +36,7 @@ class DummyPlayer(Player):
     def state(self) -> Player.States:
         """
         Return a current state of the Thing
+
         :return: an instance of self.State
         """
         return self._state
@@ -42,6 +45,7 @@ class DummyPlayer(Player):
     def is_available(self) -> bool:
         """
         Availability of thing for usage and communication
+
         :return: True if Thing is available, False otherwise
         """
         return self._is_enabled  # and self._connection.is_connected
@@ -50,6 +54,7 @@ class DummyPlayer(Player):
     def last_updated(self) -> float:
         """
         Returns a timestamp of the last thing state update
+
         :return: float, UNIX time
         """
         return self._last_updated
@@ -61,6 +66,7 @@ class DummyPlayer(Player):
         everything on its own. Devices are allowed to switch to standby
         or power-saving mode. Thing 'state' property reflects only last
         known state of the physical object.
+
         :return: None
         """
         self._is_enabled = False
@@ -70,6 +76,7 @@ class DummyPlayer(Player):
         Allows communication with a physical object. Initiates a process
         of establishing connection to the physical device. Makes physical
         device to "wake up", to start receiving commands and sending of data.
+
         :return: None
         """
         self._is_enabled = True
@@ -78,6 +85,7 @@ class DummyPlayer(Player):
         """
         Starts playing and switches the object to the 'playing' state. Additional parameters
         like track name or URL can be provided.
+
         :param song_name: song name to be played (or URL, or ID, or playlist position, etc.)
         :return: None
         """
@@ -88,6 +96,7 @@ class DummyPlayer(Player):
     def stop(self) -> None:
         """
         Stops playing and switches the object to the 'stopped' state.
+
         :return: None
         """
         self._check_is_available()
@@ -97,6 +106,7 @@ class DummyPlayer(Player):
     def pause(self) -> None:
         """
         Pause playing and switches the object to the 'paused' state.
+
         :return: None
         """
         self._check_is_available()
@@ -114,7 +124,7 @@ class DummyPlayerFactory(ThingFactory):
 
 
 ThingRegistry.register_factory(
-    platform_name="dummy",
+    integration_name="dummy",
     thing_type="player",
     factory=DummyPlayerFactory()
 )

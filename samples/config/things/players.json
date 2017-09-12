@@ -1,9 +1,10 @@
 [
   {
     "id": "PLAY1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "player",
-    "description": "Default player",
+    "friendly_name": "Living room default player",
+    "placement": "R6",
     "con_id": "DC2",
     "con_params": {
       "prefix": "[PLAY1] "

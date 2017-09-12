@@ -1,9 +1,10 @@
 [
   {
     "id": "D1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "Entrance door",
+    "friendly_name": "Entrance door",
+    "placement": "R1",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D1] "
@@ -11,9 +12,10 @@
   },
   {
     "id": "D2",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "to bedroom",
+    "friendly_name": "Bedroom door",
+    "placement": "R4",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D2] "
@@ -21,9 +23,10 @@
   },
   {
     "id": "D3",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
-    "description": "to office",
+    "friendly_name": "Office door",
+    "placement": "R5",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[D3] "

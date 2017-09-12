@@ -25,6 +25,7 @@ class User(object):
     def __init__(self, username: str, password: str):
         """
         Create a user of the system
+
         :param username: username to be used
         :param password: password to be used. NOT SAVED, just hashed
         """
@@ -37,6 +38,7 @@ class User(object):
     def username(self) -> str:
         """
         Returns a username of this user
+
         :return: username as a string
         """
         return self._username
@@ -45,6 +47,7 @@ class User(object):
     def username(self, value: str):
         """
         Updates the username of the user
+
         :param value: new username to be set
         :return: None
         """
@@ -57,6 +60,7 @@ class User(object):
     def _is_username_valid(username: str) -> bool:
         """
         Checks is the specified username is valid
+
         :param username: username to be checked
         :return: true if valid, false otherwise
         """
@@ -66,6 +70,7 @@ class User(object):
     def verify_password(self, password: str) -> bool:
         """
         Checks is the password is correct for this user
+
         :param password: password to be checked
         :return: true if password is correct and false otherwise
         """
@@ -74,6 +79,7 @@ class User(object):
     def update_password(self, old_password: str, new_password: str):
         """
         Updates current user password, raises an error if old_password is incorrect
+
         :param old_password: old password
         :param new_password: new password to be set
         :return: None

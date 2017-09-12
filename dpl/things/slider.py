@@ -24,6 +24,7 @@ class Slider(Actuator):
     def commands(self) -> Tuple[str, ...]:
         """
         Returns a list of available commands. Must be overridden in derivative classes.
+
         :return: a tuple of command names (strings)
         """
         return super().commands + ('open', 'close')
@@ -32,6 +33,7 @@ class Slider(Actuator):
     def is_active(self):
         """
         Indicates if the object is in active state
+
         :return: True if state == 'on', false otherwise
         """
         return self.state == self.States.opened
@@ -39,6 +41,7 @@ class Slider(Actuator):
     def activate(self) -> None:
         """
         Switches an object to the active ('opened') state
+
         :return: None
         """
         return self.open()
@@ -46,6 +49,7 @@ class Slider(Actuator):
     def deactivate(self) -> None:
         """
         Switches an object to the inactive ('closed') state
+
         :return: None
         """
         return self.close()
@@ -54,6 +58,7 @@ class Slider(Actuator):
         """
         Switches an object to the 'opening' and then 'opened' state if its current state
         is 'undefined', 'closed' or 'closing'. Command must be ignored otherwise.
+
         :return: None
         """
         raise NotImplementedError
@@ -62,6 +67,7 @@ class Slider(Actuator):
         """
         Switches an object to the 'closing' and then 'closed' state if its current state
         is 'undefined', 'opened' or 'opening'. Command must be ignored otherwise.
+
         :return: None
         """
         raise NotImplementedError

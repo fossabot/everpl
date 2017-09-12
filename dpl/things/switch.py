@@ -21,6 +21,7 @@ class Switch(Actuator):
     def commands(self) -> Tuple[str, ...]:
         """
         Returns a list of available commands. Must be overridden in derivative classes.
+
         :return: a tuple of command names (strings)
         """
         return super().commands + ('on', 'off')
@@ -29,6 +30,7 @@ class Switch(Actuator):
     def is_active(self):
         """
         Indicates if the object is in active state
+
         :return: True if state == 'on', false otherwise
         """
         return self.state == self.States.on
@@ -36,6 +38,7 @@ class Switch(Actuator):
     def activate(self) -> None:
         """
         Switches an object to the active ('on') state
+
         :return: None
         """
         return self.on()
@@ -43,6 +46,7 @@ class Switch(Actuator):
     def deactivate(self) -> None:
         """
         Switches an object to the inactive ('off') state
+
         :return: None
         """
         return self.off()
@@ -50,6 +54,7 @@ class Switch(Actuator):
     def on(self) -> None:
         """
         Switches an object to the 'on' state
+
         :return: None
         """
         raise NotImplementedError
@@ -57,6 +62,7 @@ class Switch(Actuator):
     def off(self) -> None:
         """
         Switches an object to the 'off' state
+
         :return: None
         """
         raise NotImplementedError

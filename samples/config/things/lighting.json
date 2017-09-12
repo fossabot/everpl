@@ -1,9 +1,10 @@
 [
   {
     "id": "Li1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
+    "placement": "R1",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[Li1] "
@@ -11,9 +12,10 @@
   },
   {
     "id": "Li2",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
+    "placement": "R2",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[Li2] "
@@ -21,9 +23,10 @@
   },
   {
     "id": "Li3",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
+    "placement": "R3",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[Li3] "
@@ -31,9 +34,10 @@
   },
   {
     "id": "Li4",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
+    "placement": "R4",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[Li4] "
@@ -41,9 +45,10 @@
   },
   {
     "id": "Li5",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
+    "placement": "R4",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[Li5] "
@@ -51,9 +56,10 @@
   },
   {
     "id": "Li6",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
-    "description": "",
+    "friendly_name": "",
+    "placement": "R6",
     "con_id": "DC1",
     "con_params": {
       "prefix": "[Li6] "

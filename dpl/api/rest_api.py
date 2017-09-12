@@ -10,7 +10,8 @@ from aiohttp import web
 
 # Include DPL modules
 from dpl.api import ApiGateway
-from dpl.utils import JsonEnumEncoder
+from dpl.utils import JsonEnumEncoder, filtering
+from . import exceptions
 
 
 # Declare constants:
@@ -42,6 +43,7 @@ def make_json_response(content: object, status: int = 200) -> web.Response:
     custom JSON encoders by default (functools.partial() may be used to create a
     corresponding callable which must to be passed into 'json_response' function
     as 'dumps' keyword argument).
+
     :param content: content to serialize
     :param status: status code of the response
     :return: created response
@@ -95,6 +97,7 @@ class RestApi(object):
         """
         Constructor. Receives a reference to API Gateway that will receive and process all
         command and data requests. Setups API routes and request handlers.
+
         :param gateway: an instance of ApiGateway
         """
         self._gateway = gateway
@@ -110,19 +113,22 @@ class RestApi(object):
         else:
             self._loop = loop
 
-        router = self._app.router
+        router = self._app.router  # type: web.UrlDispatcher
 
         router.add_get(path='/', handler=self.root_get_handler)
         router.add_post(path='/auth', handler=self.auth_post_handler)
+        router.add_route(method='OPTIONS', path='/auth', handler=self.auth_options_handler)
         router.add_get(path='/things/', handler=self.things_get_handler)
         router.add_get(path='/things/{id}', handler=self.thing_get_handler)
         router.add_post(path='/messages/', handler=self.messages_post_handler)
+        router.add_route(method='OPTIONS', path='/messages/', handler=self.messages_options_handler)
         router.add_get(path='/placements/', handler=self.placements_get_handler)
         router.add_get(path='/placements/{id}', handler=self.placement_get_handler)
 
     async def create_server(self, host: str, port: int) -> None:
         """
         Factory function that creates fully-functional aiohttp server
+
         :param host: a server hostname or address
         :param port: a server port
         :return: None
@@ -134,6 +140,7 @@ class RestApi(object):
         """
         Stop (shutdown) REST server gracefully.
         More info is available here: http://aiohttp.readthedocs.io/en/stable/web.html#aiohttp-web-graceful-shutdown
+
         :return: None
         """
         self._server.close()
@@ -146,6 +153,7 @@ class RestApi(object):
     async def _middleware_process_exceptions(app, handler):
         """
         Factory method that returns a handler coroutine for all unprocessed exceptions
+
         :param app: application that is related to this middleware
         :param handler: a handler to be wrapped; original request handler
         :return: a coroutine, middleware handler
@@ -185,6 +193,7 @@ class RestApi(object):
     async def root_get_handler(self, request: web.Request) -> web.Response:
         """
         A handler for GET requests to path='/'
+
         :param request: request to be processed
         :return: a response to request
         """
@@ -199,6 +208,7 @@ class RestApi(object):
     async def auth_post_handler(self, request: web.Request, json_data: dict = None) -> web.Response:
         """
         Primitive username and password validator
+
         :param request: request to be processed
         :param json_data: a content of request body
         :return: a response to request
@@ -222,18 +232,59 @@ class RestApi(object):
             return make_error_response(status=401, message="Access is forbidden. Please, "
                                                            "check your username and password combination")
 
+    async def auth_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /auth.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'POST, HEAD, OPTIONS'}
+        )
+
+    @staticmethod
+    def _params_to_thing_filter_pattern(request: web.Request) -> dict:
+        """
+        Fetch field names and their values from HTTP request query parameters
+        and save them to new dictionary object that can be used for filtering of things.
+
+        :param request: request to be processed
+        :return: a dict, filter pattern
+        """
+        # Specified a set of fields that are allowed for filtering
+        # (like here: https://goo.gl/KUBHTZ)
+        filter_fields = ('placement', 'type')
+
+        result = dict()
+        query_params = request.query
+
+        for field_name in filter_fields:
+            if field_name in query_params:
+                result[field_name] = query_params[field_name]
+
+        return result
+
     @restricted_access_decorator
     async def things_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /things/
+
         :param request: request to be processed
         :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
         """
         try:
             things = self._gateway.get_things(token)
+            pattern = self._params_to_thing_filter_pattern(request)
 
-            return make_json_response({"things": things})
+            filtered = filtering.filter_items(things, pattern)
+
+            return make_json_response({"things": filtered})
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
 
@@ -246,6 +297,7 @@ class RestApi(object):
     async def thing_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /things/
+
         :param request: request to be processed
         :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
@@ -256,6 +308,13 @@ class RestApi(object):
             thing = self._gateway.get_thing(token, thing_id)
 
             return make_json_response(thing)
+
+        except exceptions.ThingNotFoundError:
+            return make_error_response(
+                message="Failed to find a thing with the specified ID",
+                status=404
+            )
+
         except PermissionError as e:
             return make_error_response(status=400, message=str(e))
 
@@ -263,6 +322,7 @@ class RestApi(object):
     async def placements_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /placements/
+
         :param request: request to be processed
         :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
@@ -286,6 +346,7 @@ class RestApi(object):
     async def placement_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
         A handler for GET requests for path /placements/
+
         :param request: request to be processed
         :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
@@ -294,11 +355,13 @@ class RestApi(object):
 
         try:
             return make_json_response(self._gateway.get_placement(token, placement_id))
-        except KeyError:
+
+        except exceptions.PlacementNotFoundError:
             return make_error_response(
                 message="Failed to find a placement with the specified ID",
                 status=404
             )
+
         except PermissionError:
             return make_error_response(
                 message="This token doesn't permit viewing of placement data",
@@ -311,6 +374,7 @@ class RestApi(object):
         """
         ONLY FOR COMPATIBILITY: Accept 'action requested' messages from clients.
         Handle POST requests for /messages/ path.
+
         :param request: request to be processed
         :param token: an access token to be used, usually fetched by restricted_access_decorator
         :return: a response to request
@@ -393,5 +457,20 @@ class RestApi(object):
         return make_json_response(
             content={"message": "accepted"},
             status=202
+        )
+
+    async def messages_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /messages/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'POST, HEAD, OPTIONS'}
         )
 

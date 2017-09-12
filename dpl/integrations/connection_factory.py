@@ -1,7 +1,7 @@
 # Include standard modules
 # Include 3rd-party modules
 # Include DPL modules
-from . import Connection
+from dpl.connections import Connection
 
 
 class ConnectionFactory(object):
@@ -13,6 +13,7 @@ class ConnectionFactory(object):
     def build(*args, **kwargs) -> Connection:
         """
         Build: create a specific instance of connection by specified params
+
         :param args: positional arguments
         :param kwargs: keyword arguments
         :return: an instance of Connection
