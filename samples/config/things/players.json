@@ -1,7 +1,7 @@
 [
   {
     "id": "PLAY1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "player",
     "friendly_name": "Living room default player",
     "placement": "R6",

@@ -15,7 +15,7 @@ class Thing(object):
     items, things that uses some specific protocol (connection) and can communicate
     with the system in any way.
 
-    Specific implementations of things are grouped into 'platforms'.
+    Specific implementations of things are grouped into 'integrations'.
 
     Every thing implementation must guarantee that:
     
