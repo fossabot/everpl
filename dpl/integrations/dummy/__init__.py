@@ -1,5 +1,5 @@
 """
-Dummy platform contains a reference implementations of all thing types.
+Dummy integration contains a reference implementations of all thing types.
 Those reference implementations just print some data on display in a response
 to sent commands and use DummyConnection connection type.
 """

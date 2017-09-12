@@ -13,11 +13,11 @@ from . import ConnectionFactory, ConnectionRegistry, ThingFactory, ThingRegistry
 LOGGER = logging.getLogger(__name__)
 
 
-# FIXME: CC11: Consider splitting of PlatformManager to ThingManager and ConnectionManager
+# FIXME: CC11: Consider splitting of BindingManager to ThingManager and ConnectionManager
 # FIXME: CC12: Consider splitting of Managers to Repositories and Loaders
-class PlatformManager(object):
+class BindingManager(object):
     """
-    PlatformManager is a class that is responsible for initiation, storage, fetching and deletion
+    BindingManager is a class that is responsible for initiation, storage, fetching and deletion
     of Things and Connections.
     """
     def __init__(self):
@@ -27,18 +27,18 @@ class PlatformManager(object):
         self._connections = dict()  # type: Dict[str, Connection]
         self._things = dict()  # type: Dict[str, Thing]
 
-    def init_platforms(self, platform_names: List[str]) -> None:
+    def init_integrations(self, integration_names: List[str]) -> None:
         """
-        Load all enabled platforms from the specified list
+        Load all enabled integrations from the specified list
 
-        :param platform_names: a name of platforms to be loaded
+        :param integration_names: a name of integrations to be loaded
         :return: None
         """
-        for item in platform_names:
+        for item in integration_names:
             try:
-                importlib.import_module(name='.'+item, package="dpl.platforms")
+                importlib.import_module(name='.'+item, package="dpl.integrations")
             except ImportError as e:
-                LOGGER.warning("Failed to load platform \"%s\": %s",
+                LOGGER.warning("Failed to load integration \"%s\": %s",
                                item, e)
 
     def init_connections(self, config: List[Dict]) -> None:
@@ -50,7 +50,7 @@ class PlatformManager(object):
         """
         for item in config:
             con_id = item["id"]
-            platform_name = item["platform"]
+            integration_name = item["integration"]
             con_type = item["con_type"]
             con_params = item["con_params"]  # type: dict
 
@@ -63,8 +63,8 @@ class PlatformManager(object):
 
             if factory is None:
                 LOGGER.warning(
-                    "Failed to create connection \"%s\". Is platform \"%s\" enabled?",
-                    con_id, platform_name
+                    "Failed to create connection \"%s\". Is integration \"%s\" enabled?",
+                    con_id, integration_name
                 )
 
                 continue
@@ -84,7 +84,7 @@ class PlatformManager(object):
         """
         for item in config:
             thing_id = item["id"]
-            thing_platform = item["platform"]
+            thing_integration = item["integration"]
             thing_type = item["type"]
             thing_friendly_name = item.get("friendly_name", None)
             thing_placement = item["placement"]
@@ -92,7 +92,7 @@ class PlatformManager(object):
             con_params = item["con_params"]
 
             factory = ThingRegistry.resolve_factory(  # type: ThingFactory
-                platform_name=thing_platform,
+                integration_name=thing_integration,
                 thing_type=thing_type,
                 default=None
             )
@@ -109,8 +109,8 @@ class PlatformManager(object):
 
             if factory is None:
                 LOGGER.warning(
-                    "Failed to create thing \"%s\". Is platform \"%s\" enabled?",
-                    thing_id, thing_platform
+                    "Failed to create thing \"%s\". Is integration \"%s\" enabled?",
+                    thing_id, thing_integration
                 )
 
                 continue

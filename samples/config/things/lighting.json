@@ -1,7 +1,7 @@
 [
   {
     "id": "Li1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "",
     "placement": "R1",
@@ -12,7 +12,7 @@
   },
   {
     "id": "Li2",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "",
     "placement": "R2",
@@ -23,7 +23,7 @@
   },
   {
     "id": "Li3",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "",
     "placement": "R3",
@@ -34,7 +34,7 @@
   },
   {
     "id": "Li4",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "",
     "placement": "R4",
@@ -45,7 +45,7 @@
   },
   {
     "id": "Li5",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "",
     "placement": "R4",
@@ -56,7 +56,7 @@
   },
   {
     "id": "Li6",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "",
     "placement": "R6",

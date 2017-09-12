@@ -3,7 +3,7 @@
 
 # Include DPL modules
 from dpl.things import Switch
-from dpl.platforms import ThingFactory, ThingRegistry
+from dpl.integrations import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -109,7 +109,7 @@ class DummySwitchFactory(ThingFactory):
 
 
 ThingRegistry.register_factory(
-    platform_name="dummy",
+    integration_name="dummy",
     thing_type="switch",
     factory=DummySwitchFactory()
 )

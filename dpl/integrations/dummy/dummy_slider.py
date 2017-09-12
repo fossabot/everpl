@@ -4,7 +4,7 @@ import time
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.things import Slider
-from dpl.platforms import ThingFactory, ThingRegistry
+from dpl.integrations import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -135,7 +135,7 @@ class DummySliderFactory(ThingFactory):
 
 
 ThingRegistry.register_factory(
-    platform_name="dummy",
+    integration_name="dummy",
     thing_type="slider",
     factory=DummySliderFactory()
 )

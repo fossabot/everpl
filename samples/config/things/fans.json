@@ -1,7 +1,7 @@
 [
   {
     "id": "F1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "switch",
     "friendly_name": "Kitchen cooker hood",
     "placement": "R2",

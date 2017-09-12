@@ -3,7 +3,7 @@
 
 # Include DPL modules
 from dpl.things import Player
-from dpl.platforms import ThingFactory, ThingRegistry
+from dpl.integrations import ThingFactory, ThingRegistry
 from . import DummyConnection
 
 
@@ -124,7 +124,7 @@ class DummyPlayerFactory(ThingFactory):
 
 
 ThingRegistry.register_factory(
-    platform_name="dummy",
+    integration_name="dummy",
     thing_type="player",
     factory=DummyPlayerFactory()
 )

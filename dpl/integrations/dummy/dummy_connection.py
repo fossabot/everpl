@@ -5,7 +5,7 @@ import io
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.connections import Connection
-from dpl.platforms import ConnectionFactory, ConnectionRegistry
+from dpl.integrations import ConnectionFactory, ConnectionRegistry
 
 
 class DummyConnection(Connection):

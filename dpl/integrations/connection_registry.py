@@ -7,14 +7,14 @@ from . import ConnectionFactory
 class ConnectionRegistry(object):
     """
     ConnectionRegistry is a class that registers all connections, implemented
-    in specific platforms (dpl.platforms module), and returns a corresponding
+    in specific integrations (dpl.integrations module), and returns a corresponding
     ConnectionFactory for building of instance of this connection.
     """
     __registry = dict()  # contains references to all factories
 
     @classmethod
     def register_factory(cls, connection_type: str, factory: ConnectionFactory) -> None:
-        # FIXME: CC10: Add additional platform argument?
+        # FIXME: CC10: Add additional integration argument?
         """
         Register a factory for building of instance of corresponding connection type
 

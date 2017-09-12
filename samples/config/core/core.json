@@ -1,4 +1,4 @@
 {
-  "enabled_platforms": ["dummy"],
+  "enabled_integrations": ["dummy"],
   "debug": true
 }

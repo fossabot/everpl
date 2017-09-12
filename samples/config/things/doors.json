@@ -1,7 +1,7 @@
 [
   {
     "id": "D1",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
     "friendly_name": "Entrance door",
     "placement": "R1",
@@ -12,7 +12,7 @@
   },
   {
     "id": "D2",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
     "friendly_name": "Bedroom door",
     "placement": "R4",
@@ -23,7 +23,7 @@
   },
   {
     "id": "D3",
-    "platform": "dummy",
+    "integration": "dummy",
     "type": "slider",
     "friendly_name": "Office door",
     "placement": "R5",
