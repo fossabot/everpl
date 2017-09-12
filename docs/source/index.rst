@@ -19,7 +19,7 @@ Documentation on Everthing Platform is slitted into a couple of sections:
 
 * :ref:`user-docs`
 * :ref:`api-docs`
-* :ref:`dev-docs`   
+* :ref:`dev-docs`
 
 Platform itself is hosted on GitHub: https://github.com/s-kostyuk/adpl/
 
@@ -41,9 +41,9 @@ Platform itself is hosted on GitHub: https://github.com/s-kostyuk/adpl/
    :caption: External API Documentation
    :name: api-docs
 
-   user/api_types
-   user/rest_api
-   user/streaming_api
+   api/api_types
+   api/rest_api
+   api/streaming_api
 
 .. toctree::
    :maxdepth: 2
