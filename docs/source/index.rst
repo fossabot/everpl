@@ -3,6 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. meta::
+    :name=google-site-verification: rkbl10-TdLfWnPcS9BgMsCJrrQgDE0NNLJ1g1rr5mCU
+
 Codename: Everthing Platform
 ============================
 
