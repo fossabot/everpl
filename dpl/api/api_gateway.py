@@ -7,7 +7,7 @@ import warnings
 # Include DPL modules
 from . import exceptions
 from dpl.auth import AuthManager
-from dpl.integrations import IntegrationManager
+from dpl.integrations import BindingManager
 from dpl.core import Placement, PlacementManager
 from dpl.utils import obj_to_dict
 from dpl.things import Thing, Actuator
@@ -19,9 +19,9 @@ class ApiGateway(object):
     and pass requests further to corresponding components (to execute some command
     of fetch information about a specific thing, for example)
     """
-    def __init__(self, auth_manager: AuthManager, int_manager: IntegrationManager, placement_manager: PlacementManager):
+    def __init__(self, auth_manager: AuthManager, binding_manager: BindingManager, placement_manager: PlacementManager):
         self._am = auth_manager
-        self._im = int_manager
+        self._bm = binding_manager
         self._placements = placement_manager
 
     def auth(self, username: str, password: str) -> str:
@@ -91,7 +91,7 @@ class ApiGateway(object):
         self._check_permission(token, None)
 
         result = list()
-        things = self._im.fetch_all_things()
+        things = self._bm.fetch_all_things()
 
         for thing in things:
             result.append(self._thing_to_dict_legacy(thing))
@@ -110,7 +110,7 @@ class ApiGateway(object):
         self._check_permission(token, None)
 
         try:
-            thing = self._im.fetch_thing(thing_id)
+            thing = self._bm.fetch_thing(thing_id)
         except KeyError as e:
             raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
 

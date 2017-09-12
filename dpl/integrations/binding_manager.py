@@ -13,11 +13,11 @@ from . import ConnectionFactory, ConnectionRegistry, ThingFactory, ThingRegistry
 LOGGER = logging.getLogger(__name__)
 
 
-# FIXME: CC11: Consider splitting of IntegrationManager to ThingManager and ConnectionManager
+# FIXME: CC11: Consider splitting of BindingManager to ThingManager and ConnectionManager
 # FIXME: CC12: Consider splitting of Managers to Repositories and Loaders
-class IntegrationManager(object):
+class BindingManager(object):
     """
-    IntegrationManager is a class that is responsible for initiation, storage, fetching and deletion
+    BindingManager is a class that is responsible for initiation, storage, fetching and deletion
     of Things and Connections.
     """
     def __init__(self):
