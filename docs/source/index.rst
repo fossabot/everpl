@@ -43,6 +43,7 @@ Platform itself is hosted on GitHub: https://github.com/s-kostyuk/adpl/
 
    api/api_types
    api/rest_api
+   api/handling_errors
    api/streaming_api
 
 .. toctree::
