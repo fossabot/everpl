@@ -13,9 +13,9 @@ error type has its own identifier.
 General
 -------
 
-.. _error_1:
+.. _error_1000:
 
-Error 1: Unsupported content-type
+Error 1000: Unsupported content-type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests. It may indicate that:
@@ -35,9 +35,9 @@ information about content-types in general can be found on
 `Wikipedia <https://en.wikipedia.org/wiki/Media_type>`_ and
 `MDN <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type>`_.
 
-.. _error_2:
+.. _error_1001:
 
-Error 2: Failed to decode request body
+Error 1001: Failed to decode request body
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests. It may indicate that:
@@ -50,9 +50,9 @@ This error can be thrown on POST requests. It may indicate that:
 This error indicates some issue with the client-side code and should
 be fixed by client's developer.
 
-.. _error_3:
+.. _error_1003:
 
-Error 3: Server-side issue
+Error 1003: Server-side issue
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on any request. It may indicate that:
@@ -64,9 +64,9 @@ In this situation there is nothing to do from the client-side. Please,
 contact an administrator of the platform and platform's developers
 if needed to resolve this issue.
 
-.. _error_4:
+.. _error_1004:
 
-Error 4: Method not allowed
+Error 1004: Method not allowed
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests. It may indicate that:
@@ -79,9 +79,9 @@ be fixed by client's developer. For the full list of available resourses
 and corresponding HTTP methods, please take a look in :doc:`./rest_api`
 page of documentation.
 
-.. _error_5:
+.. _error_1005:
 
-Error 5: Resourse not found
+Error 1005: Resourse not found
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests. It may indicate that:
