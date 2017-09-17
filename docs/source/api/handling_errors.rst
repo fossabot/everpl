@@ -95,3 +95,138 @@ or a missing one. If you are sure that the specified URL is valid,
 than it means that the corresponding resourse or object was
 deleted. This is fine. Just be ready to that.
 
+Authorization and authentification
+-------
+
+This section is related to the errors in authorization and 
+authentification processes.
+
+.. _error_2000:
+
+Error 2000: Missing username
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on POST requests on ``/auth`` endpoint. 
+It may indicate that:
+
+- a client application forgot to pass 'username' field in request body;
+- a client application passed a username that is equal to null.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. Do not allow to user to send an empty
+username field.
+
+.. WARNING::
+   This behaviour may be changed if 'insecure' mode will be introduced.
+   Please, take a look in this pull request to get more information:
+   FIXME.
+
+.. _error_2001:
+
+Error 2001: Missing username
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on POST requests on ``/auth`` endpoint. 
+It may indicate that:
+
+- a client application forgot to pass 'password' field in request body;
+- a client application passed a password that is equal to null.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. Do not allow to user to send an empty
+password field.
+
+.. WARNING::
+   This behaviour may be changed if 'insecure' mode will be introduced.
+   Please, take a look in this pull request to get more information:
+   FIXME.
+
+.. _error_2002:
+
+Error 2002: Invalid username and password combination
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on POST requests on ``/auth`` endpoint. 
+It may indicate that:
+
+- the user specified a non-exising username;
+- the user specified an invalid password value.
+
+This error indicates some issue from the user-side. In this case please,
+help to user to log into system and provide some related suggestions.
+
+.. _error_2100:
+
+Error 2100: Missing Authorization header
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on all requests on protected resourses. 
+It may indicate that:
+
+- the client application forgot to pass an ``Authorization`` header in
+  HTTP request;
+- the value of this header is null.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. You must to pass a non-empty
+authorization header while acessing to protected resourses. To get
+more information about the authorization process, plese take a look
+into FIXME section of documentation.
+
+.. WARNING::
+   This behaviour may be changed if 'insecure' mode will be introduced.
+   Please, take a look in this pull request to get more information:
+   FIXME.
+
+.. _error_2101:
+
+Error 2101: Invalid access token
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on all requests on protected resourses. 
+It may indicate that:
+
+- the access token was revoked;
+- the access token was invalid from the start.
+
+This error indicates that the access token must to be renewed. In this
+case it is recommended to redirect user to authorization page. To get
+more information about the authorization process, plese take a look
+into FIXME section of documentation.
+
+.. WARNING::
+   This behaviour may be changed if 'insecure' mode will be introduced.
+   Please, take a look in this pull request to get more information:
+   FIXME.
+
+Error 2110: Permission Denied
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on all requests on protected resourses. 
+It may indicate that:
+
+- the user doesn't have an access to this resourse;
+- the user doesn't have a permission to modify this resourse;
+- the specified access token doesn't permit to process this 
+  request for some other reason.
+
+This error indicates that the user doesn't have an access to this
+resourse for some reason. There is nothing to do from the client-
+side. In this situation please describe what was happened to user
+and help him/her to contact an administrator of platfrom's instance
+and to get a corresponding rights.
+
+.. WARNING::
+   This behaviour may be changed if 'insecure' mode will be introduced.
+   Please, take a look in this pull request to get more information:
+   FIXME.
+
+Things
+-------
+
+FIXME
+
+Placements
+-------
+
+FIXME
