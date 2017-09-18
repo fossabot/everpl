@@ -43,7 +43,7 @@ Error 1001: Failed to decode request body
 This error can be thrown on POST requests. It may indicate that:
 
 - a passed request body is not a valid JSON, XML or other file format 
-  that was declared in``Content-Type`` header;
+  that was declared in ``Content-Type`` header;
 - the value of ``Content-Type`` header doesn't correspond to the
   content of request body.
 
