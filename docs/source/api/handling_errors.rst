@@ -10,6 +10,30 @@ Here is the complete list of responses for different types of API
 errors. Errors are grouped by main platform's subsystems and each
 error type has its own identifier.
 
+Error Response Format
+---------------------
+
+If some request resulted in an error, than platform instance returns
+a response with HTTP status code not less than 400 and JSON-encoded
+body with an additional information about an error.
+
+A format of request body is the following:
+
+.. code-block:: json
+
+   {
+     "error_id": "int, an identifier of an error",
+     "devel_message": "Some message for developers",
+     "user_message": "Some message that can be directly displayed to the user",
+     "docs_url": "A link to the related section in platform's documentation"
+   }
+
+Regarding HTTP status codes:
+
+- codes starting from 400 are error codes;
+- codes >= 400 and < 500 indicate client-side errors;
+- codes >= 500 indicate server-side errors.
+
 General
 -------
 
@@ -35,6 +59,8 @@ information about content-types in general can be found on
 `Wikipedia <https://en.wikipedia.org/wiki/Media_type>`_ and
 `MDN <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type>`_.
 
+HTTP status code: 400.
+
 .. _error_1001:
 
 Error 1001: Failed to decode request body
@@ -50,6 +76,8 @@ This error can be thrown on POST requests. It may indicate that:
 This error indicates some issue with the client-side code and should
 be fixed by client's developer.
 
+HTTP status code: 400.
+
 .. _error_1003:
 
 Error 1003: Server-side issue
@@ -63,6 +91,8 @@ This error can be thrown on any request. It may indicate that:
 In this situation there is nothing to do from the client-side. Please,
 contact an administrator of the platform and platform's developers
 if needed to resolve this issue.
+
+HTTP status code: 500.
 
 .. _error_1004:
 
@@ -79,6 +109,8 @@ be fixed by client's developer. For the full list of available resources
 and corresponding HTTP methods, please take a look in :doc:`./rest_api`
 page of documentation.
 
+HTTP status code: 405.
+
 .. _error_1005:
 
 Error 1005: Resource not found
@@ -94,6 +126,8 @@ example, you can have a spelling error, an extra slash symbol
 or a missing one. If you are sure that the specified URL is valid,
 than it means that the corresponding resource or object was
 deleted. This is fine. Just be ready to that.
+
+HTTP status code: 404.
 
 Authorization and authentication
 -------
@@ -141,6 +175,8 @@ password field.
    Please, take a look in this pull request to get more information:
    `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
+HTTP status code: 400.
+
 .. _error_2002:
 
 Error 2002: Invalid username and password combination
@@ -178,6 +214,8 @@ into FIXME section of documentation.
    Please, take a look in this pull request to get more information:
    `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
+HTTP status code: 400.
+
 .. _error_2101:
 
 Error 2101: Invalid access token
@@ -198,6 +236,8 @@ into FIXME section of documentation.
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
    `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
+
+HTTP status code: 400.
 
 Error 2110: Permission Denied
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -220,6 +260,8 @@ and to get a corresponding rights.
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
    `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
+
+HTTP status code: 403.
 
 Things
 -------
