@@ -1,0 +1,59 @@
+{
+  "docs_base_url": "http://everpl.rtfd.io/en/latest/api/handling_errors.html#error-",
+  "errors": [
+    {
+      "error_id": 1000,
+      "devel_message": "Unsupported content-type",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 1001,
+      "devel_message": "Failed to decode request body",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 1003,
+      "devel_message": "Server-side issue",
+      "user_message": "Server got itself into trouble at {timestamp}.\nPlease, try to perform this request later or contact an administrator of this platform instance"
+    },
+    {
+      "error_id": 1004,
+      "devel_message": "Method \"{method_name}\" is not allowed",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 1005,
+      "devel_message": "Resource not found",
+      "user_message": "Resource not found\nThe specified resource was deleted, moved or was not existing at all"
+    },
+    {
+      "error_id": 2000,
+      "devel_message": "Missing username",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 2001,
+      "devel_message": "Missing password",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 2002,
+      "devel_message": "Invalid username and password combination"
+    },
+    {
+      "error_id": 2100,
+      "devel_message": "Missing Authorization header",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 2101,
+      "devel_message": "Invalid access token",
+      "user_message": "Access token was revoked. Please, authenticate."
+    },
+    {
+      "error_id": 2110,
+      "devel_message": "Permission Denied",
+      "user_message": "Permission Denied.\nYou are not authorized to {action}. Please, contact an administrator of this platform instance"
+    }
+  ]
+}
