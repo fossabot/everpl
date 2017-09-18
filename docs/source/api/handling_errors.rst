@@ -243,6 +243,8 @@ into FIXME section of documentation.
 
 HTTP status code: 400.
 
+.. _error_2110:
+
 Error 2110: Permission Denied
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
