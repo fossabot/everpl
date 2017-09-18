@@ -72,30 +72,30 @@ Error 1004: Method not allowed
 This error can be thrown on all requests. It may indicate that:
 
 - a request method like GET, POST, PUT and so own is not supported
-  for this resouse (URL, endpoint).
+  for this resource (URL, endpoint).
 
 This error indicates some issue with the client-side code and should
-be fixed by client's developer. For the full list of available resourses
+be fixed by client's developer. For the full list of available resources
 and corresponding HTTP methods, please take a look in :doc:`./rest_api`
 page of documentation.
 
 .. _error_1005:
 
-Error 1005: Resourse not found
+Error 1005: Resource not found
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests. It may indicate that:
 
-- the specified resourse was deleted, moved or was not existing
+- the specified resource was deleted, moved or was not existing
   at all.
 
 In case of this error please double-check the specified URL. For
 example, you can have a spelling error, an extra slash symbol
 or a missing one. If you are sure that the specified URL is valid,
-than it means that the corresponding resourse or object was
+than it means that the corresponding resource or object was
 deleted. This is fine. Just be ready to that.
 
-Authorization and authentification
+Authorization and authentication
 -------
 
 This section is related to the errors in authorization and 
@@ -149,7 +149,7 @@ Error 2002: Invalid username and password combination
 This error can be thrown on POST requests on ``/auth`` endpoint. 
 It may indicate that:
 
-- the user specified a non-exising username;
+- the user specified a non-existing username;
 - the user specified an invalid password value.
 
 This error indicates some issue from the user-side. In this case please,
@@ -160,7 +160,7 @@ help to user to log into system and provide some related suggestions.
 Error 2100: Missing Authorization header
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This error can be thrown on all requests on protected resourses. 
+This error can be thrown on all requests on protected resources. 
 It may indicate that:
 
 - the client application forgot to pass an ``Authorization`` header in
@@ -169,8 +169,8 @@ It may indicate that:
 
 This error indicates some issue with the client-side code and should
 be fixed by client's developer. You must to pass a non-empty
-authorization header while acessing to protected resourses. To get
-more information about the authorization process, plese take a look
+authorization header while accessing to protected resources. To get
+more information about the authorization process, please take a look
 into FIXME section of documentation.
 
 .. WARNING::
@@ -183,7 +183,7 @@ into FIXME section of documentation.
 Error 2101: Invalid access token
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This error can be thrown on all requests on protected resourses. 
+This error can be thrown on all requests on protected resources. 
 It may indicate that:
 
 - the access token was revoked;
@@ -202,18 +202,18 @@ into FIXME section of documentation.
 Error 2110: Permission Denied
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This error can be thrown on all requests on protected resourses. 
+This error can be thrown on all requests on protected resources. 
 It may indicate that:
 
-- the user doesn't have an access to this resourse;
-- the user doesn't have a permission to modify this resourse;
+- the user doesn't have an access to this resource;
+- the user doesn't have a permission to modify this resource;
 - the specified access token doesn't permit to process this 
   request for some other reason.
 
 This error indicates that the user doesn't have an access to this
-resourse for some reason. There is nothing to do from the client-
+resource for some reason. There is nothing to do from the client-
 side. In this situation please describe what was happened to user
-and help him/her to contact an administrator of platfrom's instance
+and help him/her to contact an administrator of platform's instance
 and to get a corresponding rights.
 
 .. WARNING::
