@@ -119,7 +119,7 @@ username field.
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
-   FIXME.
+   `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
 .. _error_2001:
 
@@ -139,7 +139,7 @@ password field.
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
-   FIXME.
+   `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
 .. _error_2002:
 
@@ -176,7 +176,7 @@ into FIXME section of documentation.
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
-   FIXME.
+   `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
 .. _error_2101:
 
@@ -197,7 +197,7 @@ into FIXME section of documentation.
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
-   FIXME.
+   `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
 Error 2110: Permission Denied
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -219,7 +219,7 @@ and to get a corresponding rights.
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
    Please, take a look in this pull request to get more information:
-   FIXME.
+   `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
 Things
 -------
