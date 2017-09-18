@@ -193,6 +193,8 @@ It may indicate that:
 This error indicates some issue from the user-side. In this case please,
 help to user to log into system and provide some related suggestions.
 
+HTTP status code: 401.
+
 .. _error_2100:
 
 Error 2100: Missing Authorization header
