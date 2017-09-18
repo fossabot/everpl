@@ -155,6 +155,8 @@ username field.
    Please, take a look in this pull request to get more information:
    `pull#15 <https://github.com/s-kostyuk/adpl/pull/15>`_.
 
+HTTP status code: 400.
+
 .. _error_2001:
 
 Error 2001: Missing username
