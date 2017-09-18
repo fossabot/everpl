@@ -4,6 +4,7 @@ import json
 import warnings
 import logging
 import traceback
+import time
 
 # Include 3rd-party modules
 from aiohttp import web
@@ -12,6 +13,7 @@ from aiohttp import web
 from dpl.api import ApiGateway
 from dpl.utils import JsonEnumEncoder, filtering
 from . import exceptions
+from .api_errors import ERROR_TEMPLATES
 
 
 # Declare constants:
@@ -35,7 +37,7 @@ def make_error_response(message: str, status: int = 400) -> web.Response:
     )
 
 
-def make_json_response(content: object, status: int = 200) -> web.Response:
+def make_json_response(content: dict, status: int = 200) -> web.Response:
     """
     Serialize given content to JSON and create a corresponding response.
 
@@ -63,7 +65,10 @@ def restricted_access_decorator(decorated_callable):
         token = headers.get("Authorization", None)
 
         if token is None:
-            return make_error_response(status=401, message="Authorization header is not available or is null")
+            return make_json_response(
+                status=401,
+                content=ERROR_TEMPLATES[2100].to_dict()
+            )
 
         return await decorated_callable(self, request, *args, **kwargs, token=token)
 
@@ -73,14 +78,17 @@ def restricted_access_decorator(decorated_callable):
 def json_decode_decorator(decorated_callable):
     async def proxy(self, request, *args, **kwargs):
         if request.content_type != CONTENT_TYPE_JSON:
-            return make_error_response(status=400, message="Invalid request content-type")
+            return make_json_response(
+                status=400,
+                content=ERROR_TEMPLATES[1000].to_dict()
+            )
 
         try:
             json_data = await request.json()  # type: dict
         except json.JSONDecodeError:
-            return make_error_response(
+            return make_json_response(
                 status=400,
-                message="Request body content must to be a valid JSON. But it wasn't"
+                content=ERROR_TEMPLATES[1001].to_dict()
             )
 
         return await decorated_callable(self, request, *args, **kwargs, json_data=json_data)
@@ -169,23 +177,32 @@ class RestApi(object):
                 return await handler(request)
 
             except web.HTTPMethodNotAllowed:
-                return make_error_response(
+                error_dict = ERROR_TEMPLATES[1004].to_dict()
+                error_dict["devel_message"] = error_dict["devel_message"].format(method_name=request.method)
+
+                return make_json_response(
                     status=405,
-                    message="Method {0} is now allowed for this resource".format(request.method)
+                    content=error_dict
                 )
 
             except web.HTTPNotFound:
-                return make_error_response(
+                return make_json_response(
                     status=404,
-                    message="Resource {0} was not found".format(request.path)
+                    content=ERROR_TEMPLATES[1005].to_dict()
                 )
 
             except Exception as e:
-                LOGGER.error("Unhandled exception in request handling: %s %s\n%s", type(e), e, traceback.format_exc())
+                timestamp = time.monotonic()
 
-                return make_error_response(
+                LOGGER.error("Unhandled exception in request handling at %s: %s %s\n%s",
+                             timestamp, type(e), e, traceback.format_exc())
+
+                error_dict = ERROR_TEMPLATES[1003].to_dict()
+                error_dict["user_message"] = error_dict["user_message"].format(timestamp=timestamp)
+
+                return make_json_response(
                     status=500,
-                    message="Server got itself into trouble."
+                    content=error_dict
                 )
 
         return middleware_handler
@@ -219,18 +236,26 @@ class RestApi(object):
         password = data.get("password", None)
 
         if username is None:
-            return make_error_response(status=400, message="Username is not specified or is null")
+            return make_json_response(
+                status=400,
+                content=ERROR_TEMPLATES[2000].to_dict()
+            )
 
         if password is None:
-            return make_error_response(status=400, message="Password is not specified or is null")
+            return make_json_response(
+                status=400,
+                content=ERROR_TEMPLATES[2001].to_dict()
+            )
 
         try:
             token = self._gateway.auth(username, password)
             return make_json_response({"message": "authorized", "token": token})
 
         except ValueError:
-            return make_error_response(status=401, message="Access is forbidden. Please, "
-                                                           "check your username and password combination")
+            return make_json_response(
+                status=401,
+                content=ERROR_TEMPLATES[2002].to_dict()
+            )
 
     async def auth_options_handler(self, request: web.Request) -> web.Response:
         """
@@ -285,8 +310,15 @@ class RestApi(object):
             filtered = filtering.filter_items(things, pattern)
 
             return make_json_response({"things": filtered})
-        except PermissionError as e:
-            return make_error_response(status=400, message=str(e))
+        except PermissionError:
+            error_dict = ERROR_TEMPLATES[2110].to_dict()
+
+            error_dict["user_message"] = error_dict["user_message"].format(action="viewing of things data")
+
+            return make_json_response(
+                status=403,
+                content=error_dict
+            )
 
     def _get_thing_id(self, request: web.Request) -> str:
         thing_id = request.match_info['id']
@@ -310,13 +342,20 @@ class RestApi(object):
             return make_json_response(thing)
 
         except exceptions.ThingNotFoundError:
-            return make_error_response(
-                message="Failed to find a thing with the specified ID",
-                status=404
+            return make_json_response(
+                status=404,
+                content=ERROR_TEMPLATES[1005].to_dict()
             )
 
-        except PermissionError as e:
-            return make_error_response(status=400, message=str(e))
+        except PermissionError:
+            error_dict = ERROR_TEMPLATES[2110].to_dict()
+
+            error_dict["user_message"] = error_dict["user_message"].format(action="viewing of things data")
+
+            return make_json_response(
+                status=403,
+                content=error_dict
+            )
 
     @restricted_access_decorator
     async def placements_get_handler(self, request: web.Request, token: str = None) -> web.Response:
@@ -332,9 +371,13 @@ class RestApi(object):
                 {"placements": self._gateway.get_placements(token)}
             )
         except PermissionError:
-            return make_error_response(
-                message="This token doesn't permit viewing of placement data",
-                status=403
+            error_dict = ERROR_TEMPLATES[2110].to_dict()
+
+            error_dict["user_message"] = error_dict["user_message"].format(action="viewing of placements data")
+
+            return make_json_response(
+                status=403,
+                content=error_dict
             )
 
     def _get_placement_id(self, request: web.Request) -> str:
@@ -357,15 +400,19 @@ class RestApi(object):
             return make_json_response(self._gateway.get_placement(token, placement_id))
 
         except exceptions.PlacementNotFoundError:
-            return make_error_response(
-                message="Failed to find a placement with the specified ID",
-                status=404
+            return make_json_response(
+                status=404,
+                content=ERROR_TEMPLATES[1005].to_dict()
             )
 
         except PermissionError:
-            return make_error_response(
-                message="This token doesn't permit viewing of placement data",
-                status=403
+            error_dict = ERROR_TEMPLATES[2110].to_dict()
+
+            error_dict["user_message"] = error_dict["user_message"].format(action="viewing of placements data")
+
+            return make_json_response(
+                status=403,
+                content=error_dict
             )
 
     @restricted_access_decorator
