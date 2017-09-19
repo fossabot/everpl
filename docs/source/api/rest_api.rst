@@ -282,7 +282,7 @@ To fetch all Placements, you need to perform the following request:
 :Headers:
     :Authorization: ``your_auth_token_here``
 
-An example of response body is placed here: https://git.io/v5xz3.
+An example of response body is placed here: https://git.io/v5x6S.
 
 Fetching specific Placement
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
