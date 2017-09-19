@@ -23,6 +23,8 @@ The ``BASE_URL`` may look like this: ``http://localhost:10800/api/v1/``
 
 or like this: ``https://hostname.local/api/v1/``
 
+.. _protected_resources:
+
 Protected resources
 -------------------
 

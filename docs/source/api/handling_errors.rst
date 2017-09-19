@@ -211,7 +211,7 @@ This error indicates some issue with the client-side code and should
 be fixed by client's developer. You must to pass a non-empty
 authorization header while accessing to protected resources. To get
 more information about the authorization process, please take a look
-into FIXME section of documentation.
+into :ref:`protected_resources` section of documentation.
 
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
@@ -234,7 +234,7 @@ It may indicate that:
 This error indicates that the access token must to be renewed. In this
 case it is recommended to redirect user to authorization page. To get
 more information about the authorization process, plese take a look
-into FIXME section of documentation.
+into :ref:`protected_resources` section of documentation.
 
 .. WARNING::
    This behaviour may be changed if 'insecure' mode will be introduced.
