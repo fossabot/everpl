@@ -85,7 +85,7 @@ Error 1003: Server-side issue
 
 This error can be thrown on any request. It may indicate that:
 
-- a request was completely valid but server catched some internal
+- a request was completely valid but server caught some internal
   error.
 
 In this situation there is nothing to do from the client-side. Please,
@@ -133,7 +133,7 @@ Authorization and authentication
 -------
 
 This section is related to the errors in authorization and 
-authentification processes.
+authentication processes.
 
 .. _error_2000:
 
