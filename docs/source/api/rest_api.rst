@@ -235,7 +235,8 @@ Placement object
 Placement object has the following structure:
 
 :id:
-    A list of commands that can be sent to this Thing
+    A string (for now), some machine-friendly unique identifier of
+    specific thing.
 
 :friendly_name:
     Some user-friendly name of this particular placement that can be
