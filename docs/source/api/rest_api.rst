@@ -38,7 +38,7 @@ by an authorized user. Unprotected resources are resources that can be
 accessed by any user, including anonymous users.
 
 To access protected resources you will need to authenticate and obtain
-a special access token. Then this token must to be passed in
+a special access token [#f1]_. Then this token must to be passed in
 ``Authorization`` HTTP header on each request to protected resource.
 
 The process of obtaining of access token is described in
@@ -303,3 +303,9 @@ request:
 :Notes:
     Replace ``{id}`` part of the URL with an identifier of requested
     Placement object.
+
+
+.. rubric:: Footnotes
+
+.. [#f1] See also: `Access token definition in OAuth specs
+         <https://tools.ietf.org/html/rfc6749#section-1.4>`_
