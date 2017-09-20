@@ -40,7 +40,7 @@ General
 .. _error_1000:
 
 Error 1000: Unsupported content-type
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests. It may indicate that:
 
@@ -64,7 +64,7 @@ HTTP status code: 400.
 .. _error_1001:
 
 Error 1001: Failed to decode request body
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests. It may indicate that:
 
@@ -81,7 +81,7 @@ HTTP status code: 400.
 .. _error_1003:
 
 Error 1003: Server-side issue
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on any request. It may indicate that:
 
@@ -97,7 +97,7 @@ HTTP status code: 500.
 .. _error_1004:
 
 Error 1004: Method not allowed
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests. It may indicate that:
 
@@ -114,7 +114,7 @@ HTTP status code: 405.
 .. _error_1005:
 
 Error 1005: Resource not found
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests. It may indicate that:
 
@@ -130,7 +130,7 @@ deleted. This is fine. Just be ready to that.
 HTTP status code: 404.
 
 Authorization and authentication
--------
+--------------------------------
 
 This section is related to the errors in authorization and 
 authentication processes.
@@ -138,7 +138,7 @@ authentication processes.
 .. _error_2000:
 
 Error 2000: Missing username
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests on ``/auth`` endpoint. 
 It may indicate that:
@@ -160,7 +160,7 @@ HTTP status code: 400.
 .. _error_2001:
 
 Error 2001: Missing username
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests on ``/auth`` endpoint. 
 It may indicate that:
@@ -182,7 +182,7 @@ HTTP status code: 400.
 .. _error_2002:
 
 Error 2002: Invalid username and password combination
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests on ``/auth`` endpoint. 
 It may indicate that:
@@ -198,7 +198,7 @@ HTTP status code: 401.
 .. _error_2100:
 
 Error 2100: Missing Authorization header
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests on protected resources. 
 It may indicate that:
@@ -223,7 +223,7 @@ HTTP status code: 400.
 .. _error_2101:
 
 Error 2101: Invalid access token
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on all requests on protected resources. 
 It may indicate that:
@@ -270,11 +270,11 @@ and to get a corresponding rights.
 HTTP status code: 403.
 
 Things
--------
+------
 
 FIXME
 
 Placements
--------
+----------
 
 FIXME
