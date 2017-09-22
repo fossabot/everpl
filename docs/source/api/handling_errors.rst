@@ -159,7 +159,7 @@ HTTP status code: 400.
 
 .. _error_2001:
 
-Error 2001: Missing password
+Error 2001: Missing username
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on POST requests on ``/auth`` endpoint. 
