@@ -47,7 +47,7 @@ class Controller(object):
         self._auth_manager.create_root_user("admin", "admin")
 
         asyncio.ensure_future(
-            self._rest_api.create_server(host='localhost', port=10800)
+            self._rest_api.create_server(host="0.0.0.0", port=10800)
         )
 
     async def shutdown(self):
