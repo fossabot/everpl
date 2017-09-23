@@ -157,6 +157,16 @@ class AuthManager(object):
 
         return token
 
+    def is_token_valid(self, token: str) -> bool:
+        """
+        Check if the specified token is valid (i.e. is existing, was not
+        revoked and can still be used for auth)
+
+        :param token: an access token to be checked
+        :return: true if token is valid, force otherwise
+        """
+        return self._token_manager.is_token_present(token)
+
     def is_token_grants(self, token: str, requested_action: object) -> bool:
         """
         Check if specified token grants to perform the requested action
@@ -167,4 +177,4 @@ class AuthManager(object):
         """
         # TODO: Implement permission checking
 
-        return self._token_manager.is_token_present(token)
+        return self.is_token_valid(token) and True
