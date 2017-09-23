@@ -310,7 +310,16 @@ class RestApi(object):
             filtered = filtering.filter_items(things, pattern)
 
             return make_json_response({"things": filtered})
-        except PermissionError:
+
+        except exceptions.InvalidTokenError:
+            error_dict = ERROR_TEMPLATES[2101].to_dict()
+
+            return make_json_response(
+                status=401,
+                content=error_dict
+            )
+
+        except exceptions.PermissionDeniedForTokenError:
             error_dict = ERROR_TEMPLATES[2110].to_dict()
 
             error_dict["user_message"] = error_dict["user_message"].format(action="viewing of things data")

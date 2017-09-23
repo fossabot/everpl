@@ -6,6 +6,9 @@ ApiGateway and other classes in dpl.api module.
 
 # Exceptions of ApiGateway:
 
+class InvalidTokenError(PermissionError):
+    pass
+
 class PermissionDeniedForTokenError(PermissionError):
     pass
 
