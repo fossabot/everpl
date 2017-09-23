@@ -6,4 +6,4 @@ DPL_PARENT_PATH="$(dirname "$DPL_PATH")"
 
 export PYTHONPATH="$DPL_PARENT_PATH:$PYTHONPATH"
 
-python "$DPL_PATH/run.py" "$@"
+python3 "$DPL_PATH/run.py" "$@"
