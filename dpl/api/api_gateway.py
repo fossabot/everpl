@@ -43,6 +43,9 @@ class ApiGateway(object):
         :return: None
         :raises PermissionError: if this action is not permitted for this token
         """
+        if not self._am.is_token_valid(token):
+            raise exceptions.InvalidTokenError("Specified token was revoked or not-existing at all")
+
         if not self._am.is_token_grants(token, requested_action):
             raise exceptions.PermissionDeniedForTokenError("Specified token doesn't permit this action")
 
