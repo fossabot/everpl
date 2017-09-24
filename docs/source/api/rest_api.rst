@@ -44,6 +44,7 @@ a special access token [#f1]_. Then this token must to be passed in
 The process of obtaining of access token is described in
 `Authentication`_ section. Related error responses are described in
 :doc:`./handling_errors` section of documentation.
+Possible errors: 2100, 2101, 2110.
 
 Authentication
 --------------
@@ -94,6 +95,7 @@ In a case of success you will get the similar response:
 
 In a case of authentication error you will receive one of the responses
 listed in :doc:`./handling_errors` section of documentation.
+Possible errors: 1000, 1001, 1003, 2000, 2001, 2002.
 
 Things
 ------
