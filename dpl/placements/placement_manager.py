@@ -4,6 +4,7 @@ from typing import List, Dict, ValuesView
 # Include 3rd-party modules
 # Include DPL modules
 from .placement import Placement
+from .placement_builder import PlacementBuilder
 
 
 class PlacementManager(object):
@@ -25,13 +26,8 @@ class PlacementManager(object):
         :return: None
         """
         for conf_item in config:
-            placement_id = conf_item["id"]
-            new_placement = Placement(
-                placement_id=placement_id,
-                friendly_name=conf_item["friendly_name"],
-                image_url=conf_item["image_url"]
-            )
-            self._placements[placement_id] = new_placement
+            new_placement = PlacementBuilder.build(conf_item)
+            self._placements[new_placement.placement_id] = new_placement
 
     def fetch_all_placements(self) -> ValuesView[Placement]:
         """
