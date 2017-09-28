@@ -9,7 +9,7 @@ from dpl import api
 from dpl import auth
 from dpl.core import Configuration
 from dpl.integrations import BindingManager
-from dpl.core.placement_manager import PlacementManager
+from dpl.placements import PlacementManager
 
 
 class Controller(object):

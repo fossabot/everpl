@@ -8,7 +8,7 @@ import warnings
 from . import exceptions
 from dpl.auth import AuthManager
 from dpl.integrations import BindingManager
-from dpl.core import Placement, PlacementManager
+from dpl.placements import Placement, PlacementManager
 from dpl.utils import obj_to_dict
 from dpl.things import Thing, Actuator
 
