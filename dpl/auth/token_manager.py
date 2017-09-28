@@ -12,6 +12,10 @@ from dpl.utils import generate_token
 LOGGER = logging.getLogger(__name__)
 
 
+class TokenNotFound(KeyError):
+    pass
+
+
 class TokenManager(object):
     """
     TokenManager is a class that is responsible for generating of new tokens,
@@ -47,7 +51,7 @@ class TokenManager(object):
         :return: None
         """
         if token not in self.__tokens:
-            raise ValueError("No such token registered")
+            raise TokenNotFound("No such token registered")
 
         self.__tokens.pop(token)
 
