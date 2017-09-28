@@ -6,6 +6,33 @@ import unittest
 from dpl.utils import filtering
 
 
+class TestIsCorrectFilter(unittest.TestCase):
+    TEST_DATA = {
+        "id": 1,
+        "placement": "R1",
+        "type": "lighting"
+    }
+
+    def test_one_field_name_match(self):
+        pattern = {"placement": "R2"}
+        self.assertTrue(filtering.is_correct_filter(self.TEST_DATA, pattern))
+
+    def test_two_field_names_match(self):
+        pattern = {"placement": "R2", "type": "something"}
+        self.assertTrue(filtering.is_correct_filter(self.TEST_DATA, pattern))
+
+    def test_field_name_mismatch(self):
+        bad_field_name = "non_existing_field"
+        assert bad_field_name not in self.TEST_DATA.keys()
+
+        pattern = {bad_field_name: "R2", "type": "something"}
+        self.assertFalse(filtering.is_correct_filter(self.TEST_DATA, pattern))
+
+    def test_empty_pattern_dict_correct(self):
+        empty_pattern = {}
+        self.assertTrue(filtering.is_correct_filter(self.TEST_DATA, empty_pattern))
+
+
 class TestIsMatching(unittest.TestCase):
     TEST_DATA = {
         "id": 1,
