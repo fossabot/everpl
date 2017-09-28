@@ -70,7 +70,16 @@ def restricted_access_decorator(decorated_callable):
                 content=ERROR_TEMPLATES[2100].to_dict()
             )
 
-        return await decorated_callable(self, request, *args, **kwargs, token=token)
+        try:
+            return await decorated_callable(self, request, *args, **kwargs, token=token)
+
+        except exceptions.InvalidTokenError:
+            error_dict = ERROR_TEMPLATES[2101].to_dict()
+
+            return make_json_response(
+                status=401,
+                content=error_dict
+            )
 
     return proxy
 
@@ -311,14 +320,6 @@ class RestApi(object):
 
             return make_json_response({"things": filtered})
 
-        except exceptions.InvalidTokenError:
-            error_dict = ERROR_TEMPLATES[2101].to_dict()
-
-            return make_json_response(
-                status=401,
-                content=error_dict
-            )
-
         except exceptions.PermissionDeniedForTokenError:
             error_dict = ERROR_TEMPLATES[2110].to_dict()
 
@@ -356,7 +357,7 @@ class RestApi(object):
                 content=ERROR_TEMPLATES[1005].to_dict()
             )
 
-        except PermissionError:
+        except exceptions.PermissionDeniedForTokenError:
             error_dict = ERROR_TEMPLATES[2110].to_dict()
 
             error_dict["user_message"] = error_dict["user_message"].format(action="viewing of things data")
@@ -379,7 +380,7 @@ class RestApi(object):
             return make_json_response(
                 {"placements": self._gateway.get_placements(token)}
             )
-        except PermissionError:
+        except exceptions.PermissionDeniedForTokenError:
             error_dict = ERROR_TEMPLATES[2110].to_dict()
 
             error_dict["user_message"] = error_dict["user_message"].format(action="viewing of placements data")
@@ -414,7 +415,7 @@ class RestApi(object):
                 content=ERROR_TEMPLATES[1005].to_dict()
             )
 
-        except PermissionError:
+        except exceptions.PermissionDeniedForTokenError:
             error_dict = ERROR_TEMPLATES[2110].to_dict()
 
             error_dict["user_message"] = error_dict["user_message"].format(action="viewing of placements data")
