@@ -1,6 +1,8 @@
 # Include standard modules
 import time
 from enum import Enum
+from copy import deepcopy
+from types import MappingProxyType
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -61,18 +63,19 @@ class Thing(object):
         """
         # Connection params must be saved manually in derived classes
         # Connection params must be parsed and saved manually in derived classes
-        self._metadata = metadata
+        self._metadata = deepcopy(metadata)
         self._really_internal_state_value = self.States.unknown
         self._last_updated = time.time()
+        self._is_enabled = False
 
     @property
-    def metadata(self) -> dict:
+    def metadata(self) -> MappingProxyType:
         """
-        Returns a stored metadata
+        Returns a stored metadata (read-only view of it)
 
         :return: metadata of objects
         """
-        return self._metadata
+        return MappingProxyType(self._metadata)
 
     @property
     def state(self) -> States:
@@ -103,6 +106,16 @@ class Thing(object):
         """
         self._last_updated = time.time()
         self._really_internal_state_value = new_value
+
+    @property
+    def is_enabled(self) -> bool:
+        """
+        Indicates if the Thing is marked as enabled and it is allowed to
+        communicate with.
+
+        :return: True if communication is allowed, False otherwise
+        """
+        return self._is_enabled
 
     @property
     def is_available(self) -> bool:
