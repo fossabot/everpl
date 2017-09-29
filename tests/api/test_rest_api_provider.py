@@ -99,6 +99,23 @@ class TestRestApiProvider(unittest.TestCase):
 
         self.loop.run_until_complete(body())
 
+    def test_auth_options(self):
+        test_url = self.base_url + 'auth'
+        test_resp_headers = {'Allow': 'POST, HEAD, OPTIONS'}
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.options(test_url) as resp:
+                    self.assertEqual(resp.status, 204)
+                    self.assertIn(
+                        'Allow', resp.headers
+                    )
+                    self.assertTrue(
+                        test_resp_headers['Allow'] == resp.headers['Allow']
+                    )
+
+        self.loop.run_until_complete(body())
+
     def test_auth_content_header_missing(self):
         test_url = self.base_url + 'auth'
 
