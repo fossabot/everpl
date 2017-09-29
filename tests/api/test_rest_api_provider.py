@@ -252,5 +252,47 @@ class TestRestApiProvider(unittest.TestCase):
 
         self.loop.run_until_complete(body())
 
+    def test_auth_server_method_not_allowed(self):
+        test_url = self.base_url + 'auth'
+
+        test_unsupported_method = 'DELETE'
+
+        test_response_body = api_errors.ERROR_TEMPLATES[1004].to_dict()
+        test_response_body["devel_message"] = \
+            test_response_body["devel_message"].format(method_name=test_unsupported_method)
+
+        test_response_status = 405
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.request(method=test_unsupported_method, url=test_url) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_resource_not_found(self):
+        test_url = self.base_url + 'asdfghjkllkjhgfdsdfghj'
+
+        test_response_body = api_errors.ERROR_TEMPLATES[1005].to_dict()
+
+        test_response_status = 404
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
 if __name__ == '__main__':
     unittest.main()
