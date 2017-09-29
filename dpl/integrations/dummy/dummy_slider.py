@@ -33,7 +33,6 @@ class DummySlider(Slider):
             raise ValueError("Invalid connection params passed: {0} parameter is missing".format(key_name))
 
         self._con_instance = con_instance
-        self._is_enabled = True
 
     @property
     def state(self) -> Slider.States:
