@@ -52,15 +52,6 @@ class DummySlider(Slider):
         """
         return self._is_enabled  # and self._connection.is_connected
 
-    @property
-    def last_updated(self) -> float:
-        """
-        Returns a timestamp of the last thing state update
-
-        :return: float, UNIX time
-        """
-        return self._last_updated
-
     def disable(self) -> None:
         """
         Forbid any activity and communication with physical object.
