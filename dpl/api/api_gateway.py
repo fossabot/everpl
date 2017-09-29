@@ -1,5 +1,6 @@
 # Include standard modules
 from typing import Dict, List
+from collections import Mapping
 
 # Include 3rd-party modules
 import warnings
@@ -63,7 +64,7 @@ class ApiGateway(object):
         """
         thing_dict = obj_to_dict(thing)
         metadata = thing_dict.pop("metadata")
-        assert isinstance(metadata, dict)
+        assert isinstance(metadata, Mapping)
 
         thing_dict.update(**metadata)
 

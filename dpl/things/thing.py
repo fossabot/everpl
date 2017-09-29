@@ -3,6 +3,7 @@ import time
 from enum import Enum
 from copy import deepcopy
 from types import MappingProxyType
+from collections import Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -69,7 +70,7 @@ class Thing(object):
         self._is_enabled = False
 
     @property
-    def metadata(self) -> MappingProxyType:
+    def metadata(self) -> Mapping:
         """
         Returns a stored metadata (read-only view of it)
 
