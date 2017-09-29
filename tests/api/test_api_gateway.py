@@ -178,6 +178,37 @@ class TestApiGateway(unittest.TestCase):
 
         self.assertEqual(result, test_thing_dict)
 
+    def test_get_nonexistent_thing(self):
+        auth_manager_mock = mock.Mock(spec_set=AuthManager)
+        binding_manager_mock = mock.Mock(spec_set=BindingManager)
+        placement_manager_mock = mock.Mock(spec_set=PlacementManager)
+
+        auth_manager_mock.is_token_valid = mock.Mock()
+        auth_manager_mock.is_token_valid.return_value = True
+
+        auth_manager_mock.is_token_grants = mock.Mock()
+        auth_manager_mock.is_token_grants.return_value = True
+
+        def bm_fetch_side_effect(*args, **kwargs):
+            raise KeyError
+
+        binding_manager_mock.fetch_thing = mock.Mock()
+        binding_manager_mock.fetch_thing.side_effect = bm_fetch_side_effect
+
+        test_unregistered_token = "nobody cares"
+        test_unregistered_id = "nobody cares"
+
+        gateway = ApiGateway(
+            auth_manager_mock,
+            binding_manager_mock,
+            placement_manager_mock
+        )
+
+        with self.assertRaises(exceptions.ThingNotFoundError):
+            gateway.get_thing(
+                test_unregistered_token, test_unregistered_id
+            )
+
     def test_get_placement(self):
         auth_manager_mock = mock.Mock(spec_set=AuthManager)
         binding_manager_mock = mock.Mock(spec_set=BindingManager)
@@ -216,6 +247,37 @@ class TestApiGateway(unittest.TestCase):
         test_placement_dict["image"] = test_placement_dict["image_url"]
 
         self.assertEqual(result, test_placement_dict)
+
+    def test_get_nonexistent_placement(self):
+        auth_manager_mock = mock.Mock(spec_set=AuthManager)
+        binding_manager_mock = mock.Mock(spec_set=BindingManager)
+        placement_manager_mock = mock.Mock(spec_set=PlacementManager)
+
+        auth_manager_mock.is_token_valid = mock.Mock()
+        auth_manager_mock.is_token_valid.return_value = True
+
+        auth_manager_mock.is_token_grants = mock.Mock()
+        auth_manager_mock.is_token_grants.return_value = True
+
+        def pm_fetch_side_effect(*args, **kwargs):
+            raise KeyError
+
+        placement_manager_mock.fetch_placement = mock.Mock()
+        placement_manager_mock.fetch_placement.side_effect = pm_fetch_side_effect
+
+        test_unregistered_token = "nobody cares"
+        test_unregistered_id = "nobody cares"
+
+        gateway = ApiGateway(
+            auth_manager_mock,
+            binding_manager_mock,
+            placement_manager_mock
+        )
+
+        with self.assertRaises(exceptions.PlacementNotFoundError):
+            gateway.get_placement(
+                test_unregistered_token, test_unregistered_id
+            )
 
 
 if __name__ == '__main__':
