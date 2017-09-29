@@ -32,6 +32,8 @@ class ApiGateway(object):
         :param password: password of the user
         :return: an access token to be used
         """
+        # FIXME: auth_user can raise ValueError on fail. Set a more specific exception
+        # and document it
         return self._am.auth_user(username, password)
 
     def _check_permission(self, token: str, requested_action):
