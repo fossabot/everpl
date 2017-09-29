@@ -1,6 +1,9 @@
 # Include standard modules
 import time
 from enum import Enum
+from copy import deepcopy
+from types import MappingProxyType
+from collections import Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -61,19 +64,19 @@ class Thing(object):
         """
         # Connection params must be saved manually in derived classes
         # Connection params must be parsed and saved manually in derived classes
-        self._metadata = metadata
+        self._metadata = deepcopy(metadata)
         self._really_internal_state_value = self.States.unknown
         self._last_updated = time.time()
         self._is_enabled = False
 
     @property
-    def metadata(self) -> dict:
+    def metadata(self) -> Mapping:
         """
-        Returns a stored metadata
+        Returns a stored metadata (read-only view of it)
 
         :return: metadata of objects
         """
-        return self._metadata
+        return MappingProxyType(self._metadata)
 
     @property
     def state(self) -> States:
