@@ -71,7 +71,7 @@ class TestApiGateway(unittest.TestCase):
 
         self.assertEqual(token, test_token)
 
-    def test_getters_invalid_token(self):
+    def test_protected_invalid_token(self):
         auth_manager_mock = mock.Mock(spec_set=AuthManager)
         binding_manager_mock = mock.Mock(spec_set=BindingManager)
         placement_manager_mock = mock.Mock(spec_set=PlacementManager)
@@ -104,7 +104,7 @@ class TestApiGateway(unittest.TestCase):
         with self.assertRaises(exceptions.InvalidTokenError):
             gateway.send_command(test_unregistered_token, test_unregistered_id, test_unregistered_cmd)
 
-    def test_getters_insufficient_permissions_token(self):
+    def test_protected_insufficient_permissions_token(self):
         auth_manager_mock = mock.Mock(spec_set=AuthManager)
         binding_manager_mock = mock.Mock(spec_set=BindingManager)
         placement_manager_mock = mock.Mock(spec_set=PlacementManager)
