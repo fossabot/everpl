@@ -560,5 +560,271 @@ class TestRestApiProvider(unittest.TestCase):
 
         self.loop.run_until_complete(body())
 
+    def test_get_thing(self):
+        test_thing_id = 'Th1'
+        test_url = self.base_url + 'things/' + test_thing_id
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        test_placement_mock = {"key1": "nobody cares"}
+
+        self.api_gateway_mock.get_thing = mock.Mock()
+        self.api_gateway_mock.get_thing.return_value = test_placement_mock
+
+        test_response_status = 200
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_placement_mock
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_thing_not_found(self):
+        test_thing_id = 'Th1'
+        test_url = self.base_url + 'things/' + test_thing_id
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        def get_thing_side_effect(*args, **kwargs):
+            raise exceptions.ThingNotFoundError
+
+        test_response_body = api_errors.ERROR_TEMPLATES[1005].to_dict()
+
+        self.api_gateway_mock.get_thing = mock.Mock()
+        self.api_gateway_mock.get_thing.side_effect = get_thing_side_effect
+
+        test_response_status = 404
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_thing_missing_auth_reader(self):
+        test_thing_id = 'Th1'
+        test_url = self.base_url + 'things/' + test_thing_id
+
+        test_response_status = 401
+
+        test_response_body = api_errors.ERROR_TEMPLATES[2100].to_dict()
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_thing_invalid_token(self):
+        test_thing_id = 'Th1'
+        test_url = self.base_url + 'things/' + test_thing_id
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        def get_thing_side_effect(*args, **kwargs):
+            raise exceptions.InvalidTokenError
+
+        test_response_body = api_errors.ERROR_TEMPLATES[2101].to_dict()
+
+        self.api_gateway_mock.get_thing = mock.Mock()
+        self.api_gateway_mock.get_thing.side_effect = get_thing_side_effect
+
+        test_response_status = 401
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_thing_token_insufficient_permissions(self):
+        test_thing_id = 'R1'
+        test_url = self.base_url + 'things/' + test_thing_id
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        def get_thing_side_effect(*args, **kwargs):
+            raise exceptions.PermissionDeniedForTokenError
+
+        test_response_body = api_errors.ERROR_TEMPLATES[2110].to_dict()
+
+        self.api_gateway_mock.get_thing = mock.Mock()
+        self.api_gateway_mock.get_thing.side_effect = get_thing_side_effect
+
+        test_response_status = 403
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body['error_id'], test_response_body['error_id']
+                    )
+
+                    self.assertIn('devel_message', response_body)
+                    self.assertIn('user_message', response_body)
+                    self.assertIn('docs_url', response_body)
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        test_things_mock = [{"key1": "nobody cares"}, {"key1": "nobody cares 2"}]
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.return_value = test_things_mock
+
+        test_response_status = 200
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, {"things": test_things_mock}
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things_empty(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        test_things_mock = []
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.return_value = test_things_mock
+
+        test_response_status = 200
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, {"things": test_things_mock}
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things_missing_auth_reader(self):
+        test_url = self.base_url + 'things/'
+
+        test_response_status = 401
+
+        test_response_body = api_errors.ERROR_TEMPLATES[2100].to_dict()
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things_invalid_token(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        def get_things_side_effect(*args, **kwargs):
+            raise exceptions.InvalidTokenError
+
+        test_response_body = api_errors.ERROR_TEMPLATES[2101].to_dict()
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.side_effect = get_things_side_effect
+
+        test_response_status = 401
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, test_response_body
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things_token_insufficient_permissions(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+
+        def get_things_side_effect(*args, **kwargs):
+            raise exceptions.PermissionDeniedForTokenError
+
+        test_response_body = api_errors.ERROR_TEMPLATES[2110].to_dict()
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.side_effect = get_things_side_effect
+
+        test_response_status = 403
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body['error_id'], test_response_body['error_id']
+                    )
+
+                    self.assertIn('devel_message', response_body)
+                    self.assertIn('user_message', response_body)
+                    self.assertIn('docs_url', response_body)
+
+        self.loop.run_until_complete(body())
+
 if __name__ == '__main__':
     unittest.main()
