@@ -219,5 +219,38 @@ class TestRestApiProvider(unittest.TestCase):
 
         self.loop.run_until_complete(body())
 
+    def test_auth_server_error(self):
+        test_url = self.base_url + 'auth'
+
+        test_request_body = {
+            "username": "nobody cares",
+            "password": "nobody cares"
+        }
+
+        def auth_side_effect(*args, **kwargs):
+            raise Exception()
+
+        test_response_body = api_errors.ERROR_TEMPLATES[1003]
+        test_response_status = 500
+
+        self.api_gateway_mock.auth = mock.Mock()
+        self.api_gateway_mock.auth.side_effect = auth_side_effect
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.post(test_url, json=test_request_body) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body['error_id'], test_response_body.error_id
+                    )
+
+                    self.assertIn('devel_message', response_body)
+                    self.assertIn('user_message', response_body)
+                    self.assertIn('docs_url', response_body)
+
+        self.loop.run_until_complete(body())
+
 if __name__ == '__main__':
     unittest.main()
