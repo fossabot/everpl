@@ -17,6 +17,12 @@ from dpl.connections import Connection
 
 from dpl.integrations.dummy import DummySwitch, DummyConnection
 
+# FIXME: CC16: Reduce code duplication
+# FIXME: CC17: Add tests for several placements and several things in a list
+# FIXME: CC18: Add tests for command sending (after stabilization of its API)
+# FIXME: CC19: Replace DummySwitch with a Mock
+# FIXME: CC20: Replace all Mocks with the real classes
+
 
 class TestApiGateway(unittest.TestCase):
     GETTER_METHODS_LIST = [
@@ -209,6 +215,67 @@ class TestApiGateway(unittest.TestCase):
                 test_unregistered_token, test_unregistered_id
             )
 
+    def test_get_empty_thing_list(self):
+        auth_manager_mock = mock.Mock(spec_set=AuthManager)
+        binding_manager_mock = mock.Mock(spec_set=BindingManager)
+        placement_manager_mock = mock.Mock(spec_set=PlacementManager)
+
+        auth_manager_mock.is_token_valid = mock.Mock()
+        auth_manager_mock.is_token_valid.return_value = True
+
+        auth_manager_mock.is_token_grants = mock.Mock()
+        auth_manager_mock.is_token_grants.return_value = True
+
+        binding_manager_mock.fetch_all_things = mock.Mock()
+        binding_manager_mock.fetch_all_things.return_value = []
+
+        test_unregistered_token = "nobody cares"
+
+        gateway = ApiGateway(
+            auth_manager_mock,
+            binding_manager_mock,
+            placement_manager_mock
+        )
+
+        result = gateway.get_things(test_unregistered_token)
+
+        self.assertEqual(result, [])
+
+    def test_get_thing_list(self):
+        auth_manager_mock = mock.Mock(spec_set=AuthManager)
+        binding_manager_mock = mock.Mock(spec_set=BindingManager)
+        placement_manager_mock = mock.Mock(spec_set=PlacementManager)
+
+        auth_manager_mock.is_token_valid = mock.Mock()
+        auth_manager_mock.is_token_valid.return_value = True
+
+        auth_manager_mock.is_token_grants = mock.Mock()
+        auth_manager_mock.is_token_grants.return_value = True
+
+        test_thing = self.get_test_thing()
+
+        binding_manager_mock.fetch_all_things = mock.Mock()
+        binding_manager_mock.fetch_all_things.return_value = [test_thing, ]
+
+        gateway = ApiGateway(
+            auth_manager_mock,
+            binding_manager_mock,
+            placement_manager_mock
+        )
+
+        test_unregistered_token = "nobody cares"
+
+        test_thing_dict = obj_to_dict(test_thing)
+        test_thing_dict.update(test_thing.metadata)
+        test_thing_dict.pop("metadata")
+
+        # FIXME: Remove deprecated property
+        test_thing_dict["description"] = test_thing_dict["friendly_name"]
+
+        result = gateway.get_things(test_unregistered_token)
+
+        self.assertEqual(result, [test_thing_dict, ])
+
     def test_get_placement(self):
         auth_manager_mock = mock.Mock(spec_set=AuthManager)
         binding_manager_mock = mock.Mock(spec_set=BindingManager)
@@ -278,6 +345,68 @@ class TestApiGateway(unittest.TestCase):
             gateway.get_placement(
                 test_unregistered_token, test_unregistered_id
             )
+
+    def test_get_empty_placement_list(self):
+        auth_manager_mock = mock.Mock(spec_set=AuthManager)
+        binding_manager_mock = mock.Mock(spec_set=BindingManager)
+        placement_manager_mock = mock.Mock(spec_set=PlacementManager)
+
+        auth_manager_mock.is_token_valid = mock.Mock()
+        auth_manager_mock.is_token_valid.return_value = True
+
+        auth_manager_mock.is_token_grants = mock.Mock()
+        auth_manager_mock.is_token_grants.return_value = True
+
+        placement_manager_mock.fetch_all_placements = mock.Mock()
+        placement_manager_mock.fetch_all_placements.return_value = []
+
+        test_unregistered_token = "nobody cares"
+
+        gateway = ApiGateway(
+            auth_manager_mock,
+            binding_manager_mock,
+            placement_manager_mock
+        )
+
+        result = gateway.get_placements(test_unregistered_token)
+
+        self.assertEqual(result, [])
+
+    def test_get_placement_list(self):
+        auth_manager_mock = mock.Mock(spec_set=AuthManager)
+        binding_manager_mock = mock.Mock(spec_set=BindingManager)
+        placement_manager_mock = mock.Mock(spec_set=PlacementManager)
+
+        auth_manager_mock.is_token_valid = mock.Mock()
+        auth_manager_mock.is_token_valid.return_value = True
+
+        auth_manager_mock.is_token_grants = mock.Mock()
+        auth_manager_mock.is_token_grants.return_value = True
+
+        test_placement = self.get_test_placement()
+
+        placement_manager_mock.fetch_all_placements = mock.Mock()
+        placement_manager_mock.fetch_all_placements.return_value = [test_placement, ]
+
+        gateway = ApiGateway(
+            auth_manager_mock,
+            binding_manager_mock,
+            placement_manager_mock
+        )
+
+        test_unregistered_token = "nobody cares"
+
+        test_placement_dict = obj_to_dict(test_placement)
+
+        test_placement_dict["id"] = test_placement_dict.pop("placement_id")
+
+        # FIXME: Remove deprecated properties
+        test_placement_dict["description"] = test_placement_dict["friendly_name"]
+        test_placement_dict["image"] = test_placement_dict["image_url"]
+
+        result = gateway.get_placements(test_unregistered_token)
+
+        self.assertEqual(result, [test_placement_dict, ])
 
 
 if __name__ == '__main__':
