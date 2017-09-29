@@ -1,9 +1,21 @@
 # Include standard modules
-from typing import Tuple
+from typing import Tuple, Set
 
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.things import Thing
+
+
+# Declare an internal global variable that will keep count of
+# actuator commands
+_ACTUATOR_COMMANDS = set()
+
+
+def actuator_command(decorated_callable):
+    global _ACTUATOR_COMMANDS  # type: Set[str]
+    _ACTUATOR_COMMANDS.add(decorated_callable.__name__)
+
+    return decorated_callable
 
 
 class Actuator(Thing):
@@ -26,6 +38,9 @@ class Actuator(Thing):
     - if command can't be executed for any reason, corresponding method raises an
       exception (FIXME: CC9: or returns an error code???)
     """
+    global _ACTUATOR_COMMANDS
+    _command_names = _ACTUATOR_COMMANDS
+
     @property
     def commands(self) -> Tuple[str, ...]:
         """
@@ -33,7 +48,7 @@ class Actuator(Thing):
 
         :return: a tuple of command names (strings)
         """
-        return 'activate', 'deactivate', 'toggle'
+        return tuple(self._command_names)
 
     @property
     def is_active(self) -> bool:
@@ -63,6 +78,7 @@ class Actuator(Thing):
 
         return command_method(*args, **kwargs)
 
+    @actuator_command
     def activate(self) -> None:
         """
         Turns an object to some specific 'active' state
@@ -71,6 +87,7 @@ class Actuator(Thing):
         """
         raise NotImplementedError
 
+    @actuator_command
     def deactivate(self) -> None:
         """
         Turns an object to some specific 'inactive' state
@@ -79,6 +96,7 @@ class Actuator(Thing):
         """
         raise NotImplementedError
 
+    @actuator_command
     def toggle(self) -> None:
         """
         Switches an object from the current state to the opposite one

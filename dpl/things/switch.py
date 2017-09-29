@@ -5,6 +5,7 @@ from typing import Tuple
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.things import Actuator
+from dpl.things.actuator import actuator_command
 
 
 class Switch(Actuator):
@@ -51,6 +52,7 @@ class Switch(Actuator):
         """
         return self.off()
 
+    @actuator_command
     def on(self) -> None:
         """
         Switches an object to the 'on' state
@@ -59,6 +61,7 @@ class Switch(Actuator):
         """
         raise NotImplementedError
 
+    @actuator_command
     def off(self) -> None:
         """
         Switches an object to the 'off' state
