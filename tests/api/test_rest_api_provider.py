@@ -826,5 +826,87 @@ class TestRestApiProvider(unittest.TestCase):
 
         self.loop.run_until_complete(body())
 
+    def test_get_things_filter_by_placement(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+        test_params = {'placement': "R1"}
+
+        test_things_mock = [{"placement": "R1"}, {"placement": "R2"}]
+
+        assert test_params['placement'] == test_things_mock[0]['placement']
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.return_value = test_things_mock
+
+        test_response_status = 200
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers, params=test_params) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, {"things": [test_things_mock[0]]}
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things_filter_by_type(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+        test_params = {'type': "t2"}
+
+        test_things_mock = [{"type": "t1"}, {"type": "t2"}]
+
+        assert test_params['type'] == test_things_mock[1]['type']
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.return_value = test_things_mock
+
+        test_response_status = 200
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers, params=test_params) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, {"things": [test_things_mock[1]]}
+                    )
+
+        self.loop.run_until_complete(body())
+
+    def test_get_things_filter_by_missing_field(self):
+        test_url = self.base_url + 'things/'
+        test_token = "nobody_cares"
+
+        test_headers = {'Authorization': test_token}
+        test_params = {'something_new': "t2"}
+
+        test_things_mock = [{"type": "t1"}, {"type": "t2"}]
+
+        self.api_gateway_mock.get_things = mock.Mock()
+        self.api_gateway_mock.get_things.return_value = test_things_mock
+
+        test_response_status = 200
+
+        async def body():
+            async with aiohttp.ClientSession(loop=self.loop) as session:
+                async with session.get(url=test_url, headers=test_headers, params=test_params) as resp:
+                    self.assertEqual(resp.status, test_response_status)
+                    response_body = await resp.json()
+
+                    self.assertEqual(
+                        response_body, {"things": test_things_mock}
+                    )
+
+        self.loop.run_until_complete(body())
+
 if __name__ == '__main__':
     unittest.main()
