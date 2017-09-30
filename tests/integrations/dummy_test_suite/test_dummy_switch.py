@@ -241,6 +241,13 @@ class TestDummySwitch(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 self.switch.execute(cmd)
 
+    def test_disable_preserves_state(self):
+        self.switch.on()
+        self.switch.disable()
+
+        assert not self.switch.is_available
+
+        self.assertEqual(self.switch.state, self.switch.state.on)
 
 if __name__ == '__main__':
     unittest.main()
