@@ -202,6 +202,12 @@ class TestDummySwitch(unittest.TestCase):
 
     # FIXME: CC21: Add tests for state on is_active correlations
 
+    def test_all_commands_has_methods(self):
+        for cmd in self.switch.commands:
+            result = getattr(self.switch, cmd, default=None)
+
+            self.assertIsNotNone(result)
+
     def test_execute_call_command_methods(self):
         args = ('one', 'two', 'three')
         kwargs = {"key1": "value1", "key2": "value2"}
