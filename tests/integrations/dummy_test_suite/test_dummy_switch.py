@@ -224,7 +224,7 @@ class TestDummySwitch(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.switch.execute(command=cmd)
 
-    def test_command_in_disabled_state(self):
+    def test_toggle_fails_in_disabled_state(self):
         self.switch.disable()
 
         assert not self.switch.is_available
@@ -232,7 +232,7 @@ class TestDummySwitch(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.switch.toggle()
 
-    def test_all_commands_in_disabled_state(self):
+    def test_all_commands_fails_in_disabled_state(self):
         self.switch.disable()
 
         assert not self.switch.is_available
