@@ -204,7 +204,7 @@ class TestDummySwitch(unittest.TestCase):
 
     def test_all_commands_has_methods(self):
         for cmd in self.switch.commands:
-            result = getattr(self.switch, cmd, default=None)
+            result = getattr(self.switch, cmd, None)
 
             self.assertIsNotNone(result)
 
