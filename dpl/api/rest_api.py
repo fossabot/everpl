@@ -136,11 +136,15 @@ class RestApi(object):
         router.add_post(path='/auth', handler=self.auth_post_handler)
         router.add_route(method='OPTIONS', path='/auth', handler=self.auth_options_handler)
         router.add_get(path='/things/', handler=self.things_get_handler)
+        router.add_route(method='OPTIONS', path='/things/', handler=self.things_options_handler)
         router.add_get(path='/things/{id}', handler=self.thing_get_handler)
+        router.add_route(method='OPTIONS', path='/things/{id}', handler=self.thing_options_handler)
         router.add_post(path='/messages/', handler=self.messages_post_handler)
         router.add_route(method='OPTIONS', path='/messages/', handler=self.messages_options_handler)
         router.add_get(path='/placements/', handler=self.placements_get_handler)
+        router.add_route(method='OPTIONS', path='/placements/', handler=self.placements_options_handler)
         router.add_get(path='/placements/{id}', handler=self.placement_get_handler)
+        router.add_route(method='OPTIONS', path='/placements/{id}', handler=self.placement_options_handler)
 
     async def create_server(self, host: str, port: int) -> None:
         """
@@ -330,6 +334,21 @@ class RestApi(object):
                 content=error_dict
             )
 
+    async def things_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /things/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'GET, HEAD, OPTIONS'}
+        )
+
     def _get_thing_id(self, request: web.Request) -> str:
         thing_id = request.match_info['id']
 
@@ -367,6 +386,21 @@ class RestApi(object):
                 content=error_dict
             )
 
+    async def thing_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /things/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'GET, HEAD, OPTIONS'}
+        )
+
     @restricted_access_decorator
     async def placements_get_handler(self, request: web.Request, token: str = None) -> web.Response:
         """
@@ -389,6 +423,21 @@ class RestApi(object):
                 status=403,
                 content=error_dict
             )
+
+    async def placements_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /placements/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'GET, HEAD, OPTIONS'}
+        )
 
     def _get_placement_id(self, request: web.Request) -> str:
         placement_id = request.match_info['id']
@@ -424,6 +473,21 @@ class RestApi(object):
                 status=403,
                 content=error_dict
             )
+
+    async def placement_options_handler(self, request: web.Request) -> web.Response:
+        """
+        A handler for OPTIONS request for path /placements/.
+
+        Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+        :param request: request to be handled
+        :return: a response to request
+        """
+        return web.Response(
+            body=None,
+            status=204,
+            headers={'Allow': 'GET, HEAD, OPTIONS'}
+        )
 
     @restricted_access_decorator
     @json_decode_decorator
