@@ -110,7 +110,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(exclude=['docs', 'tests']),  # Required
+    packages=find_packages(exclude=['tests', 'tests.*', 'docs', 'docs.*']),  # Required
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
@@ -141,6 +141,9 @@ setup(
     package_data={  # Optional
         # 'sample': ['package_data.dat'],
     },
+
+    # FIXME: Workaround to use MANIFEST.in
+    include_package_data=True,
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
