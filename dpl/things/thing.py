@@ -60,7 +60,7 @@ class Thing(BaseEntity):
         parameters to use it properly. Also can receive some metadata to be stored like
         object placement, description or user-friendly name.
 
-        :param domain_id: an unique identifier of this Thing
+        :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
         :param con_params: parameters to access connection
         :param metadata: metadata to be stored
