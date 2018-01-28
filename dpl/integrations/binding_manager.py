@@ -70,7 +70,7 @@ class BindingManager(object):
                 continue
 
             con_instance = factory.build(  # type: Connection
-                **con_params
+                domain_id=con_id, **con_params
             )
 
             self._connections[con_id] = con_instance
