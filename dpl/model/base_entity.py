@@ -1,4 +1,4 @@
-TDomainId = str
+from .domain_id import TDomainId
 
 
 class BaseEntity(object):
