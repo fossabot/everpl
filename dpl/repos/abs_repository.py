@@ -3,7 +3,7 @@ Contains a pure abstract (interface-like) base implementation
 of repository
 """
 
-from typing import TypeVar, Generic, Sequence, Optional
+from typing import TypeVar, Generic, Optional
 
 
 # FIXME: CC22: Use UUID instead of string as a domain ID
@@ -38,7 +38,7 @@ class AbsRepository(Generic[TStored]):
         """
         raise NotImplementedError()
 
-    def load_all(self) -> Sequence[TStored]:
+    def load_all(self):  # -> Collection[TStored]:
         """
         Returns all objects that are stored in this Repository
 
@@ -46,7 +46,7 @@ class AbsRepository(Generic[TStored]):
         """
         raise NotImplementedError()
 
-    def select_all_domain_ids(self) -> Sequence[TDomainId]:
+    def select_all_domain_ids(self):  # -> Collection[TDomainId]:
         """
         Returns a collection of identifiers of all objects
         stored in this Repository

@@ -1,4 +1,4 @@
-from typing import Sequence, Optional, TypeVar
+from typing import Optional, TypeVar
 
 from .abs_repository import AbsRepository, TDomainId
 from dpl.things import Thing
@@ -15,7 +15,7 @@ class AbsThingRepository(AbsRepository[TThing]):
     Contains declarations of methods that must to be present
     in specific implementations of this repository
     """
-    def select_by_placement(self, placement_id: Optional[TDomainId]) -> Sequence[TDomainId]:
+    def select_by_placement(self, placement_id: Optional[TDomainId]):  # -> Collection[TDomainId]:
         """
         Fetches a collection of identifiers of all Things
         that are present in the specified placement
@@ -29,7 +29,7 @@ class AbsThingRepository(AbsRepository[TThing]):
         """
         raise NotImplementedError()
 
-    def select_by_connection(self, connection_id: TDomainId) -> Sequence[TDomainId]:
+    def select_by_connection(self, connection_id: TDomainId):  # -> Collection[TDomainId]:
         """
         Fetches a collection of identifiers of all Things that
         use the specified Connection
