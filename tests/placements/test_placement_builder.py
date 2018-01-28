@@ -23,7 +23,7 @@ class TestPlacementBuilder(unittest.TestCase):
 
         self.assertTrue(isinstance(placement, Placement))
 
-        self.assertEqual(placement.placement_id, placement_id)
+        self.assertEqual(placement.domain_id, placement_id)
         self.assertEqual(placement.friendly_name, placement_name)
         self.assertEqual(placement.image_url, placement_image)
 

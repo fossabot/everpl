@@ -16,11 +16,11 @@ class TestPlacement(unittest.TestCase):
             self.test_id
         )
 
-        self.assertEqual(placement.placement_id, self.test_id)
+        self.assertEqual(placement.domain_id, self.test_id)
         self.assertEqual(placement.friendly_name, None)
         self.assertEqual(placement.image_url, None)
 
-        self.assertTrue(isinstance(placement.placement_id, str))
+        self.assertTrue(isinstance(placement.domain_id, str))
 
     def test_params_constructor(self):
         placement = Placement(
@@ -29,7 +29,7 @@ class TestPlacement(unittest.TestCase):
             self.test_image_url
         )
 
-        self.assertEqual(placement.placement_id, self.test_id)
+        self.assertEqual(placement.domain_id, self.test_id)
         self.assertEqual(placement.friendly_name, self.test_friendly_name)
         self.assertEqual(placement.image_url, self.test_image_url)
 
@@ -41,7 +41,7 @@ class TestPlacement(unittest.TestCase):
         )
 
         with self.assertRaises(AttributeError):
-            placement.placement_id = self.test_id + "_1"
+            placement.domain_id = self.test_id + "_1"
 
     def test_id_friendly_name_setter(self):
         placement = Placement(

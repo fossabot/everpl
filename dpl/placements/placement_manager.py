@@ -27,7 +27,7 @@ class PlacementManager(object):
         """
         for conf_item in config:
             new_placement = PlacementBuilder.build(conf_item)
-            self._placements[new_placement.placement_id] = new_placement
+            self._placements[new_placement.domain_id] = new_placement
 
     def fetch_all_placements(self) -> ValuesView[Placement]:
         """

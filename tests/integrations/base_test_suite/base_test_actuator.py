@@ -2,6 +2,7 @@
 import unittest
 from unittest import mock
 import time
+import uuid
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -54,6 +55,7 @@ class BaseTestActuator(unittest.TestCase):
 
         # Build an instance of Actuator to be tested
         self.uut = self.build_uut(
+            domain_id=uuid.uuid4().hex,
             con_instance=self.connection_mock,
             con_params=self.con_params,
             metadata=self.metadata
@@ -69,6 +71,7 @@ class BaseTestActuator(unittest.TestCase):
 
     def test_init(self):
         uut = self.build_uut(
+            domain_id=uuid.uuid4().hex,
             con_instance=self.connection_mock,
             con_params=self.con_params,
             metadata=self.metadata
@@ -102,6 +105,7 @@ class BaseTestActuator(unittest.TestCase):
 
     def test_enable(self):
         uut = self.build_uut(
+            domain_id=uuid.uuid4().hex,
             con_instance=self.connection_mock,
             con_params=self.con_params,
             metadata=self.metadata

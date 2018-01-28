@@ -21,7 +21,7 @@ class PlacementBuilder(object):
         :return: a constructed instance of Placement
         """
         new_placement = Placement(
-            placement_id=config["id"],
+            domain_id=config["id"],
             friendly_name=config["friendly_name"],
             image_url=config["image_url"]
         )
