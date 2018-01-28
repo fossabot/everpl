@@ -45,7 +45,7 @@ class TestApiGateway(unittest.TestCase):
     @staticmethod
     def get_test_placement():
         return Placement(
-            placement_id="R1",
+            domain_id="R1",
             friendly_name="Corridor",
             image_url=None
         )
@@ -245,7 +245,7 @@ class TestApiGateway(unittest.TestCase):
 
         test_placement_dict = obj_to_dict(test_placement)
 
-        test_placement_dict["id"] = test_placement_dict.pop("placement_id")
+        test_placement_dict["id"] = test_placement_dict.pop("domain_id")
 
         # FIXME: Remove deprecated properties
         test_placement_dict["description"] = test_placement_dict["friendly_name"]
@@ -306,7 +306,7 @@ class TestApiGateway(unittest.TestCase):
 
         test_placement_dict = obj_to_dict(test_placement)
 
-        test_placement_dict["id"] = test_placement_dict.pop("placement_id")
+        test_placement_dict["id"] = test_placement_dict.pop("domain_id")
 
         # FIXME: Remove deprecated properties
         test_placement_dict["description"] = test_placement_dict["friendly_name"]
