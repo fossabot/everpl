@@ -5,6 +5,8 @@ import time
 # Include DPL modules
 from dpl.things import Slider
 from dpl.integrations import ThingFactory, ThingRegistry
+from dpl.model.domain_id import TDomainId
+
 from . import DummyConnection
 
 
@@ -14,16 +16,17 @@ class DummySlider(Slider):
     """
     __SWITCH_DELAY = 1  # second
 
-    def __init__(self, con_instance: DummyConnection, con_params: dict, metadata: dict):
+    def __init__(self, domain_id: TDomainId, con_instance: DummyConnection, con_params: dict, metadata: dict):
         """
         Constructor. Receives an instance of DummyConnection and a prefix to be printed
         in con_params.
 
+        :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
         :param metadata: some additional data that will be saved to 'metadata' property
         """
-        super().__init__(con_instance, con_params, metadata)
+        super().__init__(domain_id, con_instance, con_params, metadata)
 
         key_name = "prefix"
 
