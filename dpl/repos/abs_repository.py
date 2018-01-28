@@ -3,7 +3,7 @@ Contains a pure abstract (interface-like) base implementation
 of repository
 """
 
-from typing import TypeVar, Generic, Sequence
+from typing import TypeVar, Generic, Sequence, Optional
 
 
 # FIXME: CC22: Use UUID instead of string as a domain ID
@@ -28,13 +28,13 @@ class AbsRepository(Generic[TStored]):
         raise NotImplementedError()
 
     # FIXME: CC23: Use database_id instead of domain_id
-    def load(self, domain_id: TDomainId) -> TStored:
+    def load(self, domain_id: TDomainId) -> Optional[TStored]:
         """
         Loads a single object from an internal storage by its
-        identifier
+        identifier or None (null) if it wasn't found
 
         :param domain_id: an identifier of an object
-        :return: an object itself
+        :return: an object itself or None if it wasn't found
         """
         raise NotImplementedError()
 
