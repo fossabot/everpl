@@ -1,31 +1,25 @@
-class Placement(object):
+from dpl.model.base_entity import BaseEntity
+
+
+class Placement(BaseEntity):
     """
     Placement is an entity class that stores information about a specific placement (position)
     of Thing. For example, in Smart Home systems, each Placement can represent one
     room at the house and contain information about a name of the room, its internal
     identifier and an image of this room.
     """
-    def __init__(self, placement_id: str, friendly_name: str = None, image_url: str = None):
+    def __init__(self, domain_id: str, friendly_name: str = None, image_url: str = None):
         """
         Constructor
 
-        :param placement_id: some unique identifier of this entity
+        :param domain_id: some unique identifier of this entity
         :param friendly_name: human-friendly name of this placement
         :param image_url: an URL to the illustration image
         """
         # TODO: Add params validation here
-        self._placement_id = placement_id
+        super().__init__(domain_id)
         self._friendly_name = friendly_name
         self._image_url = image_url
-
-    @property
-    def placement_id(self) -> str:
-        """
-        Contains an unique identifier of this entity. Can't be changed after init.
-
-        :return: string, system-internal identifier
-        """
-        return self._placement_id
 
     @property
     def friendly_name(self) -> str:
