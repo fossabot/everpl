@@ -63,6 +63,9 @@ class ApiGateway(object):
         :return: a corresponding dict
         """
         thing_dict = obj_to_dict(thing)
+        thing_dict['id'] = thing_dict['domain_id']
+        thing_dict.pop('domain_id')
+
         metadata = thing_dict.pop("metadata")
         assert isinstance(metadata, Mapping)
 
