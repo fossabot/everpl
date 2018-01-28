@@ -70,7 +70,7 @@ class BindingManager(object):
                 continue
 
             con_instance = factory.build(  # type: Connection
-                **con_params
+                domain_id=con_id, **con_params
             )
 
             self._connections[con_id] = con_instance
@@ -116,12 +116,12 @@ class BindingManager(object):
                 continue
 
             thing_instance = factory.build(  # type: Thing
+                domain_id=thing_id,
                 con_instance=connection,
                 con_params=con_params,
                 metadata={
                     "friendly_name": thing_friendly_name,
                     "type": thing_type,
-                    "id": thing_id,
                     "placement": thing_placement
                 }
             )

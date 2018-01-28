@@ -63,6 +63,9 @@ class ApiGateway(object):
         :return: a corresponding dict
         """
         thing_dict = obj_to_dict(thing)
+        thing_dict['id'] = thing_dict['domain_id']
+        thing_dict.pop('domain_id')
+
         metadata = thing_dict.pop("metadata")
         assert isinstance(metadata, Mapping)
 
@@ -191,7 +194,7 @@ class ApiGateway(object):
         """
         # FIXME: CC14: Consider switching to direct usage of properties
         return {
-            "id": placement.placement_id,
+            "id": placement.domain_id,
             "friendly_name": placement.friendly_name,
             "image_url": placement.image_url
         }
