@@ -7,10 +7,12 @@ from collections import Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
+from dpl.model.domain_id import TDomainId
+from dpl.model.base_entity import BaseEntity
 from dpl.connections import Connection
 
 
-class Thing(object):
+class Thing(BaseEntity):
     """
     Thing is a base class for all connected devices in the system.
 
@@ -52,16 +54,19 @@ class Thing(object):
         """
         unknown = None
 
-    def __init__(self, con_instance: Connection, con_params: dict, metadata: dict = None):
+    def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
         """
         Constructor of a Thing. Receives an instance of Connection and some specific
         parameters to use it properly. Also can receive some metadata to be stored like
         object placement, description or user-friendly name.
 
+        :param domain_id: an unique identifier of this Thing
         :param con_instance: an instance of connection to be used
         :param con_params: parameters to access connection
         :param metadata: metadata to be stored
         """
+        super().__init__(domain_id)
+
         # Connection params must be saved manually in derived classes
         # Connection params must be parsed and saved manually in derived classes
         self._metadata = deepcopy(metadata)

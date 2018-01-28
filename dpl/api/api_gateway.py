@@ -191,7 +191,7 @@ class ApiGateway(object):
         """
         # FIXME: CC14: Consider switching to direct usage of properties
         return {
-            "id": placement.placement_id,
+            "id": placement.domain_id,
             "friendly_name": placement.friendly_name,
             "image_url": placement.image_url
         }
