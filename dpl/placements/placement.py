@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dpl.model.base_entity import BaseEntity
 
 
@@ -17,12 +19,13 @@ class Placement(BaseEntity):
         :param image_url: an URL to the illustration image
         """
         # TODO: Add params validation here
+        # FIXME: CC30: Consider to make friendly_name a non-nullable property
         super().__init__(domain_id)
         self._friendly_name = friendly_name
         self._image_url = image_url
 
     @property
-    def friendly_name(self) -> str:
+    def friendly_name(self) -> Optional[str]:
         """
         Contains some short meaningful human-readable naming of this placement
 
@@ -31,7 +34,7 @@ class Placement(BaseEntity):
         return self._friendly_name
 
     @friendly_name.setter
-    def friendly_name(self, new_value: str):
+    def friendly_name(self, new_value: Optional[str]):
         """
         A setter for friendly_name property
 
@@ -42,7 +45,7 @@ class Placement(BaseEntity):
         self._friendly_name = new_value
 
     @property
-    def image_url(self) -> str:
+    def image_url(self) -> Optional[str]:
         """
         Stores an URL to the illustration image for this placement
 
@@ -51,7 +54,7 @@ class Placement(BaseEntity):
         return self._image_url
 
     @image_url.setter
-    def image_url(self, new_value: str):
+    def image_url(self, new_value: Optional[str]):
         """
         A setter for image_url property
 
