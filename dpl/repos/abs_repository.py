@@ -4,11 +4,10 @@ of repository
 """
 
 from typing import TypeVar, Generic, Optional
+from dpl.model.domain_id import TDomainId
+from dpl.model.base_entity import BaseEntity
 
-
-# FIXME: CC22: Use UUID instead of string as a domain ID
-TDomainId = str
-TStored = TypeVar('TStored')
+TStored = TypeVar('TStored', bound=BaseEntity)
 
 
 class AbsRepository(Generic[TStored]):
