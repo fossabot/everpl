@@ -5,6 +5,7 @@ from typing import TypeVar, Generic
 
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
+from .service_exceptions import ServiceEntityLinkError
 
 
 TEntityDto = TypeVar('TEntityDto', bound=BaseEntity)
@@ -34,5 +35,18 @@ class AbsEntityService(Generic[TEntityDto]):
         :return: a DTO of stored object
         :raises ServiceResolutionError: if the entity with
                 the specified ID can't be found
+        """
+        raise NotImplementedError()
+
+    def remove(self, domain_id: TDomainId) -> None:
+        """
+        REMOVES an Entity with the specified ID altogether
+        from the system
+
+        :param domain_id: an identifier of Entity to be deleted
+        :return: None
+        :raises ServiceEntityLinkError: if the specified can't
+                be removed because some other entity is linked
+                (uses or refers) to it
         """
         raise NotImplementedError()
