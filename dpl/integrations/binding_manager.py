@@ -7,6 +7,8 @@ import importlib
 # Include DPL modules
 from dpl.connections import Connection
 from dpl.things import Thing
+from dpl.repo_impls.in_memory.connection_repository import ConnectionRepository
+from dpl.repo_impls.in_memory.thing_repository import ThingRepository
 from . import ConnectionFactory, ConnectionRegistry, ThingFactory, ThingRegistry
 
 # Get logger:
@@ -24,8 +26,8 @@ class BindingManager(object):
         """
         Default constructor
         """
-        self._connections = dict()  # type: Dict[str, Connection]
-        self._things = dict()  # type: Dict[str, Thing]
+        self._connections = ConnectionRepository()
+        self._things = ThingRepository()
 
     def init_integrations(self, integration_names: List[str]) -> None:
         """
@@ -73,7 +75,7 @@ class BindingManager(object):
                 domain_id=con_id, **con_params
             )
 
-            self._connections[con_id] = con_instance
+            self._connections.add(con_instance)
 
     def init_things(self, config: List[Dict]) -> None:
         """
@@ -97,7 +99,7 @@ class BindingManager(object):
                 default=None
             )
 
-            connection = self._connections.get(con_id, None)  # type: Connection
+            connection = self._connections.load(con_id)  # type: Connection
 
             if connection is None:
                 LOGGER.warning(
@@ -126,7 +128,7 @@ class BindingManager(object):
                 }
             )
 
-            self._things[thing_id] = thing_instance
+            self._things.add(thing_instance)
 
     def fetch_all_things(self) -> ValuesView[Thing]:
         """
@@ -134,7 +136,7 @@ class BindingManager(object):
 
         :return: a set-like object containing all things
         """
-        return self._things.values()
+        return self._things.load_all()
 
     def fetch_thing(self, thing_id: str) -> Thing:
         """
@@ -143,7 +145,7 @@ class BindingManager(object):
         :param thing_id: an ID of Thing to be fetched
         :return: an instance of Thing
         """
-        return self._things[thing_id]
+        return self._things.load(thing_id)
 
     def enable_all_things(self) -> None:
         """
@@ -151,7 +153,7 @@ class BindingManager(object):
 
         :return: None
         """
-        for thing in self._things.values():
+        for thing in self._things.load_all():
             thing.enable()
 
     def disable_all_things(self) -> None:
@@ -160,6 +162,6 @@ class BindingManager(object):
 
         :return: None
         """
-        for thing in self._things.values():
+        for thing in self._things.load_all():
             thing.disable()
 
