@@ -15,3 +15,11 @@ class ServiceEntityResolutionError(ServiceValidationError):
     """
     pass
 
+
+class ServiceEntityLinkError(ServiceValidationError):
+    """
+    Exception to be raised if the object is currently used
+    or linked by an another object and thus can't be deleted
+    """
+    pass
+
