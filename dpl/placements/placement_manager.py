@@ -5,6 +5,7 @@ from typing import List, Dict, ValuesView
 # Include DPL modules
 from .placement import Placement
 from .placement_builder import PlacementBuilder
+from dpl.repo_impls.in_memory.placement_repository import PlacementRepository
 
 
 class PlacementManager(object):
@@ -16,7 +17,7 @@ class PlacementManager(object):
         """
         Default constructor
         """
-        self._placements = dict()  # type: Dict[str, Placement]
+        self._placements = PlacementRepository()
 
     def init_placements(self, config: List[Dict]) -> None:
         """
@@ -27,7 +28,7 @@ class PlacementManager(object):
         """
         for conf_item in config:
             new_placement = PlacementBuilder.build(conf_item)
-            self._placements[new_placement.domain_id] = new_placement
+            self._placements.add(new_placement)
 
     def fetch_all_placements(self) -> ValuesView[Placement]:
         """
@@ -35,7 +36,7 @@ class PlacementManager(object):
 
         :return: a set-like collection of Placements
         """
-        return self._placements.values()
+        return self._placements.load_all()
 
     def fetch_placement(self, placement_id: str) -> Placement:
         """
@@ -45,4 +46,4 @@ class PlacementManager(object):
         :return: an instance of Placement with the corresponding ID
         :raises KeyValue: if the Placement with the specified ID was not found
         """
-        return self._placements[placement_id]
+        return self._placements.load(placement_id)
