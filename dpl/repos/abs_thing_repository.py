@@ -1,13 +1,10 @@
-from typing import Optional, TypeVar
+from typing import Optional
 
 from .abs_repository import AbsRepository, TDomainId
 from dpl.things import Thing
 
 
-TThing = TypeVar('TThing', bound=Thing)
-
-
-class AbsThingRepository(AbsRepository[TThing]):
+class AbsThingRepository(AbsRepository[Thing]):
     """
     Pure abstract base implementation of Repository
     containing Things.
