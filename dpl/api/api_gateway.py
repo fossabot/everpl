@@ -1,17 +1,13 @@
 # Include standard modules
 from typing import Dict, List
-from collections import Mapping
-
-# Include 3rd-party modules
-import warnings
 
 # Include DPL modules
 from . import exceptions
 from dpl.auth import AuthManager
-from dpl.integrations import BindingManager
-from dpl.placements import Placement, PlacementManager
-from dpl.utils import obj_to_dict
-from dpl.things import Thing, Actuator
+
+from dpl.services.service_exceptions import ServiceEntityResolutionError
+from dpl.services.abs_placement_service import AbsPlacementService
+from dpl.services.abs_thing_service import AbsThingService, ServiceTypeError
 
 
 class ApiGateway(object):
@@ -20,10 +16,14 @@ class ApiGateway(object):
     and pass requests further to corresponding components (to execute some command
     of fetch information about a specific thing, for example)
     """
-    def __init__(self, auth_manager: AuthManager, binding_manager: BindingManager, placement_manager: PlacementManager):
+    def __init__(
+            self, auth_manager: AuthManager,
+            thing_service: AbsThingService,
+            placement_service: AbsPlacementService
+    ):
         self._am = auth_manager
-        self._bm = binding_manager
-        self._placements = placement_manager
+        self._things = thing_service
+        self._placements = placement_service
 
     def auth(self, username: str, password: str) -> str:
         """
@@ -52,44 +52,6 @@ class ApiGateway(object):
         if not self._am.is_token_grants(token, requested_action):
             raise exceptions.PermissionDeniedForTokenError("Specified token doesn't permit this action")
 
-    def _thing_to_dict(self, thing: Thing) -> dict:
-        """
-        Just convert a thing object to a corresponding dict.
-
-        In addition to simple object -> dict serialization, the content of 'metadata'
-        property will be moved to resulting dict body.
-
-        :param thing: an instance of Thing to be converted
-        :return: a corresponding dict
-        """
-        thing_dict = obj_to_dict(thing)
-        thing_dict['id'] = thing_dict['domain_id']
-        thing_dict.pop('domain_id')
-
-        metadata = thing_dict.pop("metadata")
-        assert isinstance(metadata, Mapping)
-
-        thing_dict.update(**metadata)
-
-        return thing_dict
-
-    def _thing_to_dict_legacy(self, thing: Thing) -> dict:
-        """
-        Convert a thing object to a corresponding dict representation that is compatible
-        to the legacy API
-
-        :param thing: an instance of Thing to be converted
-        :return: a corresponding dict
-        """
-        warnings.warn("Legacy representation of things will be dropped in the next release"
-                      "of this platform. Please, switch to the '_thing_to_dict' method usage",
-                      PendingDeprecationWarning)
-
-        thing_dict = self._thing_to_dict(thing)
-        thing_dict['description'] = thing_dict['friendly_name']
-
-        return thing_dict
-
     def get_things(self, token: str) -> List[Dict]:
         """
         Receive a full list of data about things
@@ -99,31 +61,7 @@ class ApiGateway(object):
         """
         self._check_permission(token, None)
 
-        result = list()
-        things = self._bm.fetch_all_things()
-
-        for thing in things:
-            result.append(self._thing_to_dict_legacy(thing))
-
-        return result
-
-    def _get_thing(self, token: str, thing_id: str) -> Thing:
-        """
-        Private method. Receive an instance of a specific thing
-
-        :param token: access token
-        :param thing_id: an ID of thing to be fetched
-        :return: an instance of Thing that is related to the specified ID
-        """
-        # Check permission on viewing thing
-        self._check_permission(token, None)
-
-        try:
-            thing = self._bm.fetch_thing(thing_id)
-        except KeyError as e:
-            raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
-
-        return thing
+        return self._things.view_all()
 
     def get_thing(self, token: str, thing_id: str) -> Dict:
         """
@@ -136,9 +74,10 @@ class ApiGateway(object):
         # Permission on viewing of thing must be checked in '_get_thing' method
         # self._check_permission(token, None)
 
-        thing = self._get_thing(token, thing_id)
-
-        return self._thing_to_dict_legacy(thing)
+        try:
+            return self._things.view(thing_id)
+        except ServiceEntityResolutionError as e:
+            raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
 
     # FIXME: CC2: Make this method a coroutine?
     # FIXME: Specify a return value type
@@ -157,17 +96,22 @@ class ApiGateway(object):
         # FIXME: CC13: Add permission checking for specific things
         self._check_permission(token, None)
 
-        thing = self._get_thing(token, thing_id)  # type: Actuator
+        try:
+            self._things.send_command(
+                to_actuator_id=thing_id,
+                command=command,
+                command_args=kwargs
+            )
 
-        if not isinstance(thing, Actuator):
+        except ServiceTypeError as e:
             raise exceptions.CommandNotOnActuatorError(
                 "Unable to send command to {0}. Commands can be passed "
                 "only to actuators.".format(thing_id)
-            )
+            ) from e
 
-        # Send command on execution. It can raise an exception too!
-        try:
-            thing.execute(command, *args, **kwargs)
+        except ServiceEntityResolutionError as e:
+            raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
+
         except Exception as e:
             raise exceptions.CommandFailedError() from e
 
@@ -183,41 +127,7 @@ class ApiGateway(object):
         :param task_id: some id or handler of task to be fetched
         :return: a status of the task
         """
-        raise NotImplementedError
-
-    @classmethod
-    def _placement_to_dict(cls, placement: Placement) -> Dict:
-        """
-        Converts an instance of Placement to corresponding dictionary
-
-        :return: a dictionary with all properties of placement
-        """
-        # FIXME: CC14: Consider switching to direct usage of properties
-        return {
-            "id": placement.domain_id,
-            "friendly_name": placement.friendly_name,
-            "image_url": placement.image_url
-        }
-
-    @classmethod
-    def _placement_to_dict_legacy(cls, placement: Placement) -> Dict:
-        """
-        Converts an instance of Placement to corresponding dictionary that is compatible
-        with the legacy API ('description' field will be set to the value of 'friendly_name' field,
-        'image' field will be set to a value of 'image_url' field).
-
-        :return: a dictionary with all properties of placement
-        """
-        warnings.warn("Legacy representation of placements will be dropped in the next release"
-                      "of this platform. Please, switch to the '_placement_to_dict' method",
-                      PendingDeprecationWarning)
-
-        result = ApiGateway._placement_to_dict(placement)
-
-        result["description"] = placement.friendly_name
-        result["image"] = placement.image_url
-
-        return result
+        raise NotImplementedError()
 
     def get_placements(self, token: str) -> List[Dict]:
         """
@@ -229,12 +139,7 @@ class ApiGateway(object):
         # FIXME: Check permission: View placements
         self._check_permission(token, None)
 
-        result = list()
-
-        for placement in self._placements.fetch_all_placements():
-            result.append(self._placement_to_dict_legacy(placement))
-
-        return result
+        return self._placements.view_all()
 
     def get_placement(self, token: str, placement_id: str) -> Dict:
         """
@@ -248,12 +153,9 @@ class ApiGateway(object):
         self._check_permission(token, None)
 
         try:
-            placement = self._placements.fetch_placement(placement_id)
-        except KeyError as e:
+            return self._placements.view(placement_id)
+        except ServiceEntityResolutionError as e:
             raise exceptions.PlacementNotFoundError("The placement with the specified ID was not found") from e
-
-        return self._placement_to_dict_legacy(placement)
-
 
     # TODO: Add a method to provide access to push-notifications on system events
     # like changed status of a thing (for example, but not limited to)

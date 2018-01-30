@@ -1,39 +1,48 @@
-# Include standard modules
-from typing import Dict, List, ValuesView
 import logging
 import importlib
-import warnings
 
-# Include 3rd-party modules
-# Include DPL modules
-from dpl.connections import Connection
-from dpl.things import Thing
-from dpl.repo_impls.in_memory.connection_repository import ConnectionRepository
-from dpl.repo_impls.in_memory.thing_repository import ThingRepository
-from . import ConnectionFactory, ConnectionRegistry, ThingFactory, ThingRegistry
+from typing import Iterable, Mapping
 
-# Get logger:
+from dpl.connections.connection import Connection
+from dpl.things.thing import Thing
+
+from dpl.repos.abs_connection_repository import AbsConnectionRepository
+from dpl.repos.abs_thing_repository import AbsThingRepository
+
+from .connection_registry import ConnectionRegistry
+from .connection_factory import ConnectionFactory
+
+from .thing_registry import ThingRegistry
+from .thing_factory import ThingFactory
+
 LOGGER = logging.getLogger(__name__)
 
 
-# FIXME: CC11: Consider splitting of BindingManager to ThingManager and ConnectionManager
-# FIXME: CC12: Consider splitting of Managers to Repositories and Loaders
-class BindingManager(object):
+class BindingBootstrapper(object):
     """
-    BindingManager is a class that is responsible for initiation, storage, fetching and deletion
-    of Things and Connections.
-    """
-    def __init__(self):
-        """
-        Default constructor
-        """
-        warnings.warn('Warning: BindingManager is deprecated, '
-                      'use a ThingService and ConnectionService '
-                      'instead', DeprecationWarning)
-        self._connections = ConnectionRepository()
-        self._things = ThingRepository()
+    BindingBootstrapper is responsible for initialization
+    of all integrations and for instantiation of Things
+    and Connections based on the configuration files
 
-    def init_integrations(self, integration_names: List[str]) -> None:
+    WARNING: It's likely that this class will be removed
+             in the next release and replaced by some other
+             class
+    """
+    def __init__(self, connection_repo: AbsConnectionRepository, thing_repo: AbsThingRepository):
+        """
+        Constructor. Copies links to ConnectionRepository and
+        ThingRepository to be initialized to the internal storage
+
+        :param connection_repo: an instance of ConnectionRepository
+               to be initialized
+        :param thing_repo: an instance of ThingRepository
+               to be initialized
+        """
+        self._connections = connection_repo
+        self._things = thing_repo
+
+    @staticmethod
+    def init_integrations(integration_names: Iterable[str]) -> None:
         """
         Load all enabled integrations from the specified list
 
@@ -47,7 +56,7 @@ class BindingManager(object):
                 LOGGER.warning("Failed to load integration \"%s\": %s",
                                item, e)
 
-    def init_connections(self, config: List[Dict]) -> None:
+    def init_connections(self, config: Iterable[Mapping]) -> None:
         """
         Initialize all connections by configuration data
 
@@ -58,7 +67,7 @@ class BindingManager(object):
             con_id = item["id"]
             integration_name = item["integration"]
             con_type = item["con_type"]
-            con_params = item["con_params"]  # type: dict
+            con_params = item["con_params"]  # type: Mapping
 
             assert isinstance(con_params, dict)
 
@@ -81,7 +90,7 @@ class BindingManager(object):
 
             self._connections.add(con_instance)
 
-    def init_things(self, config: List[Dict]) -> None:
+    def init_things(self, config: Iterable[Mapping]) -> None:
         """
         Initialize all things by configuration data
 
@@ -133,39 +142,3 @@ class BindingManager(object):
             )
 
             self._things.add(thing_instance)
-
-    def fetch_all_things(self) -> ValuesView[Thing]:
-        """
-        Fetch a collection of all things
-
-        :return: a set-like object containing all things
-        """
-        return self._things.load_all()
-
-    def fetch_thing(self, thing_id: str) -> Thing:
-        """
-        Fetch an instance of Thing by its ID
-
-        :param thing_id: an ID of Thing to be fetched
-        :return: an instance of Thing
-        """
-        return self._things.load(thing_id)
-
-    def enable_all_things(self) -> None:
-        """
-        Call Thing.enable method on all instances of things
-
-        :return: None
-        """
-        for thing in self._things.load_all():
-            thing.enable()
-
-    def disable_all_things(self) -> None:
-        """
-        Call Thing.enable method on all instances of things
-
-        :return: None
-        """
-        for thing in self._things.load_all():
-            thing.disable()
-
