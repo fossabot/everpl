@@ -14,7 +14,6 @@ from dpl.api import ApiGateway
 from dpl.utils import JsonEnumEncoder, filtering
 from . import exceptions
 from .api_errors import ERROR_TEMPLATES
-from .cors_middleware import CorsMiddleware
 
 
 # Declare constants:
@@ -122,13 +121,8 @@ class RestApi(object):
         self._handler = None  # callable that returns a Protocol instance
         self._server = None  # type: asyncio.AbstractServer
 
-        self._cors_middleware = CorsMiddleware(
-            is_enabled=True,
-            allowed_origin='*'
-        )
-
         self._app = web.Application(
-            middlewares=(self._cors_middleware.handle, self._middleware_process_exceptions,)
+            middlewares=(self._middleware_process_exceptions,)
         )
 
         if loop is None:
