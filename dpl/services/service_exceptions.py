@@ -23,3 +23,12 @@ class ServiceEntityLinkError(ServiceValidationError):
     """
     pass
 
+
+class ServiceTypeError(ServiceValidationError):
+    """
+    Exception to be raised if the specified object can't
+    be used for the specified context (i.e. that the specified
+    Thing can't execute commands)
+    """
+    pass
+
