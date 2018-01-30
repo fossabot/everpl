@@ -31,7 +31,7 @@ PlacementDto = BaseDto
 @build_dto.register(Placement)
 def _(placement: Placement) -> PlacementDto:
     return {
-        'domain_id': placement.domain_id,
+        'id': placement.domain_id,
         'friendly_name': placement.friendly_name,
         'image_url': placement.image_url
     }

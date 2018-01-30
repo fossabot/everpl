@@ -40,7 +40,7 @@ ThingDto = BaseDto
 
 def build_thing_dto(thing: Thing) -> ThingDto:
     result = {
-        'domain_id': thing.domain_id,
+        'id': thing.domain_id,
         'state': thing.state.name,
         'is_enabled': thing.is_enabled,
         'is_available': thing.is_available,

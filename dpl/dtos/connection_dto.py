@@ -28,5 +28,5 @@ ConnectionDto = BaseDto
 @build_dto.register(Connection)
 def _(connection: Connection) -> ConnectionDto:
     return {
-        'domain_id': connection.domain_id
+        'id': connection.domain_id
     }
