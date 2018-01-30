@@ -1,4 +1,5 @@
 # Include standard modules
+import warnings
 from typing import List, Dict, ValuesView
 
 # Include 3rd-party modules
@@ -17,6 +18,7 @@ class PlacementManager(object):
         """
         Default constructor
         """
+        warnings.warn('Warning: PlacementManager is deprecated, use a PlacementService instead', DeprecationWarning)
         self._placements = PlacementRepository()
 
     def init_placements(self, config: List[Dict]) -> None:
