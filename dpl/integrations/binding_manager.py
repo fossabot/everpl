@@ -2,6 +2,7 @@
 from typing import Dict, List, ValuesView
 import logging
 import importlib
+import warnings
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -26,6 +27,9 @@ class BindingManager(object):
         """
         Default constructor
         """
+        warnings.warn('Warning: BindingManager is deprecated, '
+                      'use a ThingService and ConnectionService '
+                      'instead', DeprecationWarning)
         self._connections = ConnectionRepository()
         self._things = ThingRepository()
 
