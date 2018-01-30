@@ -45,6 +45,8 @@ class AbsEntityService(Generic[TEntityDto]):
 
         :param domain_id: an identifier of Entity to be deleted
         :return: None
+        :raises ServiceResolutionError: if the entity with
+                the specified ID can't be found
         :raises ServiceEntityLinkError: if the specified can't
                 be removed because some other entity is linked
                 (uses or refers) to it
