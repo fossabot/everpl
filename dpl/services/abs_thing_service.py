@@ -120,3 +120,21 @@ class AbsThingService(AbsEntityService[ThingDto]):
         :return:
         """
         raise NotImplementedError()
+
+    def enable_all(self) -> None:
+        """
+        Enables all things. Calls 'enable' method on all instances
+        of Thing that are present in the system
+
+        :return: None
+        """
+        raise NotImplementedError()
+
+    def disable_all(self) -> None:
+        """
+        Disables all things. Calls 'disable' method on all instances
+        of Thing that are present in the system
+
+        :return: None
+        """
+        raise NotImplementedError()
