@@ -71,8 +71,7 @@ class ApiGateway(object):
         :param thing_id: an ID of thing to be fetched
         :return: a dict with full information about the thing
         """
-        # Permission on viewing of thing must be checked in '_get_thing' method
-        # self._check_permission(token, None)
+        self._check_permission(token, None)
 
         try:
             return self._things.view(thing_id)
