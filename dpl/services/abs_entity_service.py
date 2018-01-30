@@ -23,7 +23,7 @@ class AbsEntityService(Generic[TEntityDto]):
         """
         Fetch a full list of DTOs of all stored objects
 
-        :return: a collection of UUIDs
+        :return: a collection of DTOs
         """
         raise NotImplementedError()
 
