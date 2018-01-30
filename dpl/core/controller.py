@@ -8,8 +8,15 @@ from dpl import DPL_INSTALL_PATH
 from dpl import api
 from dpl import auth
 from dpl.core import Configuration
-from dpl.integrations import BindingManager
-from dpl.placements import PlacementManager
+from dpl.integrations.binding_bootstrapper import BindingBootstrapper
+from dpl.placements.placement_bootstrapper import PlacementBootstrapper
+
+from dpl.repo_impls.in_memory.placement_repository import PlacementRepository
+from dpl.repo_impls.in_memory.connection_repository import ConnectionRepository
+from dpl.repo_impls.in_memory.thing_repository import ThingRepository
+
+from dpl.service_impls.placement_service import PlacementService
+from dpl.service_impls.thing_service import ThingService
 
 
 class Controller(object):
@@ -17,12 +24,17 @@ class Controller(object):
         os.path.abspath(__file__)
 
         self._conf = Configuration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
-        self._placements = PlacementManager()
-        self._bm = BindingManager()
+
+        self._placement_repo = PlacementRepository()
+        self._connection_repo = ConnectionRepository()
+        self._thing_repo = ThingRepository()
+
+        self._placement_service = PlacementService(self._placement_repo)
+        self._thing_service = ThingService(self._thing_repo)
 
         self._auth_manager = auth.AuthManager()
 
-        self._api_gateway = api.ApiGateway(self._auth_manager, self._bm, self._placements)
+        self._api_gateway = api.ApiGateway(self._auth_manager, self._thing_service, self._placement_service)
         self._rest_api = api.RestApi(self._api_gateway)
 
     async def start(self):
@@ -33,15 +45,23 @@ class Controller(object):
         connection_settings = self._conf.get_by_subsystem("connections")
         thing_settings = self._conf.get_by_subsystem("things")
 
-        self._placements.init_placements(placement_settings)
+        PlacementBootstrapper.init_placements(
+            placement_repo=self._placement_repo,
+            config=placement_settings
+        )
 
         enabled_integrations = core_settings["enabled_integrations"]
 
-        self._bm.init_integrations(enabled_integrations)
-        self._bm.init_connections(connection_settings)
-        self._bm.init_things(thing_settings)
+        binding_bootstrapper = BindingBootstrapper(
+            connection_repo=self._connection_repo,
+            thing_repo=self._thing_repo
+        )
 
-        self._bm.enable_all_things()
+        binding_bootstrapper.init_integrations(enabled_integrations)
+        binding_bootstrapper.init_connections(connection_settings)
+        binding_bootstrapper.init_things(thing_settings)
+
+        self._thing_service.enable_all()
 
         # FIXME: Only for testing purposes
         self._auth_manager.create_root_user("admin", "admin")
@@ -52,4 +72,4 @@ class Controller(object):
 
     async def shutdown(self):
         await self._rest_api.shutdown_server()
-        self._bm.disable_all_things()
+        self._thing_service.disable_all()
