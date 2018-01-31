@@ -1,2 +1,3 @@
 aiohttp >= 2.0
 passlib
+sqlalchemy >= 1.1  # Used to store and manage persistent data like settings and Placements
