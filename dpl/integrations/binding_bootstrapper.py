@@ -5,6 +5,8 @@ from typing import Iterable, Mapping
 
 from dpl.connections.connection import Connection
 from dpl.things.thing import Thing
+from dpl.settings.connection_settings import ConnectionSettings
+from dpl.settings.thing_settings import ThingSettings
 
 from dpl.repos.abs_connection_repository import AbsConnectionRepository
 from dpl.repos.abs_thing_repository import AbsThingRepository
@@ -56,7 +58,7 @@ class BindingBootstrapper(object):
                 LOGGER.warning("Failed to load integration \"%s\": %s",
                                item, e)
 
-    def init_connections(self, config: Iterable[Mapping]) -> None:
+    def init_connections(self, config: Iterable[ConnectionSettings]) -> None:
         """
         Initialize all connections by configuration data
 
@@ -64,33 +66,28 @@ class BindingBootstrapper(object):
         :return: None
         """
         for item in config:
-            con_id = item["id"]
-            integration_name = item["integration"]
-            con_type = item["con_type"]
-            con_params = item["con_params"]  # type: Mapping
-
-            assert isinstance(con_params, dict)
+            assert isinstance(item.connection_params, Mapping)
 
             factory = ConnectionRegistry.resolve_factory(  # type: ConnectionFactory
-                connection_type=con_type,
+                connection_type=item.connection_type,
                 default=None
             )
 
             if factory is None:
                 LOGGER.warning(
                     "Failed to create connection \"%s\". Is integration \"%s\" enabled?",
-                    con_id, integration_name
+                    item.domain_id, item.integration
                 )
 
                 continue
 
             con_instance = factory.build(  # type: Connection
-                domain_id=con_id, **con_params
+                domain_id=item.domain_id, **item.connection_params
             )
 
             self._connections.add(con_instance)
 
-    def init_things(self, config: Iterable[Mapping]) -> None:
+    def init_things(self, config: Iterable[ThingSettings]) -> None:
         """
         Initialize all things by configuration data
 
@@ -98,26 +95,18 @@ class BindingBootstrapper(object):
         :return: None
         """
         for item in config:
-            thing_id = item["id"]
-            thing_integration = item["integration"]
-            thing_type = item["type"]
-            thing_friendly_name = item.get("friendly_name", None)
-            thing_placement = item["placement"]
-            con_id = item["con_id"]
-            con_params = item["con_params"]
-
             factory = ThingRegistry.resolve_factory(  # type: ThingFactory
-                integration_name=thing_integration,
-                thing_type=thing_type,
+                integration_name=item.integration,
+                thing_type=item.thing_type,
                 default=None
             )
 
-            connection = self._connections.load(con_id)  # type: Connection
+            connection = self._connections.load(item.connection_id)  # type: Connection
 
             if connection is None:
                 LOGGER.warning(
                     "Failed to create thing \"%s\": Connection \"%s\" is not available",
-                    thing_id, con_id
+                    item.domain_id, item.connection_id
                 )
 
                 continue
@@ -125,19 +114,19 @@ class BindingBootstrapper(object):
             if factory is None:
                 LOGGER.warning(
                     "Failed to create thing \"%s\". Is integration \"%s\" enabled?",
-                    thing_id, thing_integration
+                    item.domain_id, item.integration
                 )
 
                 continue
 
             thing_instance = factory.build(  # type: Thing
-                domain_id=thing_id,
+                domain_id=item.domain_id,
                 con_instance=connection,
-                con_params=con_params,
+                con_params=item.connection_params,
                 metadata={
-                    "friendly_name": thing_friendly_name,
-                    "type": thing_type,
-                    "placement": thing_placement
+                    "friendly_name": item.friendly_name,
+                    "type": item.thing_type,
+                    "placement": item.placement_id
                 }
             )
 
