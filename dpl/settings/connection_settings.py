@@ -58,7 +58,7 @@ class ConnectionSettings(BaseEntity):
         :return: an Integration-specific type identifier
                  of this Connection
         """
-        return self._integration
+        return self._con_type
 
     @property
     def connection_params(self) -> Mapping[str, Any]:
