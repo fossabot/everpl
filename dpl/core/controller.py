@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from dpl import DPL_INSTALL_PATH
 from dpl import api
 from dpl import auth
-from dpl.core import Configuration
+from dpl.core import LegacyConfiguration
 from dpl.integrations.binding_bootstrapper import BindingBootstrapper
 
 from dpl.repo_impls.sql_alchemy.session_manager import SessionManager
@@ -32,7 +32,7 @@ LOGGER = logging.getLogger(__name__)
 
 class Controller(object):
     def __init__(self):
-        self._conf = Configuration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
+        self._conf = LegacyConfiguration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
 
         # FIXME: Make path configurable
         db_path = os.path.expanduser("~/everpl_db.sqlite")

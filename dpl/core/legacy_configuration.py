@@ -32,7 +32,7 @@ def get_dir_structure(dir_path: str) -> dict:
     return dir_structure
 
 
-class Configuration(object):
+class LegacyConfiguration(object):
     """
     Configuration is a class that is responsible for management and storage
     of all platform configurations and settings.

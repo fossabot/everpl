@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 
 # Include DPL modules
 from dpl import DPL_INSTALL_PATH
-from dpl.core import Configuration
+from dpl.core import LegacyConfiguration
 from dpl.placements.placement_bootstrapper import PlacementBootstrapper
 
 from dpl.settings.thing_settings import ThingSettings
@@ -93,7 +93,7 @@ def main():
 
     os.path.abspath(__file__)
 
-    conf = Configuration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
+    conf = LegacyConfiguration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
 
     # FIXME: Make path configurable
     db_path = os.path.expanduser("~/everpl_db.sqlite")
