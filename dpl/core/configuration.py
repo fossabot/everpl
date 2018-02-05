@@ -5,7 +5,6 @@ Contains a Configuration class
 import os
 import logging
 import shutil
-from types import MappingProxyType
 from typing import Any, MutableMapping
 
 import yaml
