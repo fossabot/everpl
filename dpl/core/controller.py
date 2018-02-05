@@ -5,12 +5,12 @@ import logging
 
 # Include 3rd-party modules
 from sqlalchemy import create_engine
+import appdirs
 
 # Include DPL modules
-from dpl import DPL_INSTALL_PATH
 from dpl import api
 from dpl import auth
-from dpl.core import LegacyConfiguration
+from dpl.core.configuration import Configuration
 from dpl.integrations.binding_bootstrapper import BindingBootstrapper
 
 from dpl.repo_impls.sql_alchemy.session_manager import SessionManager
@@ -27,16 +27,45 @@ from dpl.service_impls.placement_service import PlacementService
 from dpl.service_impls.thing_service import ThingService
 
 
-LOGGER = logging.getLogger(__name__)
+module_logger = logging.getLogger(__name__)
+dpl_root_logger = logging.getLogger(name='dpl')
+
+# Path to the folder with everpl configuration used by default
+DEFAULT_CONFIG_DIR = appdirs.user_config_dir(
+    appname='everpl'
+)
+
+# Path to the configuration file to be used by default
+# like ~/.config/everpl/everpl_config.yaml)
+DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_CONFIG_DIR, 'everpl_config.yaml')
+
+# Path to the main database file to be used by default
+DEFAULT_MAIN_DB_PATH = os.path.join(DEFAULT_CONFIG_DIR, 'everpl_db.sqlite')
 
 
 class Controller(object):
     def __init__(self):
-        self._conf = LegacyConfiguration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
+        self._conf = Configuration()
+        self._conf.load_or_create_config(DEFAULT_CONFIG_PATH)
 
-        # FIXME: Make path configurable
-        db_path = os.path.expanduser("~/everpl_db.sqlite")
-        self._engine = create_engine("sqlite:///%s" % db_path, echo=True)
+        self._core_config = self._conf.get_by_subsystem('core')
+        self._apis_config = self._conf.get_by_subsystem('apis')
+        self._integrations_config = self._conf.get_by_subsystem('integrations')
+
+        logging_level_str = self._core_config['logging_level']  # type: str
+        dpl_root_logger.setLevel(level=logging_level_str.upper())
+
+        if self._core_config.get('main_db_path') is None:
+            self._core_config['main_db_path'] = DEFAULT_MAIN_DB_PATH
+
+        main_db_path = self._core_config.get('main_db_path')
+        echo_db_requests = (logging_level_str == 'debug')
+
+        if not os.path.exists(main_db_path):
+            logging.warning("There is no DB file present by the specified path. "
+                            "A new one will be created: %s" % main_db_path)
+
+        self._engine = create_engine("sqlite:///%s" % main_db_path, echo=echo_db_requests)
         self._db_mapper = DbMapper()
         self._db_mapper.init_tables()
         self._db_mapper.init_mappers()
@@ -59,29 +88,61 @@ class Controller(object):
         self._rest_api = api.RestApi(self._api_gateway)
 
     async def start(self):
-        self._conf.load_config()
-
-        core_settings = self._conf.get_by_subsystem("core")
-        is_safe_mode = core_settings.get('safe_mode_enabled', False)
+        is_safe_mode = self._core_config['is_safe_mode']
 
         if is_safe_mode:
-            LOGGER.warning("\n\n\nSafe mode is enabled, the most of everpl capabilities will be disabled\n\n")
+            module_logger.warning("\n\n\nSafe mode is enabled, the most of everpl capabilities will be disabled\n\n")
+            module_logger.warning("\n!!! REST API access will be enabled in the safe mode !!!\n")
+
+            # Only REST API will be enabled in the safe mode
+            self._apis_config['enabled_apis'] = ('rest_api', )
+
+            # Force enable API access
+            self._core_config['is_api_enabled'] = True
         else:
             await self._bootstrap_integrations()
 
         # FIXME: Only for testing purposes
         self._auth_manager.create_root_user("admin", "admin")
 
+        is_api_enabled = self._core_config['is_api_enabled']
+
+        if is_api_enabled:
+            await self._start_apis()
+        else:
+            module_logger.warning("All APIs was disabled by everpl configuration. "
+                                  "Connections from client devices will be blocked")
+
+    async def _start_apis(self):
+        """
+        Starts all APIs enabled in everpl configuration
+
+        :return: None
+        """
+        enabled_apis = self._apis_config['enabled_apis']
+
+        if 'rest_api' in enabled_apis:
+            await self._start_rest_api()
+
+    async def _start_rest_api(self):
+        """
+        Starts REST API server
+
+        :return: None
+        """
+        rest_api_config = self._apis_config['rest_api']
+        rest_api_host = rest_api_config['host']
+        rest_api_port = rest_api_config['port']
+
         asyncio.ensure_future(
-            self._rest_api.create_server(host="0.0.0.0", port=10800)
+            self._rest_api.create_server(host=rest_api_host, port=rest_api_port)
         )
 
     async def _bootstrap_integrations(self):
-        core_settings = self._conf.get_by_subsystem("core")
+        enabled_integrations = self._integrations_config['enabled_integrations']
+
         connection_settings = self._con_settings_repo.load_all()
         thing_settings = self._thing_settings_repo.load_all()
-
-        enabled_integrations = core_settings["enabled_integrations"]
 
         binding_bootstrapper = BindingBootstrapper(
             connection_repo=self._connection_repo,
