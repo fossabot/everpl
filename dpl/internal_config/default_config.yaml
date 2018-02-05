@@ -36,6 +36,9 @@ core:  # This section contains configuration for the core of everpl
 
 
 apis:  # This section contains configuration of API providers
+  enabled_apis:  # A list of APIs to be enabled
+  - 'rest_api'
+
   rest_api:  # This section configures parameters of the default API
     # hostname or an IP address used for listening; set to '0.0.0.0'
     # to listen all incoming connections
@@ -51,7 +54,7 @@ apis:  # This section contains configuration of API providers
 integrations:  # This section contains configuration of Integrations
   # a list of names of Integrations to be enabled; minus (-) sign
   # means a new item of the list
-  enabled_itegrations:
+  enabled_integrations:
   - 'dummy'
 
 
