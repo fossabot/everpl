@@ -1,6 +1,7 @@
 # Include standard modules
 import json
 import os
+import warnings
 from typing import List, Dict
 
 # Include 3rd-party modules
@@ -45,6 +46,9 @@ class LegacyConfiguration(object):
 
         :param path: a path to configuration directory
         """
+        warnings.warn("LegacyConfiguration class must not be used for any "
+                      "purposes except configuration migration. Use Configuration "
+                      "class instead", PendingDeprecationWarning)
         check_dir_path(path)
 
         self._path = path
