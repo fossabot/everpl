@@ -12,7 +12,9 @@ from sqlalchemy import create_engine
 
 # Include DPL modules
 from dpl import DPL_INSTALL_PATH
-from dpl.core import Configuration
+from dpl.core.legacy_configuration import LegacyConfiguration
+from dpl.core.configuration import Configuration
+from dpl.core.controller import DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_PATH, DEFAULT_MAIN_DB_PATH
 from dpl.placements.placement_bootstrapper import PlacementBootstrapper
 
 from dpl.settings.thing_settings import ThingSettings
@@ -91,12 +93,12 @@ def main():
 
     print("\nStarting migration...")
 
-    os.path.abspath(__file__)
+    if not os.path.exists(DEFAULT_CONFIG_DIR):
+        print("Configuration directory is not available. "
+              "Creating a new one at %s" % DEFAULT_CONFIG_DIR)
+        os.makedirs(DEFAULT_CONFIG_DIR, mode=0o755)
 
-    conf = Configuration(path=os.path.join(DPL_INSTALL_PATH, "../samples/config"))
-
-    # FIXME: Make path configurable
-    db_path = os.path.expanduser("~/everpl_db.sqlite")
+    db_path = DEFAULT_MAIN_DB_PATH
     engine = create_engine("sqlite:///%s" % db_path, echo=True)
     db_mapper = DbMapper()
     db_mapper.init_tables()
@@ -109,12 +111,14 @@ def main():
     con_settings_repo = ConnectionSettingsRepository(db_session_manager)
     thing_settings_repo = ThingSettingsRepository(db_session_manager)
 
-    conf.load_config()
+    old_cong_path = os.path.join(DPL_INSTALL_PATH, "../samples/config")
+    old_conf = LegacyConfiguration(path=old_cong_path)
+    old_conf.load_config()
 
     # FIXME: Migrate Connection and Thing settings too!
-    placement_settings = conf.get_by_subsystem("placements")
-    connection_settings = conf.get_by_subsystem("connections")
-    thing_settings = conf.get_by_subsystem("things")
+    placement_settings = old_conf.get_by_subsystem("placements")
+    connection_settings = old_conf.get_by_subsystem("connections")
+    thing_settings = old_conf.get_by_subsystem("things")
 
     PlacementBootstrapper.init_placements(
         placement_repo=placement_repo,
@@ -136,6 +140,20 @@ def main():
         )
 
     db_session_manager.get_session().commit()
+
+    new_conf_path = DEFAULT_CONFIG_PATH
+    new_conf = Configuration()
+    new_conf.load_or_create_config(new_conf_path)
+
+    # FIXME: It must NOT te be manual!
+    print("You are needed to transfer some settings (like core "
+          "settings, api settings and a list of enabled integrations) "
+          "manually from the old configuration file located at %s to "
+          "the new one at %s"
+          % (old_cong_path, new_conf_path))
+
+    # Why manually? I just don't know for now how to override
+    # current settings but preserve all existing comments
 
     print("\nMigration finished! Your instance of everpl is ready to rock")
 

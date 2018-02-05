@@ -1,0 +1,60 @@
+%YAML 1.1
+---
+
+# Default configuration of everpl.
+
+# The main principle of everpl configuration:
+# Just Keep It Simple!!!
+
+# Although everpl uses YAML as its configuration file format and
+# although YAML is a pretty complex format (https://goo.gl/jxEG7G),
+# try to use the minimum needed subset of YAML in this configuration.
+# And please, avoid complex confusing constructions as much as possible.
+
+# WARNING: Indentation matters! Use two spaces per indentation level
+
+
+
+core:  # This section contains configuration for the core of everpl
+  # is the safe mode must to be enabled
+  is_safe_mode: false
+
+  # minimum level of logging messages to display
+  # Acceptable values: 'debug', 'info', 'warning', 'error', 'critical'
+  logging_level: 'warning'
+
+  # a path to the main database file; null will be equal to the
+  # OS-specific default path (like ~/.config/everpl/everpl_db.sqlite
+  # for Linux or %APPDATA%\everpl\everpl_db.sqlite on Windows)
+  main_db_path: null
+
+  # enable or disable an access to the platform via external APIs
+  # like REST API
+  # WARNING: With disabled API the platform will work in autonomous
+  # mode and will not accept connections from client applications
+  is_api_enabled: true
+
+
+apis:  # This section contains configuration of API providers
+  enabled_apis:  # A list of APIs to be enabled
+  - 'rest_api'
+
+  rest_api:  # This section configures parameters of the default API
+    # hostname or an IP address used for listening; set to '0.0.0.0'
+    # to listen all incoming connections
+    host: '127.0.0.1'  # only local connections allowed by default
+
+    # port used for listening of incoming connections
+    port: 10800
+
+    # is non-secured (non-TLS) connection is forbidden
+    is_strict_tls: false
+
+
+integrations:  # This section contains configuration of Integrations
+  # a list of names of Integrations to be enabled; minus (-) sign
+  # means a new item of the list
+  enabled_integrations:
+  - 'dummy'
+
+
