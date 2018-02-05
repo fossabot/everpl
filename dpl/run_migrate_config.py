@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 
 # Include DPL modules
 from dpl import DPL_INSTALL_PATH
-from dpl.core import LegacyConfiguration
+from dpl.core.legacy_configuration import LegacyConfiguration
 from dpl.core.configuration import Configuration
 from dpl.core.controller import DEFAULT_CONFIG_DIR, DEFAULT_CONFIG_PATH, DEFAULT_MAIN_DB_PATH
 from dpl.placements.placement_bootstrapper import PlacementBootstrapper
