@@ -140,13 +140,9 @@ setup(
     #
     # If using Python 2.6 or earlier, then these have to be included in
     # MANIFEST.in as well.
-    # FIXME: Add package data information
     package_data={  # Optional
-        # 'sample': ['package_data.dat'],
+        'dpl.internal_config': ['*'],
     },
-
-    # FIXME: Workaround to use MANIFEST.in
-    include_package_data=True,
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
