@@ -145,12 +145,6 @@ General thing object has the following structure:
     is currently placed (positioned). See `Placements`_ section for
     detailed information about placements.
 
-:description:
-    .. WARNING::
-        Deprecation pending
-
-    Some description of a thing.
-
 The exact set of fields and their values may vary for different types
 of things. For detailed information, please refer to the FIXME section
 of documentation.
@@ -174,8 +168,7 @@ Example of Thing object:
         "friendly_name": "Kitchen cooker hood",
         "type": "switch",
         "id": "F1",
-        "placement": "R2",
-        "description": "Kitchen cooker hood"
+        "placement": "R2"
     }
 
 
@@ -247,18 +240,6 @@ Placement object has the following structure:
 :image_url:
     A URL to related picture of this placement (room).
 
-:description:
-    .. WARNING::
-        Deprecation pending
-
-    Some description of a placement.
-
-:image:
-    .. WARNING::
-        Deprecation pending
-
-    A URL to related picture of this placement (room).
-
 Example of Placement object:
 
 .. code-block:: json
@@ -266,9 +247,7 @@ Example of Placement object:
     {
         "id": "R1",
         "friendly_name": "Corridor",
-        "image_url": "http://www.gesundheittipps.net/wp-content/uploads/2016/02/Flur_547-1024x610.jpg",
-        "description": "Corridor",
-        "image": "http://www.gesundheittipps.net/wp-content/uploads/2016/02/Flur_547-1024x610.jpg"
+        "image_url": "http://www.gesundheittipps.net/wp-content/uploads/2016/02/Flur_547-1024x610.jpg"
     }
 
 Fetching all Placements
