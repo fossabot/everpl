@@ -2,6 +2,7 @@
 import asyncio
 import os
 import logging
+import argparse
 
 # Include 3rd-party modules
 from sqlalchemy import create_engine
@@ -48,8 +49,23 @@ DEFAULT_MAIN_DB_PATH = os.path.join(DEFAULT_CONFIG_DIR, MAIN_DB_NAME)
 
 class Controller(object):
     def __init__(self):
+        # FIXME: Initialize configuration externally
         self._conf = Configuration()
-        self._conf.load_or_create_config(DEFAULT_CONFIG_PATH)
+
+        args = self.parse_arguments()
+
+        if args.config_dir is None:
+            self._config_dir = DEFAULT_CONFIG_DIR
+        else:
+            self._config_dir = args.config_dir
+
+        if args.config_path is None:
+            self._config_path = os.path.join(self._config_dir, CONFIG_NAME)
+        else:
+            self._config_path = args.config_path
+
+        self._conf.load_or_create_config(self._config_path)
+        self.apply_arguments(args)
 
         self._core_config = self._conf.get_by_subsystem('core')
         self._apis_config = self._conf.get_by_subsystem('apis')
@@ -59,7 +75,7 @@ class Controller(object):
         dpl_root_logger.setLevel(level=logging_level_str.upper())
 
         if self._core_config.get('main_db_path') is None:
-            self._core_config['main_db_path'] = DEFAULT_MAIN_DB_PATH
+            self._core_config['main_db_path'] = os.path.join(self._config_dir, MAIN_DB_NAME)
 
         main_db_path = self._core_config.get('main_db_path')
         echo_db_requests = (logging_level_str == 'debug')
@@ -89,6 +105,85 @@ class Controller(object):
 
         self._api_gateway = api.ApiGateway(self._auth_manager, self._thing_service, self._placement_service)
         self._rest_api = api.RestApi(self._api_gateway)
+
+    def parse_arguments(self):
+        """
+        Parses command-line arguments and alters everpl configuration
+        correspondingly. Returns values of cmdline arguments
+
+        :return: Any
+        """
+        # FIXME: Move argument parsing to the run.py script
+        arg_parser = argparse.ArgumentParser(
+            description="everpl runner script"
+        )
+
+        arg_parser.add_argument(
+            '--is-safe', help='if everpl must to be started in the safe mode',
+            type=bool, dest='is_safe', default=None
+        )
+
+        arg_parser.add_argument(
+            '--log-level', help='minimum level of logging messages to be displayed',
+            type=bool, dest='log_level', default=None
+        )
+
+        arg_parser.add_argument(
+            '--is-api-enabled', help='if any API access must to be enabled',
+            type=bool, dest='is_api_enabled', default=None
+        )
+
+        arg_parser.add_argument(
+            '--config-dir', help='a path to the configuration directory',
+            type=str, dest='config_dir', default=None
+        )
+
+        arg_parser.add_argument(
+            '--config-path', help='a path to the everpl config file',
+            type=str, dest='config_path', default=None
+        )
+
+        arg_parser.add_argument(
+            '--db-path', help='a path to the main DB file to be used',
+            type=str, dest='db_path', default=None
+        )
+
+        arg_parser.add_argument(
+            '--rest-api-host', help='a hostname used for REST API listening',
+            type=str, dest='rest_api_host', default=None
+        )
+
+        arg_parser.add_argument(
+            '--rest-api-port', help='a listening port for REST API',
+            type=int, dest='rest_api_port', default=None
+        )
+
+        return arg_parser.parse_args()
+
+    def apply_arguments(self, args) -> None:
+        """
+        Applies cmdline arguments to the configuration
+
+        :param args: arguments to be applied
+        :return: None
+        """
+        if args.is_safe is not None:
+            self._core_config['is_safe'] = args.is_safe
+
+        if args.log_level is not None:
+            self._core_config['logging_level'] = args.log_level
+
+        if args.is_api_enabled is not None:
+            self._core_config['is_api_enabled'] = args.is_api_enabled
+
+        if args.db_path is not None:
+            self._core_config['main_db_path'] = args.db_path
+
+        if args.rest_api_host is not None:
+            self._apis_config['rest_api']['host'] = args.rest_api_host
+
+        if args.rest_api_port is not None:
+            self._apis_config['rest_api']['port'] = args.rest_api_port
 
     async def start(self):
         is_safe_mode = self._core_config['is_safe_mode']
