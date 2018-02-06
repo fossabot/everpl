@@ -118,7 +118,10 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['aiohttp', 'passlib'],  # Optional
+    install_requires=[
+        'aiohttp>=2.0', 'passlib',
+        'sqlalchemy>=1.1', 'appdirs', 'pyyaml'
+    ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
