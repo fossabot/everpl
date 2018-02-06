@@ -1,34 +1,31 @@
-class Placement(object):
+from typing import Optional
+
+from dpl.model.base_entity import BaseEntity
+
+
+class Placement(BaseEntity):
     """
     Placement is an entity class that stores information about a specific placement (position)
     of Thing. For example, in Smart Home systems, each Placement can represent one
     room at the house and contain information about a name of the room, its internal
     identifier and an image of this room.
     """
-    def __init__(self, placement_id: str, friendly_name: str = None, image_url: str = None):
+    def __init__(self, domain_id: str, friendly_name: str = None, image_url: str = None):
         """
         Constructor
 
-        :param placement_id: some unique identifier of this entity
+        :param domain_id: some unique identifier of this entity
         :param friendly_name: human-friendly name of this placement
         :param image_url: an URL to the illustration image
         """
         # TODO: Add params validation here
-        self._placement_id = placement_id
+        # FIXME: CC30: Consider to make friendly_name a non-nullable property
+        super().__init__(domain_id)
         self._friendly_name = friendly_name
         self._image_url = image_url
 
     @property
-    def placement_id(self) -> str:
-        """
-        Contains an unique identifier of this entity. Can't be changed after init.
-
-        :return: string, system-internal identifier
-        """
-        return self._placement_id
-
-    @property
-    def friendly_name(self) -> str:
+    def friendly_name(self) -> Optional[str]:
         """
         Contains some short meaningful human-readable naming of this placement
 
@@ -37,7 +34,7 @@ class Placement(object):
         return self._friendly_name
 
     @friendly_name.setter
-    def friendly_name(self, new_value: str):
+    def friendly_name(self, new_value: Optional[str]):
         """
         A setter for friendly_name property
 
@@ -48,7 +45,7 @@ class Placement(object):
         self._friendly_name = new_value
 
     @property
-    def image_url(self) -> str:
+    def image_url(self) -> Optional[str]:
         """
         Stores an URL to the illustration image for this placement
 
@@ -57,7 +54,7 @@ class Placement(object):
         return self._image_url
 
     @image_url.setter
-    def image_url(self, new_value: str):
+    def image_url(self, new_value: Optional[str]):
         """
         A setter for image_url property
 

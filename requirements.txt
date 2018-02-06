@@ -1,2 +1,5 @@
 aiohttp >= 2.0
 passlib
+sqlalchemy >= 1.1  # Used to store and manage persistent data like settings and Placements
+appdirs   # to determine where user .config dir is located
+pyyaml  # to read configuration file in YAML

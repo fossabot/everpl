@@ -1,5 +1,5 @@
 # Include standard modules
-from typing import Dict
+from typing import Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -12,7 +12,7 @@ class PlacementBuilder(object):
     "build".
     """
     @staticmethod
-    def build(config: Dict) -> Placement:
+    def build(config: Mapping) -> Placement:
         """
         Build method just creates an instance of Placement
         based on the specified configuration params.
@@ -21,7 +21,7 @@ class PlacementBuilder(object):
         :return: a constructed instance of Placement
         """
         new_placement = Placement(
-            placement_id=config["id"],
+            domain_id=config["id"],
             friendly_name=config["friendly_name"],
             image_url=config["image_url"]
         )
