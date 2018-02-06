@@ -31,6 +31,40 @@ Recommended System Requirements:
   for different :doc:`./integrations`
 
 
+Automatic Installation Steps
+----------------------------
+
+1. Download an archive with the latest stable release of platform
+   from its repository: https://github.com/s-kostyuk/adpl/releases
+
+.. NOTE::
+    You can also download the latest development (unstable) version
+    here: https://github.com/s-kostyuk/adpl by clicking a 'clone or
+    download' button.
+
+2. Extract archive content to some directory. Remember its
+   placement (path).
+
+3. Open terminal emulator, switch to the everpl's project directory::
+
+    cd /path/to/everpls/directory
+
+4. Install an everpl package using pip::
+
+    pip3 install .
+
+5. Now it's possible to run everpl application by simply calling
+   `everpl` command::
+
+    everpl
+
+Installation finished!
+
+.. NOTE::
+    You can also install everpl package in the "Development Mode".
+    Why you may need it and what with mode provides is described
+    by the following link: [#f4]_
+
 Manual Installation Steps
 -------------------------
 
@@ -71,3 +105,7 @@ Installation finished!
         please, endorse this issue: `#22 <https://github.com/s-kostyuk/adpl/issues/22>`_.
 .. [#f3] Requirements file is placed in the root of platform's directory,
          for example: https://github.com/s-kostyuk/adpl/blob/devel/requirements.txt
+
+.. [#f4] Information about "Development Mode" of package
+         installation process:
+         https://packaging.python.org/tutorials/distributing-packages/#working-in-development-mode
