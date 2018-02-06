@@ -54,7 +54,7 @@ Automatic Installation Steps
     pip3 install .
 
 5. Now it's possible to run everpl application by simply calling
-   `everpl` command::
+   an ``everpl`` command::
 
     everpl
 
@@ -70,11 +70,6 @@ Manual Installation Steps
 
 1. Download an archive with the latest stable release of platform
    from its repository: https://github.com/s-kostyuk/adpl/releases
-
-.. NOTE::
-    You can also download the latest development (unstable) version
-    here: https://github.com/s-kostyuk/adpl by clicking a 'clone or
-    download' button.
 
 2. Extract archive content to some directory. Remember its
    placement (path).
