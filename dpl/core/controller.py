@@ -35,12 +35,15 @@ DEFAULT_CONFIG_DIR = appdirs.user_config_dir(
     appname='everpl'
 )
 
+CONFIG_NAME = 'everpl_config.yaml'
+MAIN_DB_NAME = 'everpl_db.sqlite'
+
 # Path to the configuration file to be used by default
 # like ~/.config/everpl/everpl_config.yaml)
-DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_CONFIG_DIR, 'everpl_config.yaml')
+DEFAULT_CONFIG_PATH = os.path.join(DEFAULT_CONFIG_DIR, CONFIG_NAME)
 
 # Path to the main database file to be used by default
-DEFAULT_MAIN_DB_PATH = os.path.join(DEFAULT_CONFIG_DIR, 'everpl_db.sqlite')
+DEFAULT_MAIN_DB_PATH = os.path.join(DEFAULT_CONFIG_DIR, MAIN_DB_NAME)
 
 
 class Controller(object):
