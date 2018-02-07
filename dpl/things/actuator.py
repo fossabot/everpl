@@ -3,9 +3,11 @@ import time
 from typing import Iterable, Mapping
 
 # Include 3rd-party modules
+from dpl.utils.empty_mapping import EMPTY_MAPPING
+
 # Include DPL modules
 from dpl.things.capabilities.i_state import IState
-from dpl.things.capabilities.i_actuator import IActuator, EMPTY_DICT
+from dpl.things.capabilities.i_actuator import IActuator
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
@@ -75,7 +77,7 @@ class Actuator(Thing, IActuator, IState):
         return 'activate', 'deactivate', 'toggle'
 
     # FIXME: CC9: or return an error code???
-    def execute(self, command: str, args: Mapping = EMPTY_DICT) -> None:
+    def execute(self, command: str, args: Mapping = EMPTY_MAPPING) -> None:
         """
         Accepts the specified command on execution
 
