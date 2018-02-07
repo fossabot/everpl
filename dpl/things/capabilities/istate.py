@@ -38,3 +38,15 @@ class IState(object):
         :return: an instance of self.State
         """
         raise NotImplementedError()
+
+    @property
+    def is_active(self) -> bool:
+        """
+        Returns if this object is currently in one of the
+        'active' states (like 'on' for lighting, 'open'
+        for a door and 'playing' for player)
+
+        :return: True if object is in any of 'active' states,
+                 False otherwise
+        """
+        raise NotImplementedError()
