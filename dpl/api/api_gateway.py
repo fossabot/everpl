@@ -1,5 +1,5 @@
 # Include standard modules
-from typing import Dict, List
+from typing import Dict, List, Mapping, Any
 
 # Include DPL modules
 from . import exceptions
@@ -80,15 +80,14 @@ class ApiGateway(object):
 
     # FIXME: CC2: Make this method a coroutine?
     # FIXME: Specify a return value type
-    def send_command(self, token: str, thing_id: str, command: str, *args, **kwargs):
+    def send_command(self, token: str, thing_id: str, command: str, command_args: Mapping[str, Any]):
         """
         Sends a command to specific thing with specified arguments
 
         :param token: access token
         :param thing_id: and ID of thing that must receive a specified command
         :param command: command to execute
-        :param args: arguments to send to command
-        :param kwargs: keyword-based arguments to send to command
+        :param command_args: keyword-based arguments to send to command
         :return: an some ID or handler of planned task
         """
         # FIXME: Check permission: Send commands to things
@@ -99,7 +98,7 @@ class ApiGateway(object):
             self._things.send_command(
                 to_actuator_id=thing_id,
                 command=command,
-                command_args=kwargs
+                command_args=command_args
             )
 
         except ServiceTypeError as e:

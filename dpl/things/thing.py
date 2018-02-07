@@ -1,6 +1,5 @@
 # Include standard modules
 import time
-from enum import Enum
 from copy import deepcopy
 from types import MappingProxyType
 from collections import Mapping
@@ -10,9 +9,12 @@ from collections import Mapping
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.connections import Connection
+from dpl.things.capabilities.i_enabled import IEnabled
+from dpl.things.capabilities.i_available import IAvailable
+from dpl.things.capabilities.i_last_updated import ILastUpdated
 
 
-class Thing(BaseEntity):
+class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
     """
     Thing is a base class for all connected devices in the system.
 
@@ -48,12 +50,6 @@ class Thing(BaseEntity):
     'current_track', 'play' and 'stop' for player. Or 'on'/'off' for lighting, etc.
     """
 
-    class States(Enum):
-        """
-        Possible states of the thing. Must be overridden in derived classes
-        """
-        unknown = None
-
     def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
         """
         Constructor of a Thing. Receives an instance of Connection and some specific
@@ -70,7 +66,6 @@ class Thing(BaseEntity):
         # Connection params must be saved manually in derived classes
         # Connection params must be parsed and saved manually in derived classes
         self._metadata = deepcopy(metadata)
-        self._really_internal_state_value = self.States.unknown
         self._last_updated = time.time()
         self._is_enabled = False
 
@@ -84,36 +79,6 @@ class Thing(BaseEntity):
         return MappingProxyType(self._metadata)
 
     @property
-    def state(self) -> States:
-        """
-        Return a current state of the Thing
-
-        :return: an instance of self.State
-        """
-        raise NotImplementedError
-
-    @property
-    def _state(self) -> States:
-        """
-        Return a really_internal_state_value
-
-        :return: an instance of self.State
-        """
-        return self._really_internal_state_value
-
-    @_state.setter
-    def _state(self, new_value: States) -> None:
-        """
-        Internal setter for a really_internal_state_value that can be used to
-        set a new state value and update last_updated time
-
-        :param new_value: new state value to be set
-        :return: None
-        """
-        self._last_updated = time.time()
-        self._really_internal_state_value = new_value
-
-    @property
     def is_enabled(self) -> bool:
         """
         Indicates if the Thing is marked as enabled and it is allowed to
@@ -124,15 +89,6 @@ class Thing(BaseEntity):
         return self._is_enabled
 
     @property
-    def is_available(self) -> bool:
-        """
-        Availability of thing for usage and communication
-
-        :return: True if Thing is available, False otherwise
-        """
-        raise NotImplementedError
-
-    @property
     def last_updated(self) -> float:
         """
         Returns a timestamp of the last thing state update
@@ -140,28 +96,6 @@ class Thing(BaseEntity):
         :return: float, UNIX time
         """
         return self._last_updated
-
-    def disable(self) -> None:
-        """
-        Forbid any activity and communication with physical object.
-        Underlying connection can be closed, physical device performs
-        everything on its own. Devices are allowed to switch to standby
-        or power-saving mode. Thing 'state' property reflects only last
-        known state of the physical object.
-
-        :return: None
-        """
-        raise NotImplementedError
-
-    def enable(self) -> None:
-        """
-        Allows communication with a physical object. Initiates a process
-        of establishing connection to the physical device. Makes physical
-        device to "wake up", to start receiving commands and sending of data.
-
-        :return: None
-        """
-        raise NotImplementedError
 
     def _check_is_available(self) -> None:
         """

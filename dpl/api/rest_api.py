@@ -569,7 +569,7 @@ class RestApi(object):
             )
 
         try:
-            self._gateway.send_command(token, thing_id, thing_action, **thing_action_params)
+            self._gateway.send_command(token, thing_id, thing_action, thing_action_params)
         except PermissionError as e:
             return make_error_response(
                 status=403,

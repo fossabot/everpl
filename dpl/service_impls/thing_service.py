@@ -135,7 +135,7 @@ class ThingService(AbsThingService):
 
         # FIXME: Handle validation and execution errors
         # FIXME: Ensure that such calls will be safe
-        thing.execute(command, **command_args)
+        thing.execute(command, command_args)
 
     def enable_all(self) -> None:
         """
