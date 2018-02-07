@@ -1,6 +1,5 @@
 # Include standard modules
 import time
-from enum import Enum
 from copy import deepcopy
 from types import MappingProxyType
 from collections import Mapping
