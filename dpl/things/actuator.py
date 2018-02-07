@@ -1,11 +1,12 @@
 # Include standard modules
+import time
 from typing import Iterable, Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.things.capabilities.i_state import IState
 from dpl.things.capabilities.i_actuator import IActuator, EMPTY_DICT
-from dpl.things import Thing
+from dpl.things.thing import Thing, TDomainId, Connection
 
 
 class Actuator(Thing, IActuator, IState):
@@ -28,6 +29,42 @@ class Actuator(Thing, IActuator, IState):
     - if command can't be executed for any reason, corresponding method raises an
       exception (FIXME: CC9: or returns an error code???)
     """
+    def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
+        """
+        Constructor of a Thing. Receives an instance of Connection and some specific
+        parameters to use it properly. Also can receive some metadata to be stored like
+        object placement, description or user-friendly name.
+
+        :param domain_id: a unique identifier of this Thing
+        :param con_instance: an instance of connection to be used
+        :param con_params: parameters to access connection
+        :param metadata: metadata to be stored
+        """
+        super().__init__(domain_id, con_instance, con_params, metadata)
+
+        self._really_internal_state_value = self.States.unknown
+
+    @property
+    def _state(self) -> 'Actuator.States':
+        """
+        Return a really_internal_state_value
+
+        :return: an instance of self.State
+        """
+        return self._really_internal_state_value
+
+    @_state.setter
+    def _state(self, new_value: 'Actuator.States') -> None:
+        """
+        Internal setter for a really_internal_state_value that can be used to
+        set a new state value and update last_updated time
+
+        :param new_value: new state value to be set
+        :return: None
+        """
+        self._last_updated = time.time()
+        self._really_internal_state_value = new_value
+
     @property
     def commands(self) -> Iterable[str]:
         """

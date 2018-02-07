@@ -51,12 +51,6 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
     'current_track', 'play' and 'stop' for player. Or 'on'/'off' for lighting, etc.
     """
 
-    class States(Enum):
-        """
-        Possible states of the thing. Must be overridden in derived classes
-        """
-        unknown = None
-
     def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
         """
         Constructor of a Thing. Receives an instance of Connection and some specific
@@ -73,7 +67,6 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
         # Connection params must be saved manually in derived classes
         # Connection params must be parsed and saved manually in derived classes
         self._metadata = deepcopy(metadata)
-        self._really_internal_state_value = self.States.unknown
         self._last_updated = time.time()
         self._is_enabled = False
 
@@ -85,36 +78,6 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
         :return: metadata of objects
         """
         return MappingProxyType(self._metadata)
-
-    @property
-    def state(self) -> States:
-        """
-        Return a current state of the Thing
-
-        :return: an instance of self.State
-        """
-        raise NotImplementedError
-
-    @property
-    def _state(self) -> States:
-        """
-        Return a really_internal_state_value
-
-        :return: an instance of self.State
-        """
-        return self._really_internal_state_value
-
-    @_state.setter
-    def _state(self, new_value: States) -> None:
-        """
-        Internal setter for a really_internal_state_value that can be used to
-        set a new state value and update last_updated time
-
-        :param new_value: new state value to be set
-        :return: None
-        """
-        self._last_updated = time.time()
-        self._really_internal_state_value = new_value
 
     @property
     def is_enabled(self) -> bool:
