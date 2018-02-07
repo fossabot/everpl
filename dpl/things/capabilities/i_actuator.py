@@ -1,7 +1,7 @@
 from types import MappingProxyType
 from typing import Iterable, Mapping
 
-from .istate import IState
+from .i_state import IState
 
 
 EMPTY_DICT = MappingProxyType(dict())
