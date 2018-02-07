@@ -1,12 +1,14 @@
 # Include standard modules
-from typing import Tuple
+from typing import Iterable, Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
+from dpl.things.capabilities.istate import IState
+from dpl.things.capabilities.iactuator import IActuator, EMPTY_DICT
 from dpl.things import Thing
 
 
-class Actuator(Thing):
+class Actuator(Thing, IActuator, IState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
     and change their states after that.
@@ -27,7 +29,7 @@ class Actuator(Thing):
       exception (FIXME: CC9: or returns an error code???)
     """
     @property
-    def commands(self) -> Tuple[str, ...]:
+    def commands(self) -> Iterable[str]:
         """
         Returns a list of available commands. Must be overridden in derivative classes.
 
@@ -35,23 +37,16 @@ class Actuator(Thing):
         """
         return 'activate', 'deactivate', 'toggle'
 
-    @property
-    def is_active(self) -> bool:
-        """
-        Returns an activation flag
-
-        :return: true if object is in any 'active' state, false otherwise
-        """
-        raise NotImplementedError
-
     # FIXME: CC9: or return an error code???
-    def execute(self, command: str, *args, **kwargs) -> None:
+    def execute(self, command: str, args: Mapping = EMPTY_DICT) -> None:
         """
-        Executes a command with 'command' name and specified arguments
+        Accepts the specified command on execution
 
         :param command: a name of command to be executed
-        :param args: positional arguments to be passed
-        :param kwargs: keyword arguments to be passed
+               (see 'commands' property for a list of
+                available commands)
+        :param args: a mapping with keyword arguments to be
+               passed on command execution
         :return: None
         """
         if command not in self.commands:
@@ -61,23 +56,7 @@ class Actuator(Thing):
 
         assert callable(command_method)
 
-        return command_method(*args, **kwargs)
-
-    def activate(self) -> None:
-        """
-        Turns an object to some specific 'active' state
-
-        :return: None
-        """
-        raise NotImplementedError
-
-    def deactivate(self) -> None:
-        """
-        Turns an object to some specific 'inactive' state
-
-        :return: None
-        """
-        raise NotImplementedError
+        return command_method(**args)
 
     def toggle(self) -> None:
         """
