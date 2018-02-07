@@ -10,9 +10,12 @@ from collections import Mapping
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.connections import Connection
+from dpl.things.capabilities.i_enabled import IEnabled
+from dpl.things.capabilities.i_available import IAvailable
+from dpl.things.capabilities.i_last_updated import ILastUpdated
 
 
-class Thing(BaseEntity):
+class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
     """
     Thing is a base class for all connected devices in the system.
 
@@ -124,15 +127,6 @@ class Thing(BaseEntity):
         return self._is_enabled
 
     @property
-    def is_available(self) -> bool:
-        """
-        Availability of thing for usage and communication
-
-        :return: True if Thing is available, False otherwise
-        """
-        raise NotImplementedError
-
-    @property
     def last_updated(self) -> float:
         """
         Returns a timestamp of the last thing state update
@@ -140,28 +134,6 @@ class Thing(BaseEntity):
         :return: float, UNIX time
         """
         return self._last_updated
-
-    def disable(self) -> None:
-        """
-        Forbid any activity and communication with physical object.
-        Underlying connection can be closed, physical device performs
-        everything on its own. Devices are allowed to switch to standby
-        or power-saving mode. Thing 'state' property reflects only last
-        known state of the physical object.
-
-        :return: None
-        """
-        raise NotImplementedError
-
-    def enable(self) -> None:
-        """
-        Allows communication with a physical object. Initiates a process
-        of establishing connection to the physical device. Makes physical
-        device to "wake up", to start receiving commands and sending of data.
-
-        :return: None
-        """
-        raise NotImplementedError
 
     def _check_is_available(self) -> None:
         """
