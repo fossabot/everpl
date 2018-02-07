@@ -1,10 +1,8 @@
-from types import MappingProxyType
 from typing import Iterable, Mapping
 
+from dpl.utils.empty_mapping import EMPTY_MAPPING
+
 from .i_state import IState
-
-
-EMPTY_DICT = MappingProxyType(dict())
 
 
 class IActuator(IState):
@@ -35,7 +33,7 @@ class IActuator(IState):
         """
         raise NotImplementedError()
 
-    def execute(self, command: str, args: Mapping = EMPTY_DICT) -> None:
+    def execute(self, command: str, args: Mapping = EMPTY_MAPPING) -> None:
         """
         Accepts the specified command on execution
 
