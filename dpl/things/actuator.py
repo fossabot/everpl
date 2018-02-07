@@ -3,8 +3,8 @@ from typing import Iterable, Mapping
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things.capabilities.istate import IState
-from dpl.things.capabilities.iactuator import IActuator, EMPTY_DICT
+from dpl.things.capabilities.i_state import IState
+from dpl.things.capabilities.i_actuator import IActuator, EMPTY_DICT
 from dpl.things import Thing
 
 
