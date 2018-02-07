@@ -61,7 +61,7 @@ class Player(Actuator):
         :param kwargs: keyword parameters
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def stop(self) -> None:
         """
@@ -69,7 +69,7 @@ class Player(Actuator):
 
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def pause(self) -> None:
         """
@@ -77,4 +77,4 @@ class Player(Actuator):
 
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()

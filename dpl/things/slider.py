@@ -61,7 +61,7 @@ class Slider(Actuator):
 
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def close(self) -> None:
         """
@@ -70,4 +70,4 @@ class Slider(Actuator):
 
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()

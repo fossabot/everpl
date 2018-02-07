@@ -57,7 +57,7 @@ class Switch(Actuator):
 
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def off(self) -> None:
         """
@@ -65,4 +65,4 @@ class Switch(Actuator):
 
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
