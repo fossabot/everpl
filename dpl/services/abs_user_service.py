@@ -1,5 +1,6 @@
 from dpl.model.domain_id import TDomainId
 from dpl.dtos.user_dto import UserDto
+from .service_exceptions import ServiceEntityResolutionError, ServiceValidationError
 from .abs_entity_service import AbsEntityService
 
 
@@ -17,6 +18,7 @@ class AbsUserService(AbsEntityService[UserDto]):
                to be created
         :param password: password of the User to be created
         :return: an unique identifier of the User
+        # FIXME: Document exceptions
         """
         raise NotImplementedError()
 
@@ -28,6 +30,9 @@ class AbsUserService(AbsEntityService[UserDto]):
                but domain identifier) to be altered
         :param new_username: new username to be set for the User
         :return: None
+        :raises ServiceEntityResolutionError: if the User with
+                the specified ID was not found
+        # FIXME: Document other exceptions
         """
         raise NotImplementedError()
 
@@ -40,8 +45,10 @@ class AbsUserService(AbsEntityService[UserDto]):
                but domain identifier) to be altered
         :param old_password: old password for this user
         :param new_password: new password to be set for this user
-        :return:
-        # FIXME: Document possible exceptions
+        :return: None
+        :raises ServiceEntityResolutionError: if the User with
+                the specified ID was not found
+        # FIXME: Document other exceptions
         """
         raise NotImplementedError()
 
