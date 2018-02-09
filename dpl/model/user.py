@@ -7,6 +7,8 @@ from passlib.ifc import PasswordHash
 from passlib.hash import pbkdf2_sha256
 
 # Include DPL modules
+from dpl.model.domain_id import TDomainId
+from dpl.model.base_entity import BaseEntity
 
 
 # Specify used hasher
@@ -17,18 +19,21 @@ if passlib.__version__ < '1.7':
     Hasher.hash = Hasher.encrypt
 
 
-class User(object):
+class User(BaseEntity):
     """
     User is a class that stores all information about one of the users
     of the system. Including a list of connected client devices.
     """
-    def __init__(self, username: str, password: str):
+    def __init__(self, domain_id: TDomainId, username: str, password: str):
         """
         Create a user of the system
 
+        :param domain_id: a unique identifier of this User
         :param username: username to be used
         :param password: password to be used. NOT SAVED, just hashed
         """
+        super().__init__(domain_id)
+
         self._username = None  # type: str
 
         self.username = username  # set actual value and ensure its validity
