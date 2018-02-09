@@ -31,3 +31,17 @@ class AbsUserService(AbsEntityService[UserDto]):
         """
         raise NotImplementedError()
 
+    def change_password(self, of_user: TDomainId, old_password: str, new_password: str) -> None:
+        """
+        Allows to change a password for a User from old_password
+        to the new_password
+
+        :param of_user: an identifier of the User (NOT username
+               but domain identifier) to be altered
+        :param old_password: old password for this user
+        :param new_password: new password to be set for this user
+        :return:
+        # FIXME: Document possible exceptions
+        """
+        raise NotImplementedError()
+
