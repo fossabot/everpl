@@ -22,6 +22,19 @@ class AbsUserService(AbsEntityService[UserDto]):
         """
         raise NotImplementedError()
 
+    def verify_password(self, username: str, password: str) -> bool:
+        """
+        Allows to check an username-password combination
+
+        :param username: a username of the User
+        :param password: a password for the User
+        :return: True if User with the specified username exists
+                 and have the specified password. False if either
+                 User with the specified username isn't existing
+                 or if the password is incorrect
+        """
+        raise NotImplementedError()
+
     def change_username(self, of_user: TDomainId, new_username: str) -> None:
         """
         Allows to change the username for the specified User
