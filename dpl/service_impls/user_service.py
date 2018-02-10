@@ -85,6 +85,21 @@ class UserService(AbsUserService, BaseService[UserDto]):
 
         return user.domain_id
 
+    def verify_password(self, username: TDomainId, password: str) -> bool:
+        """
+        Allows to check an username-password combination
+
+        :param username: a username of the User
+        :param password: a password for the User
+        :return: True if User with the specified username exists
+                 and have the specified password. False if either
+                 User with the specified username isn't existing
+                 or if the password is incorrect
+        """
+        resolved = self._user_repo.find_by_username(username)
+
+        return (resolved is not None) and (resolved.verify_password(password))
+
     def change_username(self, of_user: TDomainId, new_username: str) -> None:
         """
         Allows to change the username for the specified User
