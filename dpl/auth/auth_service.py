@@ -1,3 +1,4 @@
+from dpl.dtos.session_dto import SessionDto
 from dpl.services.service_exceptions import ServiceEntityResolutionError
 from dpl.services.abs_user_service import AbsUserService
 from dpl.services.abs_session_service import AbsSessionService
@@ -99,6 +100,32 @@ class AuthService(AbsAuthService):
         )
 
     # FIXME: Implement a check_permission method
+
+    def view_sessions(self, access_token: str):  # -> Collection[SessionDto]
+        """
+        Allows to view all Sessions opened for the current User
+
+        :param access_token: an access token used for User
+               identification and authorization
+        :return: a collection of DTOs of Sessions that was opened
+                 for the specified User
+        """
+        current_session = self.view_current_session(access_token)
+        user_id = current_session['user_id']
+
+        return self._session_service.view_by_user(user_id)
+
+    def view_current_session(self, access_token: str) -> SessionDto:
+        """
+        Allows to view information about the current Session
+        which is associated with the specified access token
+
+        :param access_token: an access token which is associated
+               with the current Session
+        :return: information about a current opened Session in
+                 a form of a DTO
+        """
+        return self._session_service.view_by_access_key(access_token)
 
     def close_session(self, access_token: str) -> None:
         """
