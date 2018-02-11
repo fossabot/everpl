@@ -8,6 +8,18 @@ class AbsUserService(AbsEntityService[UserDto]):
     """
     A base class for all UserService implementations
     """
+    def view_by_username(self, username: str) -> UserDto:
+        """
+        Allows to fetch a User (UserDto, to be exact) by
+        User's username
+
+        :param username: username of the User to be fetched
+        :return: an instance of User DTO
+        :raises ServiceEntityResolutionError: if the User
+                with the specified username was not found
+        """
+        raise NotImplementedError()
+
     def create_user(self, username: str, password: str) -> TDomainId:
         """
         Creates a new user in the system with the specified
