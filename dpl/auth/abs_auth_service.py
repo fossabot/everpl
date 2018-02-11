@@ -6,6 +6,9 @@ is not a child of AbsEntityService and was mainly created as
 a facade for two other services - SessionService and UserService
 """
 
+from dpl.dtos.session_dto import SessionDto
+
+
 from .exceptions import (
     AuthInvalidUserPasswordCombinationError,
     AuthInsufficientPrivilegesError,
@@ -83,6 +86,29 @@ class AbsAuthService(object):
         :param to_perform: ????????????
         :return: ?????????????
         :raises: ????????????
+        """
+        raise NotImplementedError()
+
+    def view_sessions(self, access_token: str):  # -> Collection[SessionDto]
+        """
+        Allows to view all Sessions opened for the current User
+
+        :param access_token: an access token used for User
+               identification and authorization
+        :return: a collection of DTOs of Sessions that was opened
+                 for the specified User
+        """
+        raise NotImplementedError()
+
+    def view_current_session(self, access_token: str) -> SessionDto:
+        """
+        Allows to view information about the current Session
+        which is associated with the specified access token
+
+        :param access_token: an access token which is associated
+               with the current Session
+        :return: information about a current opened Session in
+                 a form of a DTO
         """
         raise NotImplementedError()
 
