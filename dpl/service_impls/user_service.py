@@ -5,7 +5,7 @@ from dpl.model.user import User
 from dpl.dtos.user_dto import UserDto
 from dpl.dtos.dto_builder import build_dto
 from dpl.services.abs_user_service import AbsUserService, \
-    ServiceEntityResolutionError
+    ServiceEntityResolutionError, AuthInvalidUserPasswordCombinationError
 
 from dpl.repos.abs_user_repository import AbsUserRepository
 from .base_service import BaseService
@@ -114,6 +114,30 @@ class UserService(AbsUserService, BaseService[UserDto]):
         resolved = self._user_repo.find_by_username(username)
 
         return (resolved is not None) and (resolved.verify_password(password))
+
+    def authenticate(self, username: str, password: str) -> UserDto:
+        """
+        Authenticate the User by the specified username-password
+        combination.
+
+        :param username: username of the User to be authenticated
+        :param password: password of the User to be authenticated
+        :return: an instance of User (User DTO, to be exact)
+                 which has the specified username-password combination
+        :raises AuthInvalidUserPasswordCombinationError:
+                if the specified username-password combination is invalid
+        """
+        resolved = self._user_repo.find_by_username(username)
+
+        if resolved is None:
+            raise AuthInvalidUserPasswordCombinationError()
+
+        password_ok = resolved.verify_password(password)
+
+        if not password_ok:
+            raise AuthInvalidUserPasswordCombinationError()
+
+        return build_dto(resolved)
 
     def change_username(self, of_user: TDomainId, new_username: str) -> None:
         """
