@@ -1,6 +1,6 @@
 from dpl.repos.abs_placement_repository import AbsPlacementRepository, Placement
 
-from .session_manager import SessionManager
+from .session_manager import DbSessionManager
 from .base_repository import BaseRepository
 
 
@@ -9,7 +9,7 @@ class PlacementRepository(BaseRepository[Placement], AbsPlacementRepository):
     An implementation of SQLAlchemy-based storage
     of Placements
     """
-    def __init__(self, session_manager: SessionManager):
+    def __init__(self, session_manager: DbSessionManager):
         """
         Constructor. Receives an instance of SessionManager
         to be used and saves a link to it to the internal

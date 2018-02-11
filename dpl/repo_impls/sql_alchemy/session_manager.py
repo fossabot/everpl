@@ -7,10 +7,10 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-class SessionManager(object):
+class DbSessionManager(object):
     """
-    Session manager is a class which is responsible for
-    providing of Session instances, individual for each
+    DbSession manager is a class which is responsible for
+    providing of database Session instances, individual for each
     thread and for each coroutine
     """
     def __init__(self, engine: Connectable):

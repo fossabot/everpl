@@ -1,6 +1,6 @@
 from dpl.repos.abs_thing_settings_repo import AbsThingSettingsRepository, ThingSettings
 
-from .session_manager import SessionManager
+from .session_manager import DbSessionManager
 from .base_repository import BaseRepository
 
 
@@ -9,7 +9,7 @@ class ThingSettingsRepository(BaseRepository[ThingSettings], AbsThingSettingsRep
     An implementation of SQLAlchemy-based storage
     of ThingSettingsRepository
     """
-    def __init__(self, session_manager: SessionManager):
+    def __init__(self, session_manager: DbSessionManager):
         """
         Constructor. Receives an instance of SessionManager
         to be used and saves a link to it to the internal
