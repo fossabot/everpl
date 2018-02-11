@@ -93,6 +93,11 @@ class AuthService(AbsAuthService):
             new_password=new_password
         )
 
+        self._session_service.close_all_user_sessions(
+            for_user=user_id,
+            excluding=access_token
+        )
+
     # FIXME: Implement a check_permission method
 
     def close_session(self, access_token: str) -> None:
