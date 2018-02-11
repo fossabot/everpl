@@ -7,7 +7,7 @@ from dpl.utils.flatten import flatten
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.repos.abs_repository import AbsRepository
-from .session_manager import DbSessionManager
+from .db_session_manager import DbSessionManager
 
 
 TEntity = TypeVar("TEntity", bound=BaseEntity)

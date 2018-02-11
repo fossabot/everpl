@@ -21,7 +21,7 @@ from dpl.placements.placement_bootstrapper import PlacementBootstrapper
 from dpl.settings.thing_settings import ThingSettings
 from dpl.settings.connection_settings import ConnectionSettings
 
-from dpl.repo_impls.sql_alchemy.session_manager import DbSessionManager
+from dpl.repo_impls.sql_alchemy.db_session_manager import DbSessionManager
 from dpl.repo_impls.sql_alchemy.db_mapper import DbMapper
 from dpl.repo_impls.sql_alchemy.placement_repository import PlacementRepository
 from dpl.repo_impls.sql_alchemy.connection_settings_repo import ConnectionSettingsRepository

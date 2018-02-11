@@ -14,7 +14,7 @@ from dpl import auth
 from dpl.core.configuration import Configuration
 from dpl.integrations.binding_bootstrapper import BindingBootstrapper
 
-from dpl.repo_impls.sql_alchemy.session_manager import DbSessionManager
+from dpl.repo_impls.sql_alchemy.db_session_manager import DbSessionManager
 from dpl.repo_impls.sql_alchemy.db_mapper import DbMapper
 from dpl.repo_impls.sql_alchemy.placement_repository import PlacementRepository
 

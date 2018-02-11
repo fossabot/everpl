@@ -1,6 +1,6 @@
 from dpl.repos.abs_placement_repository import AbsPlacementRepository, Placement
 
-from .session_manager import DbSessionManager
+from .db_session_manager import DbSessionManager
 from .base_repository import BaseRepository
 
 

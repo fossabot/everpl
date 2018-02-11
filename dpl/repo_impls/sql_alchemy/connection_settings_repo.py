@@ -1,6 +1,6 @@
 from dpl.repos.abs_con_settings_repo import AbsConnectionSettingsRepository, ConnectionSettings
 
-from .session_manager import DbSessionManager
+from .db_session_manager import DbSessionManager
 from .base_repository import BaseRepository
 
 
