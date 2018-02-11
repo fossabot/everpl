@@ -1,6 +1,6 @@
 from dpl.repos.abs_con_settings_repo import AbsConnectionSettingsRepository, ConnectionSettings
 
-from .session_manager import SessionManager
+from .db_session_manager import DbSessionManager
 from .base_repository import BaseRepository
 
 
@@ -9,7 +9,7 @@ class ConnectionSettingsRepository(BaseRepository[ConnectionSettings], AbsConnec
     An implementation of SQLAlchemy-based storage
     of ConnectionSettingsRepository
     """
-    def __init__(self, session_manager: SessionManager):
+    def __init__(self, session_manager: DbSessionManager):
         """
         Constructor. Receives an instance of SessionManager
         to be used and saves a link to it to the internal

@@ -7,7 +7,7 @@ from dpl.utils.flatten import flatten
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.repos.abs_repository import AbsRepository
-from .session_manager import SessionManager
+from .db_session_manager import DbSessionManager
 
 
 TEntity = TypeVar("TEntity", bound=BaseEntity)
@@ -18,7 +18,7 @@ class BaseRepository(AbsRepository[TEntity]):
     """
     A base implementation of SQLAlchemy-based repository
     """
-    def __init__(self, session_manager: SessionManager, stored_cls: Type[TEntity]):
+    def __init__(self, session_manager: DbSessionManager, stored_cls: Type[TEntity]):
         """
         Constructor. Receives an instance of SessionManager
         to be used and saves a link to it to the internal

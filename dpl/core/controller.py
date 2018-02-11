@@ -14,7 +14,7 @@ from dpl import auth
 from dpl.core.configuration import Configuration
 from dpl.integrations.binding_bootstrapper import BindingBootstrapper
 
-from dpl.repo_impls.sql_alchemy.session_manager import SessionManager
+from dpl.repo_impls.sql_alchemy.db_session_manager import DbSessionManager
 from dpl.repo_impls.sql_alchemy.db_mapper import DbMapper
 from dpl.repo_impls.sql_alchemy.placement_repository import PlacementRepository
 
@@ -89,7 +89,7 @@ class Controller(object):
         self._db_mapper.init_tables()
         self._db_mapper.init_mappers()
         self._db_mapper.create_all_tables(bind=self._engine)
-        self._db_session_manager = SessionManager(engine=self._engine)
+        self._db_session_manager = DbSessionManager(engine=self._engine)
 
         self._con_settings_repo = ConnectionSettingsRepository(self._db_session_manager)
         self._thing_settings_repo = ThingSettingsRepository(self._db_session_manager)
