@@ -63,6 +63,21 @@ class UserService(AbsUserService, BaseService[UserDto]):
         """
         self._user_repo.delete(domain_id)
 
+    def view_by_username(self, username: str) -> UserDto:
+        """
+        Allows to fetch a User (UserDto, to be exact) by
+        User's username
+
+        :param username: username of the User to be fetched
+        :return: an instance of User DTO
+        :raises ServiceEntityResolutionError: if the User
+                with the specified username was not found
+        """
+        resolved = self._user_repo.find_by_username(username)
+        self._check_resolved(resolved)
+
+        return build_dto(resolved)
+
     def create_user(self, username: str, password: str) -> TDomainId:
         """
         Creates a new user in the system with the specified
