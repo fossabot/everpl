@@ -1,5 +1,6 @@
 from dpl.model.domain_id import TDomainId
 from dpl.dtos.user_dto import UserDto
+from dpl.auth.exceptions import AuthInvalidUserPasswordCombinationError
 from .service_exceptions import ServiceEntityResolutionError, ServiceValidationError
 from .abs_entity_service import AbsEntityService
 
@@ -44,6 +45,20 @@ class AbsUserService(AbsEntityService[UserDto]):
                  and have the specified password. False if either
                  User with the specified username isn't existing
                  or if the password is incorrect
+        """
+        raise NotImplementedError()
+
+    def authenticate(self, username: str, password: str) -> UserDto:
+        """
+        Authenticate the User by the specified username-password
+        combination.
+
+        :param username: username of the User to be authenticated
+        :param password: password of the User to be authenticated
+        :return: an instance of User (User DTO, to be exact)
+                 which has the specified username-password combination
+        :raises AuthInvalidUserPasswordCombinationError:
+                if the specified username-password combination is invalid
         """
         raise NotImplementedError()
 
