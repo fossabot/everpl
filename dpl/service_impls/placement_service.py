@@ -12,12 +12,10 @@ from dpl.repos.abs_placement_repository import AbsPlacementRepository
 from .base_service import BaseService
 
 
-class PlacementService(AbsPlacementService, BaseService[Placement]):
+class PlacementService(AbsPlacementService, BaseService[PlacementDto]):
     """
     This is an implementation of a PlacementService -
     a class that manages all Placements in the system
-
-    FIXME: Implement all methods of an abstract class
     """
 
     def __init__(self, placement_repo: AbsPlacementRepository):
