@@ -1,5 +1,4 @@
 import uuid
-from typing import Collection
 
 from dpl.model.domain_id import TDomainId
 from dpl.auth.session import Session
@@ -154,7 +153,7 @@ class SessionService(AbsSessionService, BaseService[SessionDto]):
                Session which must NOT to be closed
         :return: None
         """
-        resolved = self._sessions.select_by_user(for_user)  # type: Collection[Session]
+        resolved = self._sessions.select_by_user(for_user)  # type\: Collection[Session]
 
         if excluding is None:
             on_removal = [i.domain_id for i in resolved]  # small speedup on comparison
