@@ -6,7 +6,7 @@ from dpl.repos.abs_session_repository import AbsSessionRepository
 from .base_repository import BaseRepository
 
 
-class SessionRepository(AbsSessionRepository, BaseRepository[Session]):
+class SessionRepository(BaseRepository[Session], AbsSessionRepository):
     """
     An implementation of in-memory storage of Sessions
     """
