@@ -28,7 +28,7 @@ from dpl.auth.session import Session
 SessionDto = BaseDto
 
 
-@build_dto.register(BaseDto)
+@build_dto.register(Session)
 def _(session: Session) -> SessionDto:
     return {
         'domain_id': session.domain_id,
