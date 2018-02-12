@@ -4,7 +4,7 @@ from typing import Dict, Set
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.auth import User
+from dpl.model.user import User
 from dpl.auth.token_manager import TokenManager
 
 

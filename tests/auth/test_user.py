@@ -4,7 +4,7 @@ import unittest
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.auth.user import User
+from dpl.model.user import User
 
 
 class TestUser(unittest.TestCase):

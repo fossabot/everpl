@@ -12,6 +12,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.mutable
 
+from dpl.model.user import User
 from dpl.placements.placement import Placement
 from dpl.settings.connection_settings import ConnectionSettings
 from dpl.settings.thing_settings import ThingSettings
@@ -60,6 +61,7 @@ class DbMapper(object):
 
         self.metadata = metadata
 
+        self.table_users = None  # type: sa.Table
         self.table_placements = None  # type: sa.Table
         self.table_con_settings = None  # type: sa.Table
         self.table_thing_settings = None  # type: sa.Table
@@ -72,6 +74,13 @@ class DbMapper(object):
 
         :return: None
         """
+        self.table_users = sa.Table(
+            'users', self.metadata,
+            sa.Column('_domain_id', sa.String(32), primary_key=True),
+            sa.Column('_username', sa.String(32), index=True, unique=True),
+            sa.Column('_pwd_hash', sa.String(90))
+        )
+
         self.table_placements = sa.Table(
             'placements', self.metadata,
             sa.Column('_domain_id', sa.String(32), primary_key=True),
@@ -105,6 +114,7 @@ class DbMapper(object):
 
         :return: None
         """
+        sa.orm.mapper(User, self.table_users)
         sa.orm.mapper(Placement, self.table_placements)
         sa.orm.mapper(ConnectionSettings, self.table_con_settings)
         sa.orm.mapper(ThingSettings, self.table_thing_settings)
