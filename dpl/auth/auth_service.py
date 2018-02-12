@@ -58,7 +58,7 @@ class AuthService(AbsAuthService):
             client_ip=client_ip
         )
 
-        access_token = self._session_service.get_access_key(session_id)
+        access_token = self._session_service.get_access_token(session_id)
 
         return access_token
 
@@ -85,7 +85,7 @@ class AuthService(AbsAuthService):
         :raises AuthInvalidUserPasswordCombinationError:
                 if the specified old password value is invalid
         """
-        session_dto = self._session_service.view_by_access_key(access_token)
+        session_dto = self._session_service.view_by_access_token(access_token)
         user_id = session_dto['user_id']
 
         self._user_service.change_password(
@@ -163,7 +163,7 @@ class AuthService(AbsAuthService):
         :return: information about a current opened Session in
                  a form of a DTO
         """
-        return self._session_service.view_by_access_key(access_token)
+        return self._session_service.view_by_access_token(access_token)
 
     def close_session(self, access_token: str) -> None:
         """
@@ -177,7 +177,7 @@ class AuthService(AbsAuthService):
         :return: None
         """
         try:
-            session_dto = self._session_service.view_by_access_key(access_token)
+            session_dto = self._session_service.view_by_access_token(access_token)
             session_id = session_dto['domain_id']
             self._session_service.remove(domain_id=session_id)
 
@@ -199,7 +199,7 @@ class AuthService(AbsAuthService):
                 access token doesn't permit session revocation
         """
         try:
-            session_dto = self._session_service.view_by_access_key(access_token)
+            session_dto = self._session_service.view_by_access_token(access_token)
 
         except ServiceEntityResolutionError as e:
             raise AuthInvalidTokenError from e
