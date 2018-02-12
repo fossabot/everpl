@@ -3,7 +3,12 @@ from typing import Dict, List, Mapping, Any
 
 # Include DPL modules
 from . import exceptions
-from dpl.auth import AuthManager
+from dpl.auth.auth_service import (
+    AuthService,
+    AuthInvalidUserPasswordCombinationError,
+    AuthInvalidTokenError,
+    AuthInsufficientPrivilegesError
+)
 
 from dpl.services.service_exceptions import ServiceEntityResolutionError
 from dpl.services.abs_placement_service import AbsPlacementService
@@ -17,11 +22,11 @@ class ApiGateway(object):
     of fetch information about a specific thing, for example)
     """
     def __init__(
-            self, auth_manager: AuthManager,
+            self, auth_service: AuthService,
             thing_service: AbsThingService,
             placement_service: AbsPlacementService
     ):
-        self._am = auth_manager
+        self._auth_service = auth_service
         self._things = thing_service
         self._placements = placement_service
 
@@ -35,7 +40,11 @@ class ApiGateway(object):
         """
         # FIXME: auth_user can raise ValueError on fail. Set a more specific exception
         # and document it
-        return self._am.auth_user(username, password)
+        try:
+            return self._auth_service.request_access(username, password, "FIXME", "FIXME")
+
+        except AuthInvalidUserPasswordCombinationError as e:
+            raise ValueError() from e
 
     def _check_permission(self, token: str, requested_action):
         """
@@ -46,11 +55,14 @@ class ApiGateway(object):
         :return: None
         :raises PermissionError: if this action is not permitted for this token
         """
-        if not self._am.is_token_valid(token):
-            raise exceptions.InvalidTokenError("Specified token was revoked or not-existing at all")
+        try:
+            self._auth_service.check_permission(token, "FIXME", requested_action)
 
-        if not self._am.is_token_grants(token, requested_action):
-            raise exceptions.PermissionDeniedForTokenError("Specified token doesn't permit this action")
+        except AuthInvalidTokenError as e:
+            raise exceptions.InvalidTokenError("Specified token was revoked or not-existing at all") from e
+
+        except AuthInsufficientPrivilegesError as e:
+            raise exceptions.PermissionDeniedForTokenError("Specified token doesn't permit this action") from e
 
     def get_things(self, token: str) -> List[Dict]:
         """
@@ -75,6 +87,7 @@ class ApiGateway(object):
 
         try:
             return self._things.view(thing_id)
+
         except ServiceEntityResolutionError as e:
             raise exceptions.ThingNotFoundError("Thing with the specified id was not found") from e
 
