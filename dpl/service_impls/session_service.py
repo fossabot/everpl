@@ -85,15 +85,15 @@ class SessionService(AbsSessionService, BaseService[SessionDto]):
 
         return session.domain_id
 
-    def get_access_key(self, by_session: TDomainId) -> str:
+    def get_access_token(self, by_session: TDomainId) -> str:
         """
-        Allows to extract an access key from the specified Session
+        Allows to extract an access token from the specified Session
 
         WARNING: Must NOT to be directly exposed to the API
 
         :param by_session: an identifier of Session which contains
-               a needed access key
-        :return: an access key associated with the specified Session
+               a needed access token
+        :return: an access token associated with the specified Session
         """
         session = self._resolve_entity(
             repository=self._sessions,
@@ -115,18 +115,18 @@ class SessionService(AbsSessionService, BaseService[SessionDto]):
 
         return [build_dto(i) for i in resolved]
 
-    def view_by_access_key(self, access_key: str) -> SessionDto:
+    def view_by_access_token(self, access_token: str) -> SessionDto:
         """
         Allows to determine and fetch a Session which contains
-        the specified access_key
+        the specified access token
 
-        :param access_key: an access key associated with Session
+        :param access_token: an access token associated with Session
         :return: Session DTO
         :raises ServiceEntityResolutionError: if there is no
                 session with the specified access token existing
                 (access token was revoked or not existing at all)
         """
-        resolved = self._sessions.find_by_access_token(access_key)
+        resolved = self._sessions.find_by_access_token(access_token)
 
         if resolved is None:
             raise ServiceEntityResolutionError()
