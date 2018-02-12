@@ -18,7 +18,7 @@ from dpl.model.user import User
 UserDto = BaseDto
 
 
-@build_dto.register(BaseDto)
+@build_dto.register(User)
 def _(user: User) -> UserDto:
     return {
         'domain_id': user.domain_id,
