@@ -30,7 +30,7 @@ from dpl.service_impls.session_service import SessionService
 from dpl.service_impls.placement_service import PlacementService
 from dpl.service_impls.thing_service import ThingService
 
-from dpl.auth.auth_service import AuthService
+from dpl.auth.auth_service import AuthService, ServiceEntityResolutionError
 
 
 module_logger = logging.getLogger(__name__)
@@ -211,7 +211,12 @@ class Controller(object):
             await self._bootstrap_integrations()
 
         # FIXME: Only for testing purposes
-        self._user_service.create_user("admin", "admin")
+        try:
+            self._user_service.view_by_username('admin')
+
+        except ServiceEntityResolutionError:
+            self._user_service.create_user("admin", "admin")
+            self._db_session_manager.get_session().commit()
 
         is_api_enabled = self._core_config['is_api_enabled']
 
