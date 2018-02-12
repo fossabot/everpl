@@ -10,22 +10,27 @@ import appdirs
 
 # Include DPL modules
 from dpl import api
-from dpl import auth
 from dpl.core.configuration import Configuration
 from dpl.integrations.binding_bootstrapper import BindingBootstrapper
 
 from dpl.repo_impls.sql_alchemy.db_session_manager import DbSessionManager
 from dpl.repo_impls.sql_alchemy.db_mapper import DbMapper
+from dpl.repo_impls.sql_alchemy.user_repository import UserRepository
 from dpl.repo_impls.sql_alchemy.placement_repository import PlacementRepository
 
 from dpl.repo_impls.sql_alchemy.connection_settings_repo import ConnectionSettingsRepository
 from dpl.repo_impls.sql_alchemy.thing_settings_repo import ThingSettingsRepository
 
+from dpl.repo_impls.in_memory.session_repository import SessionRepository
 from dpl.repo_impls.in_memory.connection_repository import ConnectionRepository
 from dpl.repo_impls.in_memory.thing_repository import ThingRepository
 
+from dpl.service_impls.user_service import UserService
+from dpl.service_impls.session_service import SessionService
 from dpl.service_impls.placement_service import PlacementService
 from dpl.service_impls.thing_service import ThingService
+
+from dpl.auth.auth_service import AuthService
 
 
 module_logger = logging.getLogger(__name__)
@@ -94,16 +99,21 @@ class Controller(object):
         self._con_settings_repo = ConnectionSettingsRepository(self._db_session_manager)
         self._thing_settings_repo = ThingSettingsRepository(self._db_session_manager)
 
+        self._user_repo = UserRepository(self._db_session_manager)
         self._placement_repo = PlacementRepository(self._db_session_manager)
+
+        self._session_repo = SessionRepository()
         self._connection_repo = ConnectionRepository()
         self._thing_repo = ThingRepository()
+
+        self._user_service = UserService(self._user_repo)
+        self._session_service = SessionService(self._session_repo)
+        self._auth_service = AuthService(self._user_service, self._session_service)
 
         self._placement_service = PlacementService(self._placement_repo)
         self._thing_service = ThingService(self._thing_repo)
 
-        self._auth_manager = auth.AuthManager()
-
-        self._api_gateway = api.ApiGateway(self._auth_manager, self._thing_service, self._placement_service)
+        self._api_gateway = api.ApiGateway(self._auth_service, self._thing_service, self._placement_service)
         self._rest_api = api.RestApi(self._api_gateway)
 
     def parse_arguments(self):
@@ -201,7 +211,7 @@ class Controller(object):
             await self._bootstrap_integrations()
 
         # FIXME: Only for testing purposes
-        self._auth_manager.create_root_user("admin", "admin")
+        self._user_service.create_user("admin", "admin")
 
         is_api_enabled = self._core_config['is_api_enabled']
 
