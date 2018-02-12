@@ -7,7 +7,7 @@ from .db_session_manager import DbSessionManager
 from .base_repository import BaseRepository
 
 
-class UserRepository(AbsUserRepository, BaseRepository[User]):
+class UserRepository(BaseRepository[User], AbsUserRepository):
     """
     An implementation of SQLAlchemy-based storage
     of userRepository
