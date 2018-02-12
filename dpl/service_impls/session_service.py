@@ -7,6 +7,7 @@ from dpl.dtos.session_dto import SessionDto
 from dpl.repos.abs_session_repository import AbsSessionRepository
 from dpl.services.abs_session_service import AbsSessionService
 
+from dpl.services.service_exceptions import ServiceEntityResolutionError
 from .base_service import BaseService
 
 
@@ -121,8 +122,14 @@ class SessionService(AbsSessionService, BaseService[SessionDto]):
 
         :param access_key: an access key associated with Session
         :return: Session DTO
+        :raises ServiceEntityResolutionError: if there is no
+                session with the specified access token existing
+                (access token was revoked or not existing at all)
         """
         resolved = self._sessions.find_by_access_token(access_key)
+
+        if resolved is None:
+            raise ServiceEntityResolutionError()
 
         return build_dto(resolved)
 
