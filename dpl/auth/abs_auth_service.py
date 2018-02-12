@@ -75,17 +75,38 @@ class AbsAuthService(object):
         """
         raise NotImplementedError()
 
-    def check_permission(self, access_token: str, to_perform: str) -> None:
+    def check_permission(
+            self, access_token: str,
+            in_domain: str, to_execute: str,
+            *args, **kwargs
+    ) -> None:
         """
-        WARNING: check_permission signature is a subject to change!
-        Don't use it for now
+        Checks if the the specified access token allows to execute
+        the specified command in the specified domain with the
+        specified keyword and positional arguments.
 
-        FIXME: Define signature
+        Keyword and positional arguments are optional and may be used
+        for some contextual checks like "User requested information
+        about its own account" or "User has access to the resource
+        with the specified identifier" and so on.
 
-        :param access_token: ???????????
-        :param to_perform: ????????????
-        :return: ?????????????
-        :raises: ????????????
+        :param access_token: access token to be checked on a
+               sufficiency of permissions
+        :param in_domain: some domain in which the command is
+               executed like 'users' or 'placements'; is usually
+               set to the name of a corresponding Service
+        :param to_execute: command or method that was requested to
+               be executed
+        :param args: optional additional positional arguments to be
+               checked
+        :param kwargs: optional additional keyword arguments to be
+               checked
+        :return: None
+        :raises AuthInvalidTokenError: if the specified access
+                token is invalid (i.e. was revoked or not
+                existing at all)
+        :raises AuthInsufficientPrivilegesError: if the specified
+                access token doesn't permit password changing
         """
         raise NotImplementedError()
 
