@@ -30,7 +30,8 @@ class SessionRepository(BaseRepository[Session], AbsSessionRepository):
         sessions_of_user = self._sessions_by_user.get(new_obj.user_id)
 
         if sessions_of_user is None:
-            self._sessions_by_user[new_obj.user_id] = set()
+            sessions_of_user = set()
+            self._sessions_by_user[new_obj.user_id] = sessions_of_user
 
         sessions_of_user.add(new_obj)
 
