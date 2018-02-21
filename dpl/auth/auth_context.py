@@ -78,4 +78,4 @@ class AuthContext(object):
                  no access token was bound
         """
         concurrent_id = get_concurrent_identity()
-        return self._tokens.get(concurrent_id, default=None)
+        return self._tokens.get(concurrent_id, None)
