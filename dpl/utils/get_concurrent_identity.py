@@ -26,7 +26,10 @@ def get_concurrent_identity():
              task in process or of the current running
              thread if called not from a asynchronous Task
     """
-    current_task = asyncio.Task.current_task()
+    try:
+        current_task = asyncio.Task.current_task()
+    except RuntimeError:
+        current_task = None
 
     if current_task is None:
         identity = threading.current_thread().ident
