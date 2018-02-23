@@ -6,6 +6,8 @@ is not a child of AbsEntityService and was mainly created as
 a facade for two other services - SessionService and UserService
 """
 
+from typing import Sequence, Mapping
+from dpl.utils.empty_mapping import EMPTY_MAPPING
 from dpl.dtos.session_dto import SessionDto
 
 
@@ -78,7 +80,7 @@ class AbsAuthService(object):
     def check_permission(
             self, access_token: str,
             in_domain: str, to_execute: str,
-            *args, **kwargs
+            args: Sequence = (), kwargs: Mapping = EMPTY_MAPPING
     ) -> None:
         """
         Checks if the the specified access token allows to execute
