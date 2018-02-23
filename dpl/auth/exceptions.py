@@ -30,3 +30,11 @@ class AuthInvalidTokenError(ServiceValidationError):
     was revoked or was not existing at all
     """
     pass
+
+
+class AuthMissingTokenError(ServiceValidationError):
+    """
+    Exception to be raised if an attempt to extract an
+    access token out of a current context was failed
+    """
+    pass
