@@ -1,3 +1,6 @@
+from typing import Sequence, Mapping
+from dpl.utils.empty_mapping import EMPTY_MAPPING
+
 from dpl.dtos.session_dto import SessionDto
 from dpl.services.service_exceptions import ServiceEntityResolutionError
 from dpl.services.abs_user_service import AbsUserService
@@ -102,7 +105,7 @@ class AuthService(AbsAuthService):
     def check_permission(
             self, access_token: str,
             in_domain: str, to_execute: str,
-            *args, **kwargs
+            args: Sequence = (), kwargs: Mapping = EMPTY_MAPPING
     ) -> None:
         """
         Checks if the the specified access token allows to execute
