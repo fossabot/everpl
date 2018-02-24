@@ -6,7 +6,7 @@ from dpl.things import Switch
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
-from . import DummyConnection
+from .dummy_connection import DummyConnection
 
 
 class DummySwitch(Switch):

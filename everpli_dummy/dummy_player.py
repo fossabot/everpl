@@ -1,21 +1,17 @@
 # Include standard modules
-import time
-
 # Include 3rd-party modules
+
 # Include DPL modules
-from dpl.things import Slider
+from dpl.things import Player
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
+from .dummy_connection import DummyConnection
 
-from . import DummyConnection
 
-
-class DummySlider(Slider):
+class DummyPlayer(Player):
     """
-    A reference implementation of slider
+    A reference implementation of Player
     """
-    __SWITCH_DELAY = 1  # second
-
     def __init__(self, domain_id: TDomainId, con_instance: DummyConnection, con_params: dict, metadata: dict):
         """
         Constructor. Receives an instance of DummyConnection and a prefix to be printed
@@ -38,7 +34,7 @@ class DummySlider(Slider):
         self._con_instance = con_instance
 
     @property
-    def state(self) -> Slider.States:
+    def state(self) -> Player.States:
         """
         Return a current state of the Thing
 
@@ -77,58 +73,50 @@ class DummySlider(Slider):
         """
         self._is_enabled = True
 
-    def open(self) -> None:
+    def play(self, song_name: str = None) -> None:
         """
-        Switches an object to the 'opening' and then 'opened' state if its current state
-        is 'undefined', 'closed' or 'closing'. Command must be ignored otherwise.
+        Starts playing and switches the object to the 'playing' state. Additional parameters
+        like track name or URL can be provided.
+
+        :param song_name: song name to be played (or URL, or ID, or playlist position, etc.)
+        :return: None
+        """
+        self._check_is_available()
+        self._con_instance.print(self._print_prefix, "Player is playing {0}".format(song_name))
+        self._state = self.States.playing
+
+    def stop(self) -> None:
+        """
+        Stops playing and switches the object to the 'stopped' state.
 
         :return: None
         """
         self._check_is_available()
+        self._con_instance.print(self._print_prefix, "Player is stopped")
+        self._state = self.States.stopped
 
-        if self._state == self.States.opening or self._state == self.States.opened:
-            pass
-        else:
-            self._con_instance.print(self._print_prefix, "Switch is opening...")
-            self._state = self.States.opening
-
-            time.sleep(self.__SWITCH_DELAY)
-
-            self._con_instance.print(self._print_prefix, "Switch is opened")
-            self._state = self.States.opened
-
-    def close(self) -> None:
+    def pause(self) -> None:
         """
-        Switches an object to the 'closing' and then 'closed' state if its current state
-        is 'undefined', 'opened' or 'opening'. Command must be ignored otherwise.
+        Pause playing and switches the object to the 'paused' state.
 
         :return: None
         """
         self._check_is_available()
-
-        if self._state == self.States.closing or self._state == self.States.closed:
-            pass
-        else:
-            self._con_instance.print(self._print_prefix, "Switch is closing...")
-            self._state = self.States.closing
-
-            time.sleep(self.__SWITCH_DELAY)
-
-            self._con_instance.print(self._print_prefix, "Switch is closed")
-            self._state = self.States.closed
+        self._con_instance.print(self._print_prefix, "Player is paused")
+        self._state = self.States.paused
 
 
-class DummySliderFactory(ThingFactory):
+class DummyPlayerFactory(ThingFactory):
     """
-    DummySliderFactory is a class that is responsible for building of DummySliders
+    DummyPlayerFactory is a class that is responsible for building of DummyPlayers
     """
     @staticmethod
-    def build(*args, **kwargs) -> DummySlider:
-        return DummySlider(*args, **kwargs)
+    def build(*args, **kwargs) -> DummyPlayer:
+        return DummyPlayer(*args, **kwargs)
 
 
 ThingRegistry.register_factory(
     integration_name="dummy",
-    thing_type="slider",
-    factory=DummySliderFactory()
+    thing_type="player",
+    factory=DummyPlayerFactory()
 )
