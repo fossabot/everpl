@@ -31,7 +31,10 @@ from dpl.service_impls.placement_service import PlacementService
 from dpl.service_impls.thing_service import ThingService
 
 from dpl.auth.auth_service import AuthService, ServiceEntityResolutionError
+from dpl.auth.auth_context import AuthContext
+from dpl.auth.auth_aspect import AuthAspect
 
+from dpl.utils.simple_interceptor import SimpleInterceptor
 
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
@@ -106,12 +109,27 @@ class Controller(object):
         self._connection_repo = ConnectionRepository()
         self._thing_repo = ThingRepository()
 
-        self._user_service = UserService(self._user_repo)
-        self._session_service = SessionService(self._session_repo)
-        self._auth_service = AuthService(self._user_service, self._session_service)
+        self._user_service_raw = UserService(self._user_repo)
+        self._session_service_raw = SessionService(self._session_repo)
+        self._auth_service = AuthService(self._user_service_raw, self._session_service_raw)
 
-        self._placement_service = PlacementService(self._placement_repo)
-        self._thing_service = ThingService(self._thing_repo)
+        self._auth_context = AuthContext()
+        self._auth_aspect = AuthAspect(
+            auth_service=self._auth_service,
+            auth_context=self._auth_context
+        )
+
+        self._placement_service_raw = PlacementService(self._placement_repo)
+        self._placement_service = SimpleInterceptor(
+            wrapped=self._placement_service_raw,
+            aspect=self._auth_aspect
+        )  # type: PlacementService
+
+        self._thing_service_raw = ThingService(self._thing_repo)
+        self._thing_service = SimpleInterceptor(
+            wrapped=self._thing_service_raw,
+            aspect=self._auth_aspect
+        )  # type: ThingService
 
         self._api_gateway = api.ApiGateway(self._auth_service, self._thing_service, self._placement_service)
         self._rest_api = api.RestApi(self._api_gateway)
@@ -212,10 +230,10 @@ class Controller(object):
 
         # FIXME: Only for testing purposes
         try:
-            self._user_service.view_by_username('admin')
+            self._user_service_raw.view_by_username('admin')
 
         except ServiceEntityResolutionError:
-            self._user_service.create_user("admin", "admin")
+            self._user_service_raw.create_user("admin", "admin")
             self._db_session_manager.get_session().commit()
 
         is_api_enabled = self._core_config['is_api_enabled']
@@ -268,8 +286,8 @@ class Controller(object):
 
         self._db_session_manager.remove_session()
 
-        self._thing_service.enable_all()
+        self._thing_service_raw.enable_all()
 
     async def shutdown(self):
         await self._rest_api.shutdown_server()
-        self._thing_service.disable_all()
+        self._thing_service_raw.disable_all()
