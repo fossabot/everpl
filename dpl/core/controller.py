@@ -9,7 +9,6 @@ from sqlalchemy import create_engine
 import appdirs
 
 # Include DPL modules
-from dpl import api
 from dpl.core.configuration import Configuration
 from dpl.integrations.binding_bootstrapper import BindingBootstrapper
 
@@ -35,6 +34,11 @@ from dpl.auth.auth_context import AuthContext
 from dpl.auth.auth_aspect import AuthAspect
 
 from dpl.utils.simple_interceptor import SimpleInterceptor
+
+from dpl.api.rest_api.things_subapp import build_things_subapp
+from dpl.api.rest_api.placements_subapp import build_placements_subapp
+from dpl.api.rest_api.messages_subapp import build_messages_subapp
+from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
@@ -131,8 +135,30 @@ class Controller(object):
             aspect=self._auth_aspect
         )  # type: ThingService
 
-        self._api_gateway = api.ApiGateway(self._auth_service, self._thing_service, self._placement_service)
-        self._rest_api = api.RestApi(self._api_gateway)
+        api_context_data = {'auth_context': self._auth_context}
+
+        self._rest_api_things = build_things_subapp(
+            thing_service=self._thing_service,
+            additional_data=api_context_data
+        )
+
+        self._rest_api_placements = build_placements_subapp(
+            placement_service=self._placement_service,
+            additional_data=api_context_data
+        )
+
+        self._rest_api_messages = build_messages_subapp(
+            thing_service=self._thing_service,
+            additional_data=api_context_data
+        )
+
+        self._rest_api = RestApiProvider(
+            things=self._rest_api_things,
+            placements=self._rest_api_placements,
+            messages=self._rest_api_messages,
+            auth_context=self._auth_context,
+            auth_service=self._auth_service
+        )
 
     def parse_arguments(self):
         """
