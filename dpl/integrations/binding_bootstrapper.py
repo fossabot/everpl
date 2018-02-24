@@ -53,7 +53,7 @@ class BindingBootstrapper(object):
         """
         for item in integration_names:
             try:
-                importlib.import_module(name='.'+item, package="dpl.integrations")
+                importlib.import_module(name='everpli_'+item)
             except ImportError as e:
                 LOGGER.warning("Failed to load integration \"%s\": %s",
                                item, e)
