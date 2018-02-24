@@ -12,8 +12,7 @@ from unittest import mock
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.integrations.dummy import DummyConnection
-from dpl.integrations.dummy import DummySwitch
+from everpli_dummy import DummyConnection, DummySwitch
 
 
 # Import base test case for all Switch interface implementations
