@@ -13,7 +13,7 @@ from dpl.api import ApiGateway
 from dpl.api import exceptions
 from dpl.api import api_errors
 
-from dpl.api.rest_api import RestApi
+from dpl.api.rest_api_legacy import RestApiLegacy
 
 
 class TestRestApiProvider(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestRestApiProvider(unittest.TestCase):
         self.api_gateway_mock = mock.Mock(spec_set=ApiGateway)
 
         # create an instance of RestApi
-        self.rest_api_provider = RestApi(
+        self.rest_api_provider = RestApiLegacy(
             self.api_gateway_mock,
             self.loop
         )

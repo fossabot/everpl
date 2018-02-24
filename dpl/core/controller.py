@@ -132,7 +132,7 @@ class Controller(object):
         )  # type: ThingService
 
         self._api_gateway = api.ApiGateway(self._auth_service, self._thing_service, self._placement_service)
-        self._rest_api = api.RestApi(self._api_gateway)
+        self._rest_api = api.RestApiLegacy(self._api_gateway)
 
     def parse_arguments(self):
         """

@@ -106,7 +106,7 @@ def json_decode_decorator(decorated_callable):
     return proxy
 
 
-class RestApi(object):
+class RestApiLegacy(object):
     """
     RestApi is a provider of REST API implementation which receives
     REST requests from clients and passes them to ApiGateway.
