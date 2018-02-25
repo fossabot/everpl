@@ -102,3 +102,28 @@ class SimpleInterceptor(Generic[T]):
             else:  # intercept only public methods
                 setattr(self, name, self._aspect(member))
 
+    def __getattr__(self, item: str):
+        """
+        This method is invoked only in a case when the requested
+        method wasn't found by usual means (i.e. in existing
+        attribute of this interceptor).
+
+        Looks for an attribute in the original (wrapped) object.
+        If an attribute was found and is a callable, then it is
+        wrapped with an aspect, saved to the interceptor attribute
+        for future uses and returned to the caller. In all other
+        cases an AttributeError will be raised.
+
+        Is handy for the usage of interceptors with Mocks.
+
+        :param item: a name of an attribute to be fetched
+        :return: an attribute value
+        """
+        wrapped_attr = getattr(self._wrapped, item)
+
+        if callable(wrapped_attr):
+            setattr(self, item, self._aspect(wrapped_attr))
+
+        return super().__getattribute__(item)
+
+
