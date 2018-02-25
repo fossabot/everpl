@@ -149,7 +149,7 @@ class RestApiProvider(object):
         await self._app.cleanup()  # fires on_cleanup signal (so does nothing now)
 
 
-async def root_get_handler(self, request: web.Request) -> web.Response:
+async def root_get_handler(request: web.Request) -> web.Response:
     """
     A handler for GET requests to path='/'
 
