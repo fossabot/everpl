@@ -55,6 +55,8 @@ class TestRestApiProvider(unittest.TestCase):
         self.raw_things_service.view.__qualname__ = 'ThingService.view'
         self.raw_things_service.view_all = mock.Mock()
         self.raw_things_service.view_all.__qualname__ = 'ThingService.view_all'
+        self.raw_things_service.select_by_placement = mock.Mock()
+        self.raw_things_service.select_by_placement.__qualname__ = 'ThingService.select_by_placement'
 
         # create an instance of AuthContext
         self.auth_context = AuthContext()
@@ -661,7 +663,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_response_body = api_errors.ERROR_TEMPLATES[1005].to_dict()
 
-        self.things_service.view.side_effect = get_thing_side_effect
+        self.raw_things_service.view.side_effect = get_thing_side_effect
 
         test_response_status = 404
 
@@ -733,12 +735,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_thing_side_effect(*args, **kwargs):
-            raise exceptions.PermissionDeniedForTokenError
+            raise AuthInsufficientPrivilegesError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2110].to_dict()
 
-        self.api_gateway_mock.get_thing = mock.Mock()
-        self.api_gateway_mock.get_thing.side_effect = get_thing_side_effect
+        self.raw_things_service.view.side_effect = get_thing_side_effect
 
         test_response_status = 403
 
@@ -766,8 +767,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_things_mock = [{"key1": "nobody cares"}, {"key1": "nobody cares 2"}]
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.return_value = test_things_mock
+        self.raw_things_service.view_all.return_value = test_things_mock
 
         test_response_status = 200
 
@@ -791,8 +791,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_things_mock = []
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.return_value = test_things_mock
+        self.raw_things_service.view_all.return_value = test_things_mock
 
         test_response_status = 200
 
@@ -834,12 +833,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_things_side_effect(*args, **kwargs):
-            raise exceptions.InvalidTokenError
+            raise AuthInvalidTokenError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2101].to_dict()
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.side_effect = get_things_side_effect
+        self.raw_things_service.view_all.side_effect = get_things_side_effect
 
         test_response_status = 401
 
@@ -862,12 +860,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_things_side_effect(*args, **kwargs):
-            raise exceptions.PermissionDeniedForTokenError
+            raise AuthInsufficientPrivilegesError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2110].to_dict()
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.side_effect = get_things_side_effect
+        self.raw_things_service.view_all.side_effect = get_things_side_effect
 
         test_response_status = 403
 
@@ -895,11 +892,12 @@ class TestRestApiProvider(unittest.TestCase):
         test_params = {'placement': "R1"}
 
         test_things_mock = [{"placement": "R1"}, {"placement": "R2"}]
+        test_filtered_mock = list().append(test_things_mock[0])
 
         assert test_params['placement'] == test_things_mock[0]['placement']
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.return_value = test_things_mock
+        self.raw_things_service.view_all.return_value = test_things_mock
+        self.raw_things_service.select_by_placement.return_value = test_filtered_mock
 
         test_response_status = 200
 
@@ -910,7 +908,7 @@ class TestRestApiProvider(unittest.TestCase):
                     response_body = await resp.json()
 
                     self.assertEqual(
-                        response_body, {"things": [test_things_mock[0]]}
+                        response_body, {"things": test_filtered_mock}
                     )
 
         self.loop.run_until_complete(body())
@@ -926,8 +924,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         assert test_params['type'] == test_things_mock[1]['type']
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.return_value = test_things_mock
+        self.raw_things_service.view_all.return_value = test_things_mock
 
         test_response_status = 200
 
@@ -952,8 +949,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_things_mock = [{"type": "t1"}, {"type": "t2"}]
 
-        self.api_gateway_mock.get_things = mock.Mock()
-        self.api_gateway_mock.get_things.return_value = test_things_mock
+        self.raw_things_service.view_all.return_value = test_things_mock
 
         test_response_status = 200
 
