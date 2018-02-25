@@ -13,7 +13,22 @@ from dpl.api import ApiGateway
 from dpl.api import exceptions
 from dpl.api import api_errors
 
-from dpl.api.rest_api_legacy import RestApiLegacy
+from dpl.utils.simple_interceptor import SimpleInterceptor
+from dpl.auth.abs_auth_service import (
+    AbsAuthService,
+    AuthInvalidUserPasswordCombinationError,
+    AuthInvalidTokenError,
+    AuthInsufficientPrivilegesError
+)
+from dpl.auth.auth_context import AuthContext
+from dpl.auth.auth_aspect import AuthAspect
+from dpl.services.abs_thing_service import AbsThingService
+from dpl.services.abs_placement_service import AbsPlacementService, ServiceEntityResolutionError
+
+from dpl.api.rest_api.things_subapp import build_things_subapp
+from dpl.api.rest_api.placements_subapp import build_placements_subapp
+from dpl.api.rest_api.messages_subapp import build_messages_subapp
+from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
 
 class TestRestApiProvider(unittest.TestCase):
@@ -25,13 +40,66 @@ class TestRestApiProvider(unittest.TestCase):
         # create a new event loop
         self.loop = asyncio.new_event_loop()  # type: asyncio.AbstractEventLoop
 
-        # create a mock of ApiGateway
-        self.api_gateway_mock = mock.Mock(spec_set=ApiGateway)
+        # create mocks of all needed services
+        self.auth_service = mock.Mock(spec_set=AbsAuthService)  # type: AbsAuthService
+        self.raw_things_service = mock.Mock(spec_set=AbsThingService)  # type: AbsThingService
+        self.raw_placement_service = mock.Mock(spec_set=AbsPlacementService)  # type: AbsPlacementService
+
+        # configure Mock methods
+        self.raw_placement_service.view = mock.Mock()
+        self.raw_placement_service.view.__qualname__ = 'PlacementService.view'
+        self.raw_placement_service.view_all = mock.Mock()
+        self.raw_placement_service.view_all.__qualname__ = 'PlacementService.view_all'
+
+        self.raw_things_service.view = mock.Mock()
+        self.raw_things_service.view.__qualname__ = 'ThingService.view'
+        self.raw_things_service.view_all = mock.Mock()
+        self.raw_things_service.view_all.__qualname__ = 'ThingService.view_all'
+
+        # create an instance of AuthContext
+        self.auth_context = AuthContext()
+
+        # create an instance of AuthAspect
+        self.auth_aspect = AuthAspect(
+            auth_service=self.auth_service,
+            auth_context=self.auth_context
+        )
+
+        # protect services with an authorization aspect
+        self.things_service = SimpleInterceptor(
+            wrapped=self.raw_things_service,
+            aspect=self.auth_aspect
+        )  # type: AbsThingService
+        self.placement_service = SimpleInterceptor(
+            wrapped=self.raw_placement_service,
+            aspect=self.auth_aspect
+        )  # type: AbsPlacementService
+
+        # prepare authorization context for subapps
+        context_data = {'auth_context': self.auth_context}
+
+        # initialize all subapps
+        things_subapp = build_things_subapp(
+            thing_service=self.things_service,
+            additional_data=context_data
+        )
+        placements_subapp = build_placements_subapp(
+            placement_service=self.placement_service,
+            additional_data=context_data
+        )
+        messages_subapp = build_messages_subapp(
+            thing_service=self.things_service,
+            additional_data=context_data
+        )
 
         # create an instance of RestApi
-        self.rest_api_provider = RestApiLegacy(
-            self.api_gateway_mock,
-            self.loop
+        self.rest_api_provider = RestApiProvider(
+            things=things_subapp,
+            placements=placements_subapp,
+            messages=messages_subapp,
+            auth_context=self.auth_context,
+            auth_service=self.auth_service,
+            loop=self.loop
         )
 
         # TODO: Pick a random free port. Check if port is free
@@ -53,7 +121,10 @@ class TestRestApiProvider(unittest.TestCase):
 
         # delete links to used objects
         del self.rest_api_provider
-        del self.api_gateway_mock
+        del self.raw_placement_service
+        del self.raw_things_service
+        del self.auth_context
+        del self.auth_service
 
         del self.loop
 
@@ -88,8 +159,8 @@ class TestRestApiProvider(unittest.TestCase):
             "message": "authorized"
         }
 
-        self.api_gateway_mock.auth = mock.Mock()
-        self.api_gateway_mock.auth.return_value = test_token
+        self.auth_service.request_access = mock.Mock()
+        self.auth_service.request_access.return_value = test_token
 
         async def body():
             async with aiohttp.ClientSession(loop=self.loop) as session:
@@ -202,14 +273,13 @@ class TestRestApiProvider(unittest.TestCase):
         }
 
         def auth_side_effect(*args, **kwargs):
-            # FIXME: specify more concrete exception
-            raise ValueError()
+            raise AuthInvalidUserPasswordCombinationError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2002].to_dict()
         test_response_status = 401
 
-        self.api_gateway_mock.auth = mock.Mock()
-        self.api_gateway_mock.auth.side_effect = auth_side_effect
+        self.auth_service.request_access = mock.Mock()
+        self.auth_service.request_access.side_effect = auth_side_effect
 
         async def body():
             async with aiohttp.ClientSession(loop=self.loop) as session:
@@ -233,8 +303,8 @@ class TestRestApiProvider(unittest.TestCase):
         test_response_body = api_errors.ERROR_TEMPLATES[1003]
         test_response_status = 500
 
-        self.api_gateway_mock.auth = mock.Mock()
-        self.api_gateway_mock.auth.side_effect = auth_side_effect
+        self.auth_service.request_access = mock.Mock()
+        self.auth_service.request_access = auth_side_effect
 
         async def body():
             async with aiohttp.ClientSession(loop=self.loop) as session:
@@ -303,8 +373,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_placement_mock = {"key1": "nobody cares"}
 
-        self.api_gateway_mock.get_placement = mock.Mock()
-        self.api_gateway_mock.get_placement.return_value = test_placement_mock
+        self.raw_placement_service.view.return_value = test_placement_mock
 
         test_response_status = 200
 
@@ -328,12 +397,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_placement_side_effect(*args, **kwargs):
-            raise exceptions.PlacementNotFoundError
+            raise ServiceEntityResolutionError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[1005].to_dict()
 
-        self.api_gateway_mock.get_placement = mock.Mock()
-        self.api_gateway_mock.get_placement.side_effect = get_placement_side_effect
+        self.raw_placement_service.view.side_effect = get_placement_side_effect
 
         test_response_status = 404
 
@@ -376,13 +444,13 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_headers = {'Authorization': test_token}
 
-        def get_placement_side_effect(*args, **kwargs):
-            raise exceptions.InvalidTokenError
+        def auth_side_effect(*args, **kwargs):
+            raise AuthInvalidTokenError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2101].to_dict()
 
-        self.api_gateway_mock.get_placement = mock.Mock()
-        self.api_gateway_mock.get_placement.side_effect = get_placement_side_effect
+        self.auth_service.check_permission = mock.Mock()
+        self.auth_service.check_permission.side_effect = auth_side_effect
 
         test_response_status = 401
 
@@ -406,12 +474,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_placement_side_effect(*args, **kwargs):
-            raise exceptions.PermissionDeniedForTokenError
+            raise AuthInsufficientPrivilegesError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2110].to_dict()
 
-        self.api_gateway_mock.get_placement = mock.Mock()
-        self.api_gateway_mock.get_placement.side_effect = get_placement_side_effect
+        self.raw_placement_service.view.side_effect = get_placement_side_effect
 
         test_response_status = 403
 
@@ -439,8 +506,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_placements_mock = [{"key1": "nobody cares"}, {"key1": "nobody cares 2"}]
 
-        self.api_gateway_mock.get_placements = mock.Mock()
-        self.api_gateway_mock.get_placements.return_value = test_placements_mock
+        self.raw_placement_service.view_all.return_value = test_placements_mock
 
         test_response_status = 200
 
@@ -464,8 +530,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_placements_mock = []
 
-        self.api_gateway_mock.get_placements = mock.Mock()
-        self.api_gateway_mock.get_placements.return_value = test_placements_mock
+        self.raw_placement_service.view_all.return_value = test_placements_mock
 
         test_response_status = 200
 
@@ -506,13 +571,13 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_headers = {'Authorization': test_token}
 
-        def get_placements_side_effect(*args, **kwargs):
-            raise exceptions.InvalidTokenError
+        def auth_side_effect(*args, **kwargs):
+            raise AuthInvalidTokenError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2101].to_dict()
 
-        self.api_gateway_mock.get_placements = mock.Mock()
-        self.api_gateway_mock.get_placements.side_effect = get_placements_side_effect
+        self.auth_service.check_permission = mock.Mock()
+        self.auth_service.check_permission.side_effect = auth_side_effect
 
         test_response_status = 401
 
@@ -535,12 +600,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_placements_side_effect(*args, **kwargs):
-            raise exceptions.PermissionDeniedForTokenError
+            raise AuthInsufficientPrivilegesError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2110].to_dict()
 
-        self.api_gateway_mock.get_placements = mock.Mock()
-        self.api_gateway_mock.get_placements.side_effect = get_placements_side_effect
+        self.raw_placement_service.view_all.side_effect = get_placements_side_effect
 
         test_response_status = 403
 
@@ -569,8 +633,7 @@ class TestRestApiProvider(unittest.TestCase):
 
         test_placement_mock = {"key1": "nobody cares"}
 
-        self.api_gateway_mock.get_thing = mock.Mock()
-        self.api_gateway_mock.get_thing.return_value = test_placement_mock
+        self.raw_things_service.view.return_value = test_placement_mock
 
         test_response_status = 200
 
@@ -594,12 +657,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_thing_side_effect(*args, **kwargs):
-            raise exceptions.ThingNotFoundError
+            raise ServiceEntityResolutionError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[1005].to_dict()
 
-        self.api_gateway_mock.get_thing = mock.Mock()
-        self.api_gateway_mock.get_thing.side_effect = get_thing_side_effect
+        self.things_service.view.side_effect = get_thing_side_effect
 
         test_response_status = 404
 
@@ -643,12 +705,11 @@ class TestRestApiProvider(unittest.TestCase):
         test_headers = {'Authorization': test_token}
 
         def get_thing_side_effect(*args, **kwargs):
-            raise exceptions.InvalidTokenError
+            raise AuthInvalidTokenError()
 
         test_response_body = api_errors.ERROR_TEMPLATES[2101].to_dict()
 
-        self.api_gateway_mock.get_thing = mock.Mock()
-        self.api_gateway_mock.get_thing.side_effect = get_thing_side_effect
+        self.raw_things_service.view.side_effect = get_thing_side_effect
 
         test_response_status = 401
 
