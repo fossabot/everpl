@@ -6,8 +6,8 @@ import asyncio
 import aiohttp.web as web
 
 from dpl.auth.auth_context import AuthContext
-from dpl.auth.auth_service import (
-    AuthService,
+from dpl.auth.abs_auth_service import (
+    AbsAuthService,
     AuthInvalidUserPasswordCombinationError
 )
 from dpl.api.cors_middleware import CorsMiddleware
@@ -75,7 +75,7 @@ class RestApiProvider(object):
 
     def __init__(
             self, things: web.Application, placements: web.Application, messages: web.Application,
-            auth_context: AuthContext, auth_service: AuthService
+            auth_context: AuthContext, auth_service: AbsAuthService
     ):
         self._things = things
         self._placements = placements
