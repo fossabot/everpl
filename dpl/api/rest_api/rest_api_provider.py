@@ -75,7 +75,8 @@ class RestApiProvider(object):
 
     def __init__(
             self, things: web.Application, placements: web.Application, messages: web.Application,
-            auth_context: AuthContext, auth_service: AbsAuthService
+            auth_context: AuthContext, auth_service: AbsAuthService,
+            loop: asyncio.AbstractEventLoop = None
     ):
         self._things = things
         self._placements = placements
@@ -83,7 +84,11 @@ class RestApiProvider(object):
         self._auth_context = auth_context
         self._auth_service = auth_service
 
-        self._loop = asyncio.get_event_loop()
+        if loop is None:
+            self._loop = asyncio.get_event_loop()
+        else:
+            self._loop = loop
+
         self._handler = None
         self._server = None
 
