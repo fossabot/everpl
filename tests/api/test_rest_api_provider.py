@@ -3,14 +3,11 @@ import unittest
 from unittest import mock
 import asyncio
 import json
-import xml
 
 # Include 3rd-party modules
 import aiohttp
 
 # Include DPL modules
-from dpl.api import ApiGateway
-from dpl.api import exceptions
 from dpl.api import api_errors
 
 from dpl.utils.simple_interceptor import SimpleInterceptor
