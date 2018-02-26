@@ -272,9 +272,111 @@ HTTP status code: 403.
 Things
 ------
 
-FIXME
+.. _error_3100:
+
+Error 3100: Not an Actuator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a command on execution
+to the Thing. It may indicate that:
+
+- the ``/execute`` sub-resource is not available for this instance;
+- this instance isn't capable of command execution.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. Do not allow to user to send any
+commands to the non-actuator objects.
+
+HTTP status code: 404.
+
+.. _error_3101:
+
+Error 3101: Missing 'command' value
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a command on execution
+to the Thing. It may indicate that:
+
+- the client application forgot to pass a ``command`` value in a
+  body of HTTP request;
+- the value of this header is not a string (i.e. is a number, null
+  or a value of some other type).
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. You must to pass a valid ``command``
+value while sending of commands on execution to Actuators. To get
+more information about the ``/execute`` request and its format,
+please take a look into :ref:`things_executing_commands` section of
+documentation.
+
+HTTP status code: 400.
+
+.. _error_3102:
+
+Error 3102: Missing 'command_args' value
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a command on execution
+to the Thing. It may indicate that:
+
+- the client application forgot to pass a ``command_args`` value in a
+  body of HTTP request;
+- the value of the ``command_args`` key is not a mapping (dictionary).
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. You must to pass a valid ``command_args``
+value while sending of commands on execution to Actuators. To get
+more information about the ``/execute`` request and its format,
+please take a look into :ref:`things_executing_commands` section of
+documentation.
+
+HTTP status code: 400.
+
+.. _error_3103:
+
+Error 3103: Unacceptable command arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a command on execution
+to the Thing. It may indicate that:
+
+- the client application forgot to pass some non-optional argument in
+  the ``command_args`` field of a body of HTTP request;
+- the client application passed an unexpected extra (additional)
+  command argument in the ``command_args`` field of a body of HTTP request;
+- one of the command arguments haves an invalid type;
+- one of the command arguments haves an invalid value.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. You must to pass a valid ``command_args``
+value while sending of commands on execution to Actuators. To get
+more information about the ``/execute`` request and its format,
+please take a look into :ref:`things_executing_commands` section of
+documentation.
+
+HTTP status code: 400.
+
+
+Error 3110: Unsupported command
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a command on execution
+to the Thing. It may indicate that:
+
+- the specified instance of Actuator doesn't support the requested
+  command.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. You must to pass the name of a command
+which is supported by the specified Thing instance in ``command``
+field in request body. To get more information about the ``/execute``
+request and its format, please take a look into
+:ref:`things_executing_commands` section of documentation.
+
+HTTP status code: 400.
+
 
 Placements
 ----------
 
-FIXME
+There is no Placement-specific exceptions for now.
