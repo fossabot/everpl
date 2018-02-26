@@ -5,7 +5,8 @@ from dpl.dtos.thing_dto import ThingDto
 from .service_exceptions import (
     ServiceEntityResolutionError,
     ServiceTypeError,
-    ServiceInvalidArgumentsError
+    ServiceInvalidArgumentsError,
+    ServiceUnsupportedCommandError
 )
 from .abs_entity_service import AbsEntityService
 
@@ -67,6 +68,8 @@ class AbsThingService(AbsEntityService[ThingDto]):
         :raises ServiceInvalidArguments: if the arguments specified
                 in command_args parameter are invalid (i.e. one of
                 the arguments if missing or has a wrong type)
+        :raises ServiceUnsupportedCommandError: if the specified
+                command is not supported by this instance of Thing
         """
         raise NotImplementedError()
 

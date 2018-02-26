@@ -11,6 +11,25 @@ from dpl.things.capabilities.i_actuator import IActuator
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
+class UnsupportedCommandError(ValueError):
+    """
+    An exceptions to be raised if the specified command
+    is not supported by this instance of Thing
+    """
+    pass
+
+
+class UnacceptableCommandArgumentsError(Exception):
+    """
+    An exception to be raised if at least one of the specified
+    command arguments has an unacceptable type or if there is
+    an incorrect set of arguments passed (i.e. if one of the
+    mandatory arguments is missing or if one of the specified
+    arguments is extra and isn't related to the specified command)
+    """
+    pass
+
+
 class Actuator(Thing, IActuator, IState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
@@ -87,15 +106,21 @@ class Actuator(Thing, IActuator, IState):
         :param args: a mapping with keyword arguments to be
                passed on command execution
         :return: None
+        :raises UnsupportedCommandError: if the specified command
+                is not supported by this instance of Thing and thus
+                can't be executed
         """
         if command not in self.commands:
-            raise ValueError("Unsupported command passed: {0}".format(command))
+            raise UnsupportedCommandError("Unsupported command passed: {0}".format(command))
 
         command_method = getattr(self, command)
 
         assert callable(command_method)
 
-        return command_method(**args)
+        try:
+            return command_method(**args)
+        except TypeError as e:
+            raise UnacceptableCommandArgumentsError() from e
 
     def toggle(self) -> None:
         """

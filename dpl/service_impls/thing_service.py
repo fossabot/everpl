@@ -1,13 +1,14 @@
 from typing import Optional, Mapping, Any
 
 from dpl.model.domain_id import TDomainId
-from dpl.things.actuator import Actuator
+from dpl.things.actuator import Actuator, UnsupportedCommandError, UnacceptableCommandArgumentsError
 from dpl.dtos.thing_dto import ThingDto
 # noinspection PyUnresolvedReferences
 from dpl.dtos.actuator_dto import ActuatorDto
 from dpl.dtos.dto_builder import build_dto
 from dpl.services.abs_thing_service import AbsThingService, \
-    ServiceEntityResolutionError, ServiceTypeError, ServiceInvalidArgumentsError
+    ServiceEntityResolutionError, ServiceTypeError, ServiceInvalidArgumentsError, \
+    ServiceUnsupportedCommandError
 
 from dpl.repos.abs_thing_repository import AbsThingRepository
 
@@ -115,6 +116,9 @@ class ThingService(AbsThingService):
                 identifier is not an instance of Actuator, doesn't
                 implement 'execute' method and thus can't be used
                 in this context
+        :raises ServiceUnsupportedCommandError: if the specified
+                command is not supported by this instance of Thing
+        :raises ServiceUnsupportedCommandError:
         """
         thing = self._things.load(to_actuator_id)  # type: Actuator
 
@@ -138,8 +142,11 @@ class ThingService(AbsThingService):
         try:
             thing.execute(command, command_args)
 
-        except TypeError as e:
+        except UnacceptableCommandArgumentsError as e:
             raise ServiceInvalidArgumentsError() from e
+
+        except UnsupportedCommandError as e:
+            raise ServiceUnsupportedCommandError() from e
 
     def enable_all(self) -> None:
         """
