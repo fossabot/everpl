@@ -233,3 +233,19 @@ async def thing_execute_post_handler(request: web.Request) -> web.Response:
             content=ERROR_TEMPLATES[3103].to_dict()
         )
 
+
+async def thing_execute_options_handler(request: web.Request) -> web.Response:
+    """
+    A handler for OPTIONS request for path /things/{id}/execute.
+
+    Returns a response that contains 'Allow' header with all allowed HTTP methods.
+
+    :param request: request to be handled
+    :return: a response to request
+    """
+    return web.Response(
+        body=None,
+        status=204,
+        headers={'Allow': 'POST, OPTIONS'}
+    )
+
