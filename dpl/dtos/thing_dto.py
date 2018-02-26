@@ -18,7 +18,9 @@ thing_dto_sample = {
     "is_available": True,
     # UNIX timestamp in float in UTC timezone, the time when
     # the Thing properties was last updated (changed)
-    "last_updated": 1517232368.30256
+    "last_updated": 1517232368.30256,
+    # indicates a list of supported Capabilities
+    "capabilities": ["actuator", "has_state", "is_active"]
 }
 ```
 
@@ -43,7 +45,8 @@ def build_thing_dto(thing: Thing) -> ThingDto:
         'id': thing.domain_id,
         'is_enabled': thing.is_enabled,
         'is_available': thing.is_available,
-        'last_updated': thing.last_updated
+        'last_updated': thing.last_updated,
+        'capabilities': thing.capabilities
     }
 
     result.update(thing.metadata)
