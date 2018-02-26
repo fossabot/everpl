@@ -15,7 +15,8 @@ from dpl.services.abs_thing_service import (
     AbsThingService,
     ServiceEntityResolutionError,
     ServiceTypeError,
-    ServiceInvalidArgumentsError
+    ServiceInvalidArgumentsError,
+    ServiceUnsupportedCommandError
 )
 from dpl.api.api_errors import ERROR_TEMPLATES
 
@@ -233,6 +234,12 @@ async def thing_execute_post_handler(request: web.Request) -> web.Response:
         return make_json_response(
             status=400,
             content=ERROR_TEMPLATES[3103].to_dict()
+        )
+
+    except ServiceUnsupportedCommandError:
+        return make_json_response(
+            status=400,
+            content=ERROR_TEMPLATES[3110].to_dict()
         )
 
 
