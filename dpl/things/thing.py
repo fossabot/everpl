@@ -2,7 +2,7 @@
 import time
 from copy import deepcopy
 from types import MappingProxyType
-from collections import Mapping
+from typing import Mapping, Sequence
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -12,9 +12,11 @@ from dpl.connections import Connection
 from dpl.things.capabilities.is_enabled import IsEnabled
 from dpl.things.capabilities.is_available import Available
 from dpl.things.capabilities.last_updated import LastUpdated
+from .capability_filler_meta import CapabilityFiller
 
 
-class Thing(BaseEntity, IsEnabled, Available, LastUpdated):
+class Thing(BaseEntity, IsEnabled, Available, LastUpdated,
+            metaclass=CapabilityFiller):
     """
     Thing is a base class for all connected devices in the system.
 
@@ -52,6 +54,8 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated):
     like 'current_track', 'play' and 'stop' for player. Or 'on'/'off' for
     lighting, etc.
     """
+    # _capabilities field will be filled by the CapabilityFiller metaclass
+    _capabilities = None   # type: Sequence[str]
 
     def __init__(
             self, domain_id: TDomainId,
@@ -75,6 +79,16 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated):
         self._metadata = deepcopy(metadata)
         self._last_updated = time.time()
         self._is_enabled = False
+
+    @property
+    def capabilities(self) -> Sequence[str]:  # -> Collection[str]:
+        """
+        Returns a list of Capabilities supported by this Thing
+
+        :return: a collection of Capability names supported by
+                 (implemented by) this Thing
+        """
+        return self._capabilities
 
     @property
     def metadata(self) -> Mapping:
