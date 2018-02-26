@@ -54,6 +54,31 @@
       "error_id": 2110,
       "devel_message": "Permission Denied",
       "user_message": "Permission Denied.\nYou are not authorized to {action}. Please, contact an administrator of this platform instance"
+    },
+    {
+      "error_id": 3100,
+      "devel_message": "Not an Actuator",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 3101,
+      "devel_message": "Missing 'command' value",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 3102,
+      "devel_message": "Missing 'command_args' value",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 3103,
+      "devel_message": "Unacceptable command arguments",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 3110,
+      "devel_message": "Unsupported command",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
     }
   ]
 }
