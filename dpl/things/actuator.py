@@ -19,6 +19,17 @@ class UnsupportedCommandError(ValueError):
     pass
 
 
+class UnacceptableCommandArgumentsError(Exception):
+    """
+    An exception to be raised if at least one of the specified
+    command arguments has an unacceptable type or if there is
+    an incorrect set of arguments passed (i.e. if one of the
+    mandatory arguments is missing or if one of the specified
+    arguments is extra and isn't related to the specified command)
+    """
+    pass
+
+
 class Actuator(Thing, IActuator, IState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
@@ -106,7 +117,10 @@ class Actuator(Thing, IActuator, IState):
 
         assert callable(command_method)
 
-        return command_method(**args)
+        try:
+            return command_method(**args)
+        except TypeError as e:
+            raise UnacceptableCommandArgumentsError() from e
 
     def toggle(self) -> None:
         """
