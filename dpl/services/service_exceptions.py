@@ -40,3 +40,11 @@ class ServiceInvalidArgumentsError(ServiceValidationError):
     a wrong type and so on).
     """
     pass
+
+
+class ServiceUnsupportedCommandError(Exception):
+    """
+    An exception to be raised if the specified command
+    is not supported by this instance of Thing
+    """
+    pass
