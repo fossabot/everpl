@@ -2,7 +2,11 @@ from typing import Optional, Mapping, Any
 
 from dpl.model.domain_id import TDomainId
 from dpl.dtos.thing_dto import ThingDto
-from .service_exceptions import ServiceEntityResolutionError, ServiceTypeError
+from .service_exceptions import (
+    ServiceEntityResolutionError,
+    ServiceTypeError,
+    ServiceInvalidArgumentsError
+)
 from .abs_entity_service import AbsEntityService
 
 
@@ -60,6 +64,9 @@ class AbsThingService(AbsEntityService[ThingDto]):
                 identifier is not an instance of Actuator, doesn't
                 implement 'execute' method and thus can't be used
                 in this context
+        :raises ServiceInvalidArguments: if the arguments specified
+                in command_args parameter are invalid (i.e. one of
+                the arguments if missing or has a wrong type)
         """
         raise NotImplementedError()
 

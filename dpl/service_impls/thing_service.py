@@ -7,7 +7,7 @@ from dpl.dtos.thing_dto import ThingDto
 from dpl.dtos.actuator_dto import ActuatorDto
 from dpl.dtos.dto_builder import build_dto
 from dpl.services.abs_thing_service import AbsThingService, \
-    ServiceEntityResolutionError, ServiceTypeError
+    ServiceEntityResolutionError, ServiceTypeError, ServiceInvalidArgumentsError
 
 from dpl.repos.abs_thing_repository import AbsThingRepository
 
@@ -135,7 +135,11 @@ class ThingService(AbsThingService):
 
         # FIXME: Handle validation and execution errors
         # FIXME: Ensure that such calls will be safe
-        thing.execute(command, command_args)
+        try:
+            thing.execute(command, command_args)
+
+        except TypeError as e:
+            raise ServiceInvalidArgumentsError() from e
 
     def enable_all(self) -> None:
         """

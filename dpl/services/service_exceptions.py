@@ -32,3 +32,11 @@ class ServiceTypeError(ServiceValidationError):
     """
     pass
 
+
+class ServiceInvalidArgumentsError(ServiceValidationError):
+    """
+    Exception to be raised if the specified arguments or one
+    of them is invalid (i.e. on of the values is missing, has
+    a wrong type and so on).
+    """
+    pass
