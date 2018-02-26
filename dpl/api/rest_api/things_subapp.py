@@ -47,6 +47,8 @@ def build_things_subapp(
     router.add_route(method='OPTIONS', path='/', handler=things_options_handler)
     router.add_get(path='/{id}', handler=thing_get_handler)
     router.add_route(method='OPTIONS', path='/{id}', handler=thing_options_handler)
+    router.add_post(path='/{id}/execute', handler=thing_execute_post_handler)
+    router.add_route(method='OPTIONS', path='/{id}/execute', handler=thing_execute_options_handler)
 
     return app
 
