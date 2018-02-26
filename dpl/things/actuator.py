@@ -11,6 +11,14 @@ from dpl.things.capabilities.i_actuator import IActuator
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
+class UnsupportedCommandError(ValueError):
+    """
+    An exceptions to be raised if the specified command
+    is not supported by this instance of Thing
+    """
+    pass
+
+
 class Actuator(Thing, IActuator, IState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
@@ -87,9 +95,12 @@ class Actuator(Thing, IActuator, IState):
         :param args: a mapping with keyword arguments to be
                passed on command execution
         :return: None
+        :raises UnsupportedCommandError: if the specified command
+                is not supported by this instance of Thing and thus
+                can't be executed
         """
         if command not in self.commands:
-            raise ValueError("Unsupported command passed: {0}".format(command))
+            raise UnsupportedCommandError("Unsupported command passed: {0}".format(command))
 
         command_method = getattr(self, command)
 
