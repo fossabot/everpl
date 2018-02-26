@@ -218,6 +218,78 @@ To fetch a specific Thing, you need to perform the following request:
     Thing object.
 
 
+.. _things_executing_commands:
+
+Sending commands to a Thing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting from the v0.3 of everpl it's possible to send commands to
+the Actuators - to the Things that are able to execute some commands.
+
+Each command can have its own set of arguments, the list of the allowed
+commands is specified in the ``commands`` field for each Actuator Thing.
+The list of available commands and their set of possible arguments is
+determined by the list of capabilities implemented by the specified Thing.
+
+To send a command to an Actuator Thing you need to send a POST request
+using an ``/execute`` sub-resource of a Thing in question:
+
+:URL structure:
+    ``BASE_URL/things/{id}/execute``
+
+:Method:
+    ``POST``
+
+:Headers:
+    :Authorization: ``your_auth_token_here``
+    :Content-Type: ``application/json``
+
+:Request Body:
+    .. code-block:: json
+
+        {
+	        "command": "the_name_of_the_command",
+	        "command_args": {}
+        }
+
+:Notes:
+    Replace ``{id}`` part of the URL with an identifier of requested
+    Thing object.
+
+The presence of the both ``command`` and ``command_args`` fields is mandatory.
+
+The value of the ``command`` field must to be a string - the name of the
+command to be executed; this value is must to be an element from the
+``commands`` field of the specified Thing.
+
+The value of the ``command_args`` field must to be a dictionary of keyword-
+arguments for the command with keys as strings and values as specified in
+the Thing's documentation. It's allowed to pass an empty dictionary as the
+value of the ``command_args`` field if there is no additional arguments needed
+for an execution of the specified command.
+
+In a case of success your command will be send on execution and you will get
+a similar response:
+
+:Status Code:
+    202
+
+:Headers:
+    :Content-Type: ``application/json``
+
+:Response Body:
+    .. code-block:: json
+
+        {
+	        "message": "accepted"
+        }
+
+In a case of an pre-execution (validation) error you will receive
+one of the responses listed in :doc:`./handling_errors` section of
+documentation. Possible errors: 1000, 1001, 1003, 1005, 2100, 2101,
+2110, 3100, 3101, 3102, 3103, 3110.
+
+
 Placements
 ----------
 
