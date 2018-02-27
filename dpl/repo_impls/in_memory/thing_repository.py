@@ -11,7 +11,7 @@ class ThingRepository(BaseRepository[Thing], AbsThingRepository):
     An implementation of Things storage
     """
 
-    def select_by_placement(self, placement_id: Optional[TDomainId]) -> Sequence[TDomainId]:
+    def select_by_placement(self, placement_id: Optional[TDomainId]) -> Sequence[Thing]:
         """
         Fetches a collection of identifiers of all Things
         that are present in the specified placement
@@ -20,34 +20,34 @@ class ThingRepository(BaseRepository[Thing], AbsThingRepository):
                used for filtering; None (null) can be used as
                a value of parameter to fetch a list of Things
                that don't belong to any Placement
-        :return: a collection of identifiers of all things that
-                 belong to the specified placement
+        :return: a collection of all things that belong to
+                 the specified placement
         """
         # FIXME: Replace by native database filtering when DB
         # of settings will be added
-        result = list()  # type: MutableSequence[TDomainId]
+        result = list()  # type: MutableSequence[Thing]
 
         for thing in self._objects.values():
             if thing.metadata.get('placement') == placement_id:
-                result.append(thing.domain_id)
+                result.append(thing)
 
         return result
 
-    def select_by_connection(self, connection_id: TDomainId) -> Sequence[TDomainId]:
+    def select_by_connection(self, connection_id: TDomainId) -> Sequence[Thing]:
         """
         Fetches a collection of identifiers of all Things that
         use the specified Connection
 
         :param connection_id: an ID of Connection of interest
-        :return: a collection of identifiers of all Things that
-                 use the specified connection
+        :return: a collection of all Things that use the
+                 specified connection
         """
         # FIXME: Replace by native database filtering when DB
         # of settings will be added
-        result = list()  # type: MutableSequence[TDomainId]
+        result = list()  # type: MutableSequence[Thing]
 
         for thing in self._objects.values():
             if thing.metadata.get('con_id') == connection_id:
-                result.append(thing.domain_id)
+                result.append(thing)
 
         return result
