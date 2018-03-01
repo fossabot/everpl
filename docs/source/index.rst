@@ -51,10 +51,10 @@ Platform itself is hosted on GitHub: https://github.com/s-kostyuk/adpl/
    :caption: Developer Documentation
    :name: dev-docs
 
-   dev/dev_overview
-   dev/base_components
-   dev/dev_integrations
-   dev/implement_own_integration
+   developer/dev_overview
+   developer/base_components
+   developer/dev_integrations
+   developer/implement_own_integration
 
 
 Indices and tables
