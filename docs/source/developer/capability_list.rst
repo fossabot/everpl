@@ -41,6 +41,8 @@ Has State
     :Field Name: ``state``
     :Field Values:
         The set of possible values is specified by other Capabilities
+    :Field Description:
+        Some sign of the current Thing state
 
 :Provided Commands:
     No specific commands are provided
