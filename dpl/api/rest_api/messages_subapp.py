@@ -71,7 +71,10 @@ async def messages_post_handler(request: web.Request) -> web.Response:
     :param request: request to be processed
     :return: a response to request
     """
-    warnings.warn(PendingDeprecationWarning)
+    warnings.warn(
+        "/messages/ path is deprecated. Use /things/{id}/execute endpoint instead",
+        PendingDeprecationWarning
+    )
 
     request_body = await request.json()
 
