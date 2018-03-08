@@ -113,6 +113,25 @@ class Controller(object):
         self._connection_repo = ConnectionRepository()
         self._thing_repo = ThingRepository()
 
+        is_safe_mode = self._core_config['is_safe_mode']
+
+        if is_safe_mode:
+            module_logger.warning(
+                "\n\n\nSafe mode is enabled, the most of everpl capabilities will be disabled\n\n")
+            module_logger.warning(
+                "\n!!! REST API access will be enabled in the safe mode !!!\n")
+
+            # Only REST API will be enabled in the safe mode
+            self._apis_config['enabled_apis'] = ('rest_api',)
+
+            # Force enable API access
+            self._core_config['is_api_enabled'] = True
+        else:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(
+                self._bootstrap_integrations()
+            )
+
         self._user_service_raw = UserService(self._user_repo)
         self._session_service_raw = SessionService(self._session_repo)
         self._auth_service = AuthService(self._user_service_raw, self._session_service_raw)
@@ -240,20 +259,6 @@ class Controller(object):
             self._apis_config['rest_api']['port'] = args.rest_api_port
 
     async def start(self):
-        is_safe_mode = self._core_config['is_safe_mode']
-
-        if is_safe_mode:
-            module_logger.warning("\n\n\nSafe mode is enabled, the most of everpl capabilities will be disabled\n\n")
-            module_logger.warning("\n!!! REST API access will be enabled in the safe mode !!!\n")
-
-            # Only REST API will be enabled in the safe mode
-            self._apis_config['enabled_apis'] = ('rest_api', )
-
-            # Force enable API access
-            self._core_config['is_api_enabled'] = True
-        else:
-            await self._bootstrap_integrations()
-
         # FIXME: Only for testing purposes
         try:
             self._user_service_raw.view_by_username('admin')
