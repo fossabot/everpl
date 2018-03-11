@@ -267,6 +267,8 @@ class Controller(object):
             self._user_service_raw.create_user("admin", "admin")
             self._db_session_manager.get_session().commit()
 
+        self._thing_service_raw.enable_all()
+
         is_api_enabled = self._core_config['is_api_enabled']
 
         if is_api_enabled:
@@ -316,8 +318,6 @@ class Controller(object):
         binding_bootstrapper.init_things(thing_settings)
 
         self._db_session_manager.remove_session()
-
-        self._thing_service_raw.enable_all()
 
     async def shutdown(self):
         await self._rest_api.shutdown_server()
