@@ -40,6 +40,8 @@ from dpl.api.rest_api.placements_subapp import build_placements_subapp
 from dpl.api.rest_api.messages_subapp import build_messages_subapp
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
+from dpl.api.local_announce import LocalAnnounce
+
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
 
@@ -179,6 +181,8 @@ class Controller(object):
             auth_service=self._auth_service
         )
 
+        self._local_announce = LocalAnnounce()
+
     def parse_arguments(self):
         """
         Parses command-line arguments and alters everpl configuration
@@ -288,6 +292,23 @@ class Controller(object):
         if 'rest_api' in enabled_apis:
             await self._start_rest_api()
 
+        if 'local_announce' in enabled_apis:
+            self._start_local_announce()
+
+    def _start_local_announce(self):
+        # FIXME: Allow to override params
+        rest_api_config = self._apis_config['rest_api']
+        rest_api_host = rest_api_config['host']
+        rest_api_port = rest_api_config['port']
+
+        self._local_announce.create_server(
+            instance_name=None,  # use default
+            # address=,  # use default
+            port=rest_api_port,  # use default REST API listening port
+            # server_host=rest_api_host  # use REST API listening hostname
+            server_host=None  # use default name for service host
+        )
+
     async def _start_rest_api(self):
         """
         Starts REST API server
@@ -321,4 +342,5 @@ class Controller(object):
 
     async def shutdown(self):
         await self._rest_api.shutdown_server()
+        self._local_announce.shutdown_server()
         self._thing_service_raw.disable_all()
