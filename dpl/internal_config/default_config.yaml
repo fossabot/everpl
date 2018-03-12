@@ -38,6 +38,7 @@ core:  # This section contains configuration for the core of everpl
 apis:  # This section contains configuration of API providers
   enabled_apis:  # A list of APIs to be enabled
   - 'rest_api'
+  - 'local_announce'
 
   rest_api:  # This section configures parameters of the default API
     # hostname or an IP address used for listening; set to '0.0.0.0'
@@ -49,6 +50,10 @@ apis:  # This section contains configuration of API providers
 
     # is non-secured (non-TLS) connection is forbidden
     is_strict_tls: false
+
+  local_announce:  # This section allows to override default parameters of
+                   # the Zeroconf (Avahi) announcement.
+                   # By default REST API params will be used
 
 
 integrations:  # This section contains configuration of Integrations
