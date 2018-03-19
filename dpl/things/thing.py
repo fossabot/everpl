@@ -9,12 +9,12 @@ from collections import Mapping
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.connections import Connection
-from dpl.things.capabilities.i_enabled import IEnabled
-from dpl.things.capabilities.i_available import IAvailable
-from dpl.things.capabilities.i_last_updated import ILastUpdated
+from dpl.things.capabilities.enabled import Enabled
+from dpl.things.capabilities.available import Available
+from dpl.things.capabilities.last_updated import LastUpdated
 
 
-class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
+class Thing(BaseEntity, Enabled, Available, LastUpdated):
     """
     Thing is a base class for all connected devices in the system.
 
