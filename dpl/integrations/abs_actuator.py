@@ -15,7 +15,7 @@ from dpl.things.capabilities.i_actuator import (
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
-class Actuator(Thing, IActuator, IState):
+class AbsActuator(Thing, IActuator, IState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
     and change their states after that.
@@ -51,7 +51,7 @@ class Actuator(Thing, IActuator, IState):
         self._really_internal_state_value = self.States.unknown
 
     @property
-    def _state(self) -> 'Actuator.States':
+    def _state(self) -> 'AbsActuator.States':
         """
         Return a really_internal_state_value
 
@@ -60,7 +60,7 @@ class Actuator(Thing, IActuator, IState):
         return self._really_internal_state_value
 
     @_state.setter
-    def _state(self, new_value: 'Actuator.States') -> None:
+    def _state(self, new_value: 'AbsActuator.States') -> None:
         """
         Internal setter for a really_internal_state_value that can be used to
         set a new state value and update last_updated time
