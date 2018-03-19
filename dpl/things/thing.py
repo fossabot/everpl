@@ -110,6 +110,7 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
 
         :return: None
         """
+        # FIXME: CC40: Define a more specific exception for such situations
         if not self.is_available:
             raise RuntimeError("This thing is unavailable and can't be used at this time")
 
