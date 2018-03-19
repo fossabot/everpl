@@ -1,24 +1,24 @@
 Capabilities
 ============
 
-As was known, different devices implement the different functionality.
+As known, different devices implement different functionality.
 Some devices report current climate conditions like humidity,
-temperature and atmospheric pressure. Other devices are able to change
-such conditions in your home like air conditioners, humidifiers and
-climate systems. Other devices allows to play music, videos, display
-photos and so on.
+temperature and atmospheric pressure. Other devices like air
+conditioners, humidifiers and climate systems are able to change
+such conditions in the building. Other devices allow to play music,
+videos, display photos and so on.
 
 In everpl such pieces of functionality which are implemented by specific
 devices (Things) are called Capabilities.
 
-Each Capability is some abstract atomic piece of functionality which can
-be implemented or provided by some device (Thing). Each Capabilities
-can provide some new properties (fields, data) of a Thing and/or commands
+Each Capability is an abstract atomic piece of functionality which can
+be implemented or provided by some device (Thing). Each Capability
+can define some new properties (fields, data) of a Thing and/or commands
 that can be send to device for execution.
 
 One device can have several different Capabilities. For example, there
-already mentioned climatic devices which are capable of measuring
-temperature, relative humidity and, maybe, CO2 levels. There are RGB
+are already mentioned climatic devices which are capable of measuring
+temperature, relative humidity and, maybe, CO2 levels. There are RGB Lamps
 which can be turned on and off, change their brightness and even change
 their color. There are Smart-TVs which is capable of doing... a lot of
 stuff.
