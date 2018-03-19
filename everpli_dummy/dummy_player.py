@@ -12,15 +12,19 @@ class DummyPlayer(AbsPlayer):
     """
     A reference implementation of Player
     """
-    def __init__(self, domain_id: TDomainId, con_instance: DummyConnection, con_params: dict, metadata: dict):
+    def __init__(
+            self, domain_id: TDomainId, con_instance: DummyConnection,
+            con_params: dict, metadata: dict
+    ):
         """
-        Constructor. Receives an instance of DummyConnection and a prefix to be printed
-        in con_params.
+        Constructor. Receives an instance of DummyConnection and a prefix to
+        be printed in con_params.
 
         :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
-        :param metadata: some additional data that will be saved to 'metadata' property
+        :param metadata: some additional data that will be saved to 'metadata'
+               property
         """
         super().__init__(domain_id, con_instance, con_params, metadata)
 
@@ -29,7 +33,8 @@ class DummyPlayer(AbsPlayer):
         try:
             self._print_prefix = con_params[key_name]
         except KeyError:
-            raise ValueError("Invalid connection params passed: {0} parameter is missing".format(key_name))
+            raise ValueError("Invalid connection params passed: "
+                             "{0} parameter is missing".format(key_name))
 
         self._con_instance = con_instance
 
@@ -75,14 +80,18 @@ class DummyPlayer(AbsPlayer):
 
     def play(self, song_name: str = None) -> None:
         """
-        Starts playing and switches the object to the 'playing' state. Additional parameters
-        like track name or URL can be provided.
+        Starts playing and switches the object to the 'playing' state.
+        Additional parameters like track name or URL can be provided.
 
-        :param song_name: song name to be played (or URL, or ID, or playlist position, etc.)
+        :param song_name: song name to be played (or URL, or ID, or playlist
+               position, etc.)
         :return: None
         """
         self._check_is_available()
-        self._con_instance.print(self._print_prefix, "Player is playing {0}".format(song_name))
+        self._con_instance.print(
+            self._print_prefix,
+            "Player is playing {0}".format(song_name)
+        )
         self._state = self.States.playing
 
     def stop(self) -> None:
@@ -108,7 +117,8 @@ class DummyPlayer(AbsPlayer):
 
 class DummyPlayerFactory(ThingFactory):
     """
-    DummyPlayerFactory is a class that is responsible for building of DummyPlayers
+    DummyPlayerFactory is a class that is responsible for building of
+    DummyPlayers
     """
     @staticmethod
     def build(*args, **kwargs) -> DummyPlayer:
