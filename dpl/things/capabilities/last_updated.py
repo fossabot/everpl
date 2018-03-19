@@ -1,6 +1,6 @@
-class ILastUpdated(object):
+class LastUpdated(object):
     """
-    ILastUpdated capability allows to determine a moment
+    LastUpdated capability allows to determine a moment
     in time when the properties of a Thing was altered
     for the last time.
     """

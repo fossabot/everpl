@@ -1,9 +1,9 @@
-class IAvailable(object):
+class Available(object):
     """
-    Instances which provide IAvailable capability provides
+    Instances which provide Available capability provides
     their availability status: is they are available for
     communication or not - i.e. they are explicitly disabled
-    (see IEnabled capability), lost, faulted, have a
+    (see Enabled capability), lost, faulted, have a
     discharged battery and so on).
     """
     @property

@@ -2,7 +2,7 @@ from typing import Iterable, Mapping
 
 from dpl.utils.empty_mapping import EMPTY_MAPPING
 
-from .i_state import IState
+from .state import State
 
 
 class UnsupportedCommandError(ValueError):
@@ -24,9 +24,9 @@ class UnacceptableCommandArgumentsError(Exception):
     pass
 
 
-class IActuator(IState):
+class Actuator(State):
     """
-    IActuator capability is usually mapped to Actuators.
+    Actuator capability is usually mapped to Actuators.
     Devices with this capability are capable to act, i.e.
     perform some actions in the real world like playing
     music and changing tracks, turning power on and off,
