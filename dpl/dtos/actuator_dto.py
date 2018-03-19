@@ -20,6 +20,7 @@ ActuatorDto = ThingDto
 @build_dto.register(AbsActuator)
 def _(thing: AbsActuator) -> ActuatorDto:
     result = {
+        'state': thing.state.name,
         'commands': thing.commands,
         'is_active': thing.is_active
     }
