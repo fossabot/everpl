@@ -3,9 +3,9 @@ from typing import TypeVar, Generic, Optional
 TValueType = TypeVar['TValueType']
 
 
-class Value(Generic[TValueType]):
+class HasValue(Generic[TValueType]):
     """
-    Objects with Value capability are usually mapped to
+    Objects with HasValue capability are usually mapped to
     sensors. They allow to read the current measurements
     like the current temperature, humidity or brightness
     levels.
