@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class State(object):
+class HasState(object):
     """
     This interface allows a read-only access to states of a Thing.
 
