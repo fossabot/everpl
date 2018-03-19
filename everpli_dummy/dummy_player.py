@@ -2,13 +2,13 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.things import Player
+from dpl.integrations.abs_player import AbsPlayer
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 from .dummy_connection import DummyConnection
 
 
-class DummyPlayer(Player):
+class DummyPlayer(AbsPlayer):
     """
     A reference implementation of Player
     """
@@ -34,7 +34,7 @@ class DummyPlayer(Player):
         self._con_instance = con_instance
 
     @property
-    def state(self) -> Player.States:
+    def state(self) -> AbsPlayer.States:
         """
         Return a current state of the Thing
 

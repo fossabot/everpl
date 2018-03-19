@@ -2,14 +2,14 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.things import Switch
+from dpl.integrations.abs_switch import AbsSwitch
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
 from .dummy_connection import DummyConnection
 
 
-class DummySwitch(Switch):
+class DummySwitch(AbsSwitch):
     def __init__(self, domain_id: TDomainId, con_instance: DummyConnection, con_params: dict, metadata: dict):
         """
         Constructor. Receives an instance of DummyConnection and a prefix to be printed
@@ -32,7 +32,7 @@ class DummySwitch(Switch):
         self._con_instance = con_instance
 
     @property
-    def state(self) -> Switch.States:
+    def state(self) -> AbsSwitch.States:
         """
         Return a current state of the Thing
 
