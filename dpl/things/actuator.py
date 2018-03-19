@@ -7,27 +7,12 @@ from dpl.utils.empty_mapping import EMPTY_MAPPING
 
 # Include DPL modules
 from dpl.things.capabilities.i_state import IState
-from dpl.things.capabilities.i_actuator import IActuator
+from dpl.things.capabilities.i_actuator import (
+    IActuator,
+    UnsupportedCommandError,
+    UnacceptableCommandArgumentsError
+)
 from dpl.things.thing import Thing, TDomainId, Connection
-
-
-class UnsupportedCommandError(ValueError):
-    """
-    An exceptions to be raised if the specified command
-    is not supported by this instance of Thing
-    """
-    pass
-
-
-class UnacceptableCommandArgumentsError(Exception):
-    """
-    An exception to be raised if at least one of the specified
-    command arguments has an unacceptable type or if there is
-    an incorrect set of arguments passed (i.e. if one of the
-    mandatory arguments is missing or if one of the specified
-    arguments is extra and isn't related to the specified command)
-    """
-    pass
 
 
 class Actuator(Thing, IActuator, IState):
