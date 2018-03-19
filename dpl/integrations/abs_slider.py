@@ -23,7 +23,8 @@ class AbsSlider(AbsActuator):
     @property
     def commands(self) -> Tuple[str, ...]:
         """
-        Returns a list of available commands. Must be overridden in derivative classes.
+        Returns a list of available commands. Must be overridden in derivative
+        classes.
 
         :return: a tuple of command names (strings)
         """
@@ -56,8 +57,9 @@ class AbsSlider(AbsActuator):
 
     def open(self) -> None:
         """
-        Switches an object to the 'opening' and then 'opened' state if its current state
-        is 'undefined', 'closed' or 'closing'. Command must be ignored otherwise.
+        Switches an object to the 'opening' and then 'opened' state if its
+        current state is 'undefined', 'closed' or 'closing'. Command must be
+        ignored otherwise.
 
         :return: None
         """
@@ -65,8 +67,9 @@ class AbsSlider(AbsActuator):
 
     def close(self) -> None:
         """
-        Switches an object to the 'closing' and then 'closed' state if its current state
-        is 'undefined', 'opened' or 'opening'. Command must be ignored otherwise.
+        Switches an object to the 'closing' and then 'closed' state if its
+        current state is 'undefined', 'opened' or 'opening'. Command must be
+        ignored otherwise.
 
         :return: None
         """
