@@ -4,10 +4,10 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Actuator
+from .abs_actuator import AbsActuator
 
 
-class Slider(Actuator):
+class AbsSlider(AbsActuator):
     """
     Slider is an abstraction of real-life object, that can be in one of two
     stable states: 'opened' and 'closed' and also can be two transition states:
