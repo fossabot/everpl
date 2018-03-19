@@ -70,8 +70,8 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
         """
         super().__init__(domain_id)
 
-        # Connection params must be saved manually in derived classes
-        # Connection params must be parsed and saved manually in derived classes
+        self._con_instance = con_instance
+        self._con_params = con_params
         self._metadata = deepcopy(metadata)
         self._last_updated = time.time()
         self._is_enabled = False
