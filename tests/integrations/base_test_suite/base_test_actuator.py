@@ -6,7 +6,7 @@ import uuid
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Actuator
+from dpl.integrations.abs_actuator import AbsActuator
 from dpl.connections import Connection
 
 
@@ -35,7 +35,7 @@ class BaseTestActuator(unittest.TestCase):
         raise NotImplementedError
 
     @classmethod
-    def build_uut(cls, *args, **kwargs) -> Actuator:
+    def build_uut(cls, *args, **kwargs) -> AbsActuator:
         """
         Builds Unit Under Test (uut) - an instance of Actuator to be tested.
 

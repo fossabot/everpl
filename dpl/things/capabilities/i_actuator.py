@@ -5,6 +5,25 @@ from dpl.utils.empty_mapping import EMPTY_MAPPING
 from .i_state import IState
 
 
+class UnsupportedCommandError(ValueError):
+    """
+    An exceptions to be raised if the specified command
+    is not supported by this instance of Thing
+    """
+    pass
+
+
+class UnacceptableCommandArgumentsError(Exception):
+    """
+    An exception to be raised if at least one of the specified
+    command arguments has an unacceptable type or if there is
+    an incorrect set of arguments passed (i.e. if one of the
+    mandatory arguments is missing or if one of the specified
+    arguments is extra and isn't related to the specified command)
+    """
+    pass
+
+
 class IActuator(IState):
     """
     IActuator capability is usually mapped to Actuators.

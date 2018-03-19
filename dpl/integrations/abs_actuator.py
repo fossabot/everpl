@@ -7,30 +7,15 @@ from dpl.utils.empty_mapping import EMPTY_MAPPING
 
 # Include DPL modules
 from dpl.things.capabilities.i_state import IState
-from dpl.things.capabilities.i_actuator import IActuator
+from dpl.things.capabilities.i_actuator import (
+    IActuator,
+    UnsupportedCommandError,
+    UnacceptableCommandArgumentsError
+)
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
-class UnsupportedCommandError(ValueError):
-    """
-    An exceptions to be raised if the specified command
-    is not supported by this instance of Thing
-    """
-    pass
-
-
-class UnacceptableCommandArgumentsError(Exception):
-    """
-    An exception to be raised if at least one of the specified
-    command arguments has an unacceptable type or if there is
-    an incorrect set of arguments passed (i.e. if one of the
-    mandatory arguments is missing or if one of the specified
-    arguments is extra and isn't related to the specified command)
-    """
-    pass
-
-
-class Actuator(Thing, IActuator, IState):
+class AbsActuator(Thing, IActuator, IState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
     and change their states after that.
@@ -39,22 +24,26 @@ class Actuator(Thing, IActuator, IState):
 
     - it can be in one of two states: 'activated' or 'deactivated';
     - 'activation' is a switching of a device to some specific active state
-      (like 'on' for LightBulb, 'opened' for Door and 'capturing' for Camera and
-      'playing' for Player);
-    - 'deactivation' is a switching of a device to some specific non-active state
-      (like 'off' for LightBulb, 'closed' for Door and 'idle' for Camera and
-      'stopped'/'paused' for Player);
+      (like 'on' for LightBulb, 'opened' for Door and 'capturing' for Camera
+      and 'playing' for Player);
+    - 'deactivation' is a switching of a device to some specific non-active
+      state (like 'off' for LightBulb, 'closed' for Door and 'idle' for Camera
+      and 'stopped'/'paused' for Player);
     - it can be toggled between those to states;
     - it provides a list of available commands;
     - each available command can be executed;
-    - if command can't be executed for any reason, corresponding method raises an
-      exception (FIXME: CC9: or returns an error code???)
+    - if command can't be executed for any reason, corresponding method raises
+      an exception (FIXME: CC9: or returns an error code???)
     """
-    def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
+    def __init__(
+            self, domain_id: TDomainId,
+            con_instance: Connection, con_params: dict,
+            metadata: dict = None
+    ):
         """
-        Constructor of a Thing. Receives an instance of Connection and some specific
-        parameters to use it properly. Also can receive some metadata to be stored like
-        object placement, description or user-friendly name.
+        Constructor of a Thing. Receives an instance of Connection and some
+        specific parameters to use it properly. Also can receive some metadata
+        to be stored like object placement, description or user-friendly name.
 
         :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
@@ -66,7 +55,7 @@ class Actuator(Thing, IActuator, IState):
         self._really_internal_state_value = self.States.unknown
 
     @property
-    def _state(self) -> 'Actuator.States':
+    def _state(self) -> 'AbsActuator.States':
         """
         Return a really_internal_state_value
 
@@ -75,7 +64,7 @@ class Actuator(Thing, IActuator, IState):
         return self._really_internal_state_value
 
     @_state.setter
-    def _state(self, new_value: 'Actuator.States') -> None:
+    def _state(self, new_value: 'AbsActuator.States') -> None:
         """
         Internal setter for a really_internal_state_value that can be used to
         set a new state value and update last_updated time
@@ -89,7 +78,8 @@ class Actuator(Thing, IActuator, IState):
     @property
     def commands(self) -> Iterable[str]:
         """
-        Returns a list of available commands. Must be overridden in derivative classes.
+        Returns a list of available commands. Must be overridden in derivative
+        classes.
 
         :return: a tuple of command names (strings)
         """
@@ -111,7 +101,9 @@ class Actuator(Thing, IActuator, IState):
                 can't be executed
         """
         if command not in self.commands:
-            raise UnsupportedCommandError("Unsupported command passed: {0}".format(command))
+            raise UnsupportedCommandError(
+                "Unsupported command passed: {0}".format(command)
+            )
 
         command_method = getattr(self, command)
 

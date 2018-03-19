@@ -3,28 +3,33 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Slider
+from dpl.integrations.abs_slider import AbsSlider
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
 from .dummy_connection import DummyConnection
 
 
-class DummySlider(Slider):
+class DummySlider(AbsSlider):
     """
     A reference implementation of slider
     """
     __SWITCH_DELAY = 1  # second
 
-    def __init__(self, domain_id: TDomainId, con_instance: DummyConnection, con_params: dict, metadata: dict):
+    def __init__(
+            self, domain_id: TDomainId,
+            con_instance: DummyConnection, con_params: dict,
+            metadata: dict
+    ):
         """
-        Constructor. Receives an instance of DummyConnection and a prefix to be printed
-        in con_params.
+        Constructor. Receives an instance of DummyConnection and a prefix to
+        be printed in con_params.
 
         :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
-        :param metadata: some additional data that will be saved to 'metadata' property
+        :param metadata: some additional data that will be saved to 'metadata'
+               property
         """
         super().__init__(domain_id, con_instance, con_params, metadata)
 
@@ -33,12 +38,15 @@ class DummySlider(Slider):
         try:
             self._print_prefix = con_params[key_name]
         except KeyError:
-            raise ValueError("Invalid connection params passed: {0} parameter is missing".format(key_name))
+            raise ValueError(
+                "Invalid connection params passed: "
+                "{0} parameter is missing".format(key_name)
+            )
 
         self._con_instance = con_instance
 
     @property
-    def state(self) -> Slider.States:
+    def state(self) -> AbsSlider.States:
         """
         Return a current state of the Thing
 
@@ -79,17 +87,20 @@ class DummySlider(Slider):
 
     def open(self) -> None:
         """
-        Switches an object to the 'opening' and then 'opened' state if its current state
-        is 'undefined', 'closed' or 'closing'. Command must be ignored otherwise.
+        Switches an object to the 'opening' and then 'opened' state if its
+        current state is 'undefined', 'closed' or 'closing'. Command must be
+        ignored otherwise.
 
         :return: None
         """
         self._check_is_available()
 
-        if self._state == self.States.opening or self._state == self.States.opened:
+        if self._state == self.States.opening or \
+                self._state == self.States.opened:
             pass
         else:
-            self._con_instance.print(self._print_prefix, "Switch is opening...")
+            self._con_instance.print(self._print_prefix,
+                                     "Switch is opening...")
             self._state = self.States.opening
 
             time.sleep(self.__SWITCH_DELAY)
@@ -99,17 +110,20 @@ class DummySlider(Slider):
 
     def close(self) -> None:
         """
-        Switches an object to the 'closing' and then 'closed' state if its current state
-        is 'undefined', 'opened' or 'opening'. Command must be ignored otherwise.
+        Switches an object to the 'closing' and then 'closed' state if its
+        current state is 'undefined', 'opened' or 'opening'. Command must be
+        ignored otherwise.
 
         :return: None
         """
         self._check_is_available()
 
-        if self._state == self.States.closing or self._state == self.States.closed:
+        if self._state == self.States.closing or \
+                self._state == self.States.closed:
             pass
         else:
-            self._con_instance.print(self._print_prefix, "Switch is closing...")
+            self._con_instance.print(self._print_prefix,
+                                     "Switch is closing...")
             self._state = self.States.closing
 
             time.sleep(self.__SWITCH_DELAY)
@@ -120,7 +134,8 @@ class DummySlider(Slider):
 
 class DummySliderFactory(ThingFactory):
     """
-    DummySliderFactory is a class that is responsible for building of DummySliders
+    DummySliderFactory is a class that is responsible for building of
+    DummySliders
     """
     @staticmethod
     def build(*args, **kwargs) -> DummySlider:

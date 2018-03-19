@@ -4,13 +4,14 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Actuator
+from .abs_actuator import AbsActuator
 
 
-class Switch(Actuator):
+class AbsSwitch(AbsActuator):
     """
-    Switch is an abstraction of objects with two only available states: 'on' and 'off'.
-    Like simple light bulb, power socket, relay or fan with uncontrollable speed.
+    Switch is an abstraction of objects with two only available states: 'on'
+    and 'off'. Like simple light bulb, power socket, relay or fan with
+    uncontrollable speed.
     """
     class States(Enum):
         on = True
@@ -20,7 +21,8 @@ class Switch(Actuator):
     @property
     def commands(self) -> Tuple[str, ...]:
         """
-        Returns a list of available commands. Must be overridden in derivative classes.
+        Returns a list of available commands. Must be overridden in derivative
+        classes.
 
         :return: a tuple of command names (strings)
         """

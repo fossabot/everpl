@@ -11,15 +11,16 @@ to the ActuatorDto
 
 from .dto_builder import build_dto
 from .thing_dto import ThingDto, build_thing_dto
-from dpl.things.actuator import Actuator
+from dpl.integrations.abs_actuator import AbsActuator
 
 
 ActuatorDto = ThingDto
 
 
-@build_dto.register(Actuator)
-def _(thing: Actuator) -> ActuatorDto:
+@build_dto.register(AbsActuator)
+def _(thing: AbsActuator) -> ActuatorDto:
     result = {
+        'state': thing.state.name,
         'commands': thing.commands,
         'is_active': thing.is_active
     }

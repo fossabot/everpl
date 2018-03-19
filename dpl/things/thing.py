@@ -18,9 +18,9 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
     """
     Thing is a base class for all connected devices in the system.
 
-    Every implementation of Thing is an abstraction of real-life objects, devices,
-    items, things that uses some specific protocol (connection) and can communicate
-    with the system in any way.
+    Every implementation of Thing is an abstraction of real-life objects,
+    devices, items, things that uses some specific protocol (connection) and
+    can communicate with the system in any way.
 
     Specific implementations of things are grouped into 'integrations'.
 
@@ -30,31 +30,38 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
     - a current state of thing is always updated and corresponds to the current
       state of real object at the moment;
     - connection lost is indicated in specific property;
-    - if connection is lost then the last known state of the object must be displayed
-      in corresponding property;
-    - every implementation of a thing must notify all subscribers about the changes of
-      thing state and connection state;
+    - if connection is lost then the last known state of the object must be
+      displayed in the corresponding property;
+    - every implementation of a thing must notify all subscribers about the
+      changes of thing state and connection state;
     - each thing has and additional 'is_available' property;
     - each thing can be 'enabled' and 'disabled';
-    - 'disabled' thing doesn't update its state and doesn't try to support underlying
-      connection alive;
+    - 'disabled' thing doesn't update its state and doesn't try to support
+      underlying connection alive;
     - 'enabled' thing tries to keep thing state updated;
-    - 'is_available' property indicates that a communication with this thing can be
-      performed;
-    - 'is_available' is True **only** if thing is enabled **and** connection is not lost;
-    - additional (optional) information about the object can be placed in so-called 'metadata';
-    - usually the following metadata is saved: thing ID, user-friendly name, thing placement
-      (position) information and some description.
+    - 'is_available' property indicates that a communication with this thing
+      can be performed;
+    - 'is_available' is True **only** if thing is enabled **and** connection is
+      not lost;
+    - additional (optional) information about the object can be placed in
+      so-called 'metadata';
+    - usually the following metadata is saved: thing ID, user-friendly name,
+      thing placement (position) information and some description.
 
-    Derived classes are allowed to define additional methods and properties like
-    'current_track', 'play' and 'stop' for player. Or 'on'/'off' for lighting, etc.
+    Derived classes are allowed to define additional methods and properties
+    like 'current_track', 'play' and 'stop' for player. Or 'on'/'off' for
+    lighting, etc.
     """
 
-    def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
+    def __init__(
+            self, domain_id: TDomainId,
+            con_instance: Connection, con_params: dict,
+            metadata: dict = None
+    ):
         """
-        Constructor of a Thing. Receives an instance of Connection and some specific
-        parameters to use it properly. Also can receive some metadata to be stored like
-        object placement, description or user-friendly name.
+        Constructor of a Thing. Receives an instance of Connection and some
+        specific parameters to use it properly. Also can receive some metadata
+        to be stored like object placement, description or user-friendly name.
 
         :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
@@ -63,8 +70,8 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
         """
         super().__init__(domain_id)
 
-        # Connection params must be saved manually in derived classes
-        # Connection params must be parsed and saved manually in derived classes
+        self._con_instance = con_instance
+        self._con_params = con_params
         self._metadata = deepcopy(metadata)
         self._last_updated = time.time()
         self._is_enabled = False
@@ -103,6 +110,7 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
 
         :return: None
         """
+        # FIXME: CC40: Define a more specific exception for such situations
         if not self.is_available:
             raise RuntimeError("This thing is unavailable and can't be used at this time")
 

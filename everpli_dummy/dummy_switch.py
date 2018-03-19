@@ -2,23 +2,28 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.things import Switch
+from dpl.integrations.abs_switch import AbsSwitch
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
 from .dummy_connection import DummyConnection
 
 
-class DummySwitch(Switch):
-    def __init__(self, domain_id: TDomainId, con_instance: DummyConnection, con_params: dict, metadata: dict):
+class DummySwitch(AbsSwitch):
+    def __init__(
+            self, domain_id: TDomainId,
+            con_instance: DummyConnection, con_params: dict,
+            metadata: dict
+    ):
         """
-        Constructor. Receives an instance of DummyConnection and a prefix to be printed
-        in con_params.
+        Constructor. Receives an instance of DummyConnection and a prefix to
+        be printed in con_params.
 
         :param domain_id: a unique identifier of this Thing
         :param con_instance: an instance of connection to be used
         :param con_params: a dict which contains connection access params
-        :param metadata: some additional data that will be saved to 'metadata' property
+        :param metadata: some additional data that will be saved to 'metadata'
+               property
         """
         super().__init__(domain_id, con_instance, con_params, metadata)
 
@@ -27,12 +32,13 @@ class DummySwitch(Switch):
         try:
             self._print_prefix = con_params[key_name]
         except KeyError:
-            raise ValueError("Invalid connection params passed: {0} parameter is missing".format(key_name))
+            raise ValueError("Invalid connection params passed: "
+                             "{0} parameter is missing".format(key_name))
 
         self._con_instance = con_instance
 
     @property
-    def state(self) -> Switch.States:
+    def state(self) -> AbsSwitch.States:
         """
         Return a current state of the Thing
 
@@ -94,7 +100,8 @@ class DummySwitch(Switch):
 
 class DummySwitchFactory(ThingFactory):
     """
-    DummySliderFactory is a class that is responsible for building of DummySliders
+    DummySliderFactory is a class that is responsible for building of
+    DummySliders
     """
     @staticmethod
     def build(*args, **kwargs) -> DummySwitch:

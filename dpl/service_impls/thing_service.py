@@ -1,14 +1,20 @@
 from typing import Optional, Mapping, Any
 
 from dpl.model.domain_id import TDomainId
-from dpl.things.actuator import Actuator, UnsupportedCommandError, UnacceptableCommandArgumentsError
+from dpl.integrations.abs_actuator import (
+    AbsActuator, UnsupportedCommandError, UnacceptableCommandArgumentsError
+)
 from dpl.dtos.thing_dto import ThingDto
 # noinspection PyUnresolvedReferences
 from dpl.dtos.actuator_dto import ActuatorDto
 from dpl.dtos.dto_builder import build_dto
-from dpl.services.abs_thing_service import AbsThingService, \
-    ServiceEntityResolutionError, ServiceTypeError, ServiceInvalidArgumentsError, \
+from dpl.services.abs_thing_service import (
+    AbsThingService,
+    ServiceEntityResolutionError,
+    ServiceTypeError,
+    ServiceInvalidArgumentsError,
     ServiceUnsupportedCommandError
+)
 
 from dpl.repos.abs_thing_repository import AbsThingRepository
 
@@ -75,7 +81,9 @@ class ThingService(AbsThingService):
         # FIXME: Handle exceptions caused by link breakages
         self._things.delete(domain_id)
 
-    def select_by_placement(self, placement_id: Optional[TDomainId]):  # -> Collection[ThingDto]:
+    def select_by_placement(
+            self, placement_id: Optional[TDomainId]
+    ):  # -> Collection[ThingDto]:
         """
         Selects all Things that are physically present in the
         specified Placement
@@ -90,7 +98,10 @@ class ThingService(AbsThingService):
             build_dto(i) for i in self._things.select_by_placement(placement_id)
         ]
 
-    def send_command(self, to_actuator_id: TDomainId, command: str, command_args: Mapping[str, Any]) -> None:
+    def send_command(
+            self, to_actuator_id: TDomainId,
+            command: str, command_args: Mapping[str, Any]
+    ) -> None:
         """
         Allows to send a command to Actuator or any other Thing
         which has an 'execute' method implemented.
@@ -120,7 +131,7 @@ class ThingService(AbsThingService):
                 command is not supported by this instance of Thing
         :raises ServiceUnsupportedCommandError:
         """
-        thing = self._things.load(to_actuator_id)  # type: Actuator
+        thing = self._things.load(to_actuator_id)  # type: AbsActuator
 
         if thing is None:
             raise ServiceEntityResolutionError(

@@ -4,13 +4,13 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Actuator
+from .abs_actuator import AbsActuator
 
 
-class Player(Actuator):
+class AbsPlayer(AbsActuator):
     """
-    Player is an abstraction of basic player device or application. It can be in
-    one of three states: 'stopped', 'playing' and 'paused'.
+    Player is an abstraction of basic player device or application. It can be
+    in one of three states: 'stopped', 'playing' and 'paused'.
     """
     class States(Enum):
         stopped = 0
@@ -21,7 +21,8 @@ class Player(Actuator):
     @property
     def commands(self) -> Tuple[str, ...]:
         """
-        Returns a list of available commands. Must be overridden in derivative classes.
+        Returns a list of available commands. Must be overridden in derivative
+        classes.
 
         :return: a tuple of command names (strings)
         """
@@ -54,8 +55,8 @@ class Player(Actuator):
 
     def play(self, *args, **kwargs) -> None:
         """
-        Starts playing and switches the object to the 'playing' state. Additional parameters
-        like track name or URL can be provided.
+        Starts playing and switches the object to the 'playing' state.
+        Additional parameters like track name or URL can be provided.
 
         :param args: positional parameters
         :param kwargs: keyword parameters

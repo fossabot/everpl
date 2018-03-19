@@ -4,10 +4,10 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Actuator
+from .abs_actuator import AbsActuator
 
 
-class Slider(Actuator):
+class AbsSlider(AbsActuator):
     """
     Slider is an abstraction of real-life object, that can be in one of two
     stable states: 'opened' and 'closed' and also can be two transition states:
@@ -23,7 +23,8 @@ class Slider(Actuator):
     @property
     def commands(self) -> Tuple[str, ...]:
         """
-        Returns a list of available commands. Must be overridden in derivative classes.
+        Returns a list of available commands. Must be overridden in derivative
+        classes.
 
         :return: a tuple of command names (strings)
         """
@@ -56,8 +57,9 @@ class Slider(Actuator):
 
     def open(self) -> None:
         """
-        Switches an object to the 'opening' and then 'opened' state if its current state
-        is 'undefined', 'closed' or 'closing'. Command must be ignored otherwise.
+        Switches an object to the 'opening' and then 'opened' state if its
+        current state is 'undefined', 'closed' or 'closing'. Command must be
+        ignored otherwise.
 
         :return: None
         """
@@ -65,8 +67,9 @@ class Slider(Actuator):
 
     def close(self) -> None:
         """
-        Switches an object to the 'closing' and then 'closed' state if its current state
-        is 'undefined', 'opened' or 'opening'. Command must be ignored otherwise.
+        Switches an object to the 'closing' and then 'closed' state if its
+        current state is 'undefined', 'opened' or 'opening'. Command must be
+        ignored otherwise.
 
         :return: None
         """
