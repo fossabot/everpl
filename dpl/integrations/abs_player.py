@@ -4,10 +4,10 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.things import Actuator
+from .abs_actuator import AbsActuator
 
 
-class Player(Actuator):
+class AbsPlayer(AbsActuator):
     """
     Player is an abstraction of basic player device or application. It can be in
     one of three states: 'stopped', 'playing' and 'paused'.
