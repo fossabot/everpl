@@ -1,7 +1,4 @@
 from .thing import Thing
-from .actuator import Actuator
-from .switch import Switch
-from .slider import Slider
-from .player import Player
+from . import capabilities
 
-__all__ = ["Thing", "Actuator", "Switch", "Slider", "Player"]
+__all__ = ["Thing", "capabilities"]
