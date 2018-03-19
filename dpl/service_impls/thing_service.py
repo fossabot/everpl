@@ -81,7 +81,9 @@ class ThingService(AbsThingService):
         # FIXME: Handle exceptions caused by link breakages
         self._things.delete(domain_id)
 
-    def select_by_placement(self, placement_id: Optional[TDomainId]):  # -> Collection[ThingDto]:
+    def select_by_placement(
+            self, placement_id: Optional[TDomainId]
+    ):  # -> Collection[ThingDto]:
         """
         Selects all Things that are physically present in the
         specified Placement
@@ -96,7 +98,10 @@ class ThingService(AbsThingService):
             build_dto(i) for i in self._things.select_by_placement(placement_id)
         ]
 
-    def send_command(self, to_actuator_id: TDomainId, command: str, command_args: Mapping[str, Any]) -> None:
+    def send_command(
+            self, to_actuator_id: TDomainId,
+            command: str, command_args: Mapping[str, Any]
+    ) -> None:
         """
         Allows to send a command to Actuator or any other Thing
         which has an 'execute' method implemented.
