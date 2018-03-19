@@ -53,7 +53,11 @@ class Thing(BaseEntity, IEnabled, IAvailable, ILastUpdated):
     lighting, etc.
     """
 
-    def __init__(self, domain_id: TDomainId, con_instance: Connection, con_params: dict, metadata: dict = None):
+    def __init__(
+            self, domain_id: TDomainId,
+            con_instance: Connection, con_params: dict,
+            metadata: dict = None
+    ):
         """
         Constructor of a Thing. Receives an instance of Connection and some
         specific parameters to use it properly. Also can receive some metadata
