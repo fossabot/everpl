@@ -6,7 +6,7 @@ from typing import Iterable, Mapping
 from dpl.utils.empty_mapping import EMPTY_MAPPING
 
 # Include DPL modules
-from dpl.things.capabilities.state import State
+from dpl.things.capabilities.has_state import HasState
 from dpl.things.capabilities.actuator import (
     Actuator,
     UnsupportedCommandError,
@@ -15,7 +15,7 @@ from dpl.things.capabilities.actuator import (
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
-class AbsActuator(Thing, Actuator, State):
+class AbsActuator(Thing, Actuator, HasState):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
     and change their states after that.

@@ -2,7 +2,7 @@ from typing import Iterable, Mapping
 
 from dpl.utils.empty_mapping import EMPTY_MAPPING
 
-from .state import State
+from .has_state import HasState
 
 
 class UnsupportedCommandError(ValueError):
@@ -24,7 +24,7 @@ class UnacceptableCommandArgumentsError(Exception):
     pass
 
 
-class Actuator(State):
+class Actuator(HasState):
     """
     Actuator capability is usually mapped to Actuators.
     Devices with this capability are capable to act, i.e.
