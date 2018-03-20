@@ -1,24 +1,18 @@
 # Include standard modules
-from enum import Enum
 from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
+from dpl.things.capabilities.open_closed import OpenClosed
 from .abs_actuator import AbsActuator
 
 
-class AbsSlider(AbsActuator):
+class AbsSlider(AbsActuator, OpenClosed):
     """
     Slider is an abstraction of real-life object, that can be in one of two
     stable states: 'opened' and 'closed' and also can be two transition states:
     'opening' and 'closing'
     """
-    class States(Enum):
-        closed  = 0b00
-        opening = 0b01
-        closing = 0b10
-        opened  = 0b11
-        unknown = None
 
     @property
     def commands(self) -> Tuple[str, ...]:
