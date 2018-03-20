@@ -1,6 +1,6 @@
-class IEnabled(object):
+class IsEnabled(object):
     """
-    Things with IEnabled capability can be enabled or disabled.
+    Things with IsEnabled capability can be enabled or disabled.
 
     In 'disabled' state object becomes unavailable for any
     communication and is allowed to disconnect, terminate current

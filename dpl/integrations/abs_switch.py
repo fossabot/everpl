@@ -4,10 +4,11 @@ from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
+from dpl.things.capabilities.on_off import OnOff
 from .abs_actuator import AbsActuator
 
 
-class AbsSwitch(AbsActuator):
+class AbsSwitch(AbsActuator, OnOff):
     """
     Switch is an abstraction of objects with two only available states: 'on'
     and 'off'. Like simple light bulb, power socket, relay or fan with
@@ -34,6 +35,15 @@ class AbsSwitch(AbsActuator):
         Indicates if the object is in active state
 
         :return: True if state == 'on', false otherwise
+        """
+        return self.is_powered_on
+
+    @property
+    def is_powered_on(self) -> bool:
+        """
+        Indicates if this device powered on or not
+
+        :return: True if this device is powered on, False otherwise.
         """
         return self.state == self.States.on
 
