@@ -10,7 +10,7 @@ from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.connections import Connection
 from dpl.things.capabilities.is_enabled import IsEnabled
-from dpl.things.capabilities.available import Available
+from dpl.things.capabilities.is_available import Available
 from dpl.things.capabilities.last_updated import LastUpdated
 
 
