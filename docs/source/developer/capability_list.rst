@@ -90,10 +90,18 @@ Is Active
         otherwise.
 
 
-Has State devices are devices that have the ``state`` property. The
-value of the property is some string which is directly mapped to one
-of the device states. The exact set of possible states is defined by
-a set of Capabilities provided by the device.
+Is Active devices are devices that have the ``is_active`` property.
+The value of this property is a boolean with ``true`` mapped to the
+set of "active" states (i.e. working, acting, turned on) and ``false``
+mapped to the set of "inactive" states (i.e. not working, not acting,
+turned off, stopped).
+
+Is Active Capability must to be implemented if and only if the current
+state of the device can be clearly mapped to either "active" or
+"inactive" state.
+
+Actuator Is Active devices must to implement such methods as ``toggle``,
+``activate`` and ``deactivate``.
 
 
 On/Off
