@@ -14,6 +14,8 @@ class OnOff(object):
     is mapped to false. on command is also mapped to the activate and off
     command is mapped to the deactivate command.
     """
+    _capability_name = 'on_off'
+
     @property
     def is_powered_on(self) -> bool:
         """

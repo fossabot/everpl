@@ -10,6 +10,8 @@ class HasValue(Generic[TValueType]):
     like the current temperature, humidity or brightness
     levels.
     """
+    _capability_name = 'has_value'
+
     @property
     def value(self) -> Optional[TValueType]:
         """

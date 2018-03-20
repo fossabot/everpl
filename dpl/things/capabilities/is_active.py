@@ -27,6 +27,7 @@ class IsActive(object):
     property, analyze an availability status in is_available property
     and so on).
     """
+    _capability_name = 'is_active'
 
     @property
     def is_active(self) -> bool:
