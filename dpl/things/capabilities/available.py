@@ -3,7 +3,7 @@ class Available(object):
     Instances which provide Available capability provides
     their availability status: is they are available for
     communication or not - i.e. they are explicitly disabled
-    (see Enabled capability), lost, faulted, have a
+    (see IsEnabled capability), lost, faulted, have a
     discharged battery and so on).
     """
     @property
