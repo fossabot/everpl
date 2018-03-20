@@ -111,7 +111,7 @@ On/Off
     ``on_off``
 
 :Provided Fields:
-    :Field Name: ``is_power_on``
+    :Field Name: ``is_powered_on``
     :Field Values:
         boolean: ``true`` or ``false``
     :Field Description:
@@ -133,7 +133,7 @@ On/Off
 
 On/Off devices are devices that can be either powered "on" or "off".
 The current state of those devices can be determined by the value of
-the ``is_power_on`` field. Actuator On/Off devices are able to be turned
+the ``is_powered_on`` field. Actuator On/Off devices are able to be turned
 on and off with the on and off commands correspondingly.
 
 If the device provides both on_off and is_active capabilities, then
