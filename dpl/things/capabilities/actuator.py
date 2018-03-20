@@ -32,6 +32,8 @@ class Actuator(HasState):
     music and changing tracks, turning power on and off,
     turning light on and off and so on.
     """
+    _capability_name = 'actuator'
+
     @property
     def commands(self) -> Iterable[str]:
         """

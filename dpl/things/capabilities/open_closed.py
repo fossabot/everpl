@@ -22,6 +22,8 @@ class OpenClosed(HasState):
     opposite states (from ``open`` to ``closed``, from ``closed`` to ``open``,
     from ``opening`` to ``closed``, from ``closing`` to ``opened``).
     """
+    _capability_name = 'open_closed'
+
     class States(Enum):
         """
         Possible states of the thing: 'open', 'closed' and 'unknown'.

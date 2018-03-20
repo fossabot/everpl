@@ -25,6 +25,8 @@ class HasState(IsActive):
     property, analyze an availability status in is_available property
     and so on).
     """
+    _capability_name = 'has_state'
+
     class States(Enum):
         """
         Possible states of the thing. Must be overridden in derived
