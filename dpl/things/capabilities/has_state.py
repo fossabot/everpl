@@ -1,7 +1,9 @@
 from enum import Enum
 
+from .is_active import IsActive
 
-class HasState(object):
+
+class HasState(IsActive):
     """
     This interface allows a read-only access to states of a Thing.
 
@@ -36,17 +38,5 @@ class HasState(object):
         Return a current state of the Thing
 
         :return: an instance of self.State
-        """
-        raise NotImplementedError()
-
-    @property
-    def is_active(self) -> bool:
-        """
-        Returns if this object is currently in one of the
-        'active' states (like 'on' for lighting, 'open'
-        for a door and 'playing' for player)
-
-        :return: True if object is in any of 'active' states,
-                 False otherwise
         """
         raise NotImplementedError()
