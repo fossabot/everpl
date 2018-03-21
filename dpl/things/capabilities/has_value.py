@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic, Optional
 
-TValueType = TypeVar['TValueType']
+TValueType = TypeVar('TValueType')
 
 
 class HasValue(Generic[TValueType]):
