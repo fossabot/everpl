@@ -50,7 +50,7 @@ dto_filler_registry = dict()  # type: Dict[str, DtoFillerType]
 
 
 def register_dto_filler(register_for: str) -> \
-        Callable[DtoFillerType, DtoFillerType]:
+        Callable[[DtoFillerType], DtoFillerType]:
     """
     register_dto_filler is a Python decorator which decorates the wrapped
     DTO Filler method in the dto_filler_registry
