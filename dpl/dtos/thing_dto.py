@@ -37,7 +37,7 @@ from typing import Callable, Dict
 
 from .base_dto import BaseDto
 from .dto_builder import build_dto
-from dpl.things import Thing
+from dpl.things import Thing, capabilities
 
 
 ThingDto = BaseDto
@@ -96,3 +96,27 @@ def build_thing_dto(thing: Thing) -> ThingDto:
 @build_dto.register(Thing)
 def _(thing: Thing) -> ThingDto:
     return build_thing_dto(thing)
+
+
+# FIXME: CC39: Define such DTO fillers in their own or Capability-related
+# modules
+
+@register_dto_filler('has_state')
+def _(thing: capabilities.HasState, result: ThingDto) -> None:
+    result['state'] = thing.state.name
+
+
+@register_dto_filler('is_active')
+def _(thing: capabilities.IsActive, result: ThingDto) -> None:
+    result['is_active'] = thing.is_active
+
+
+@register_dto_filler('on_off')
+def _(thing: capabilities.OnOff, result: ThingDto) -> None:
+    result['is_powered_on'] = thing.is_powered_on
+
+
+@register_dto_filler('has_value')
+def _(thing: capabilities.HasValue, result: ThingDto) -> None:
+    result['value'] = thing.value
+
