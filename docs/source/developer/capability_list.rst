@@ -151,7 +151,7 @@ Open/Closed
 :Provided Fields:
     :Field Name: ``state``
     :Field Values:
-        string: ``open``, ``closed``, ``opening``, ``closing``
+        string: ``opened``, ``closed``, ``opening``, ``closing``
     :Field Description:
         Signs if this Thing (door, valve, lock, etc.) is opened,
         closed or in one of the transition states.
@@ -170,9 +170,9 @@ Open/Closed
         Closes the Thing
 
 
-Open/Closed devices are devices that can be in either "open" or
+Open/Closed devices are devices that can be in either "opened" or
 "closed" state. The current state of those devices can be determined bу
-the value of the ``state`` field. In addition to the "open" and "closed"
+the value of the ``state`` field. In addition to the "opened" and "closed"
 states there are two transitional states possible: "opening" and "closing".
 Actuator Open/Closed devices are able to be opened and closed with the
 ``open`` and ``close`` commands correspondingly.
@@ -183,7 +183,7 @@ value of ``is_active`` field and ``close`` with ``closing`` states are
 mapped to ``false``. Also generic ``activate`` and ``deactivate`` commands
 are available for such devices with ``activate`` mapped to ``open``,
 ``deactivate`` mapped to ``close`` and ``toggle`` toggles between the
-opposite states (from ``open`` to ``closed``, from ``closed`` to ``open``,
+opposite states (from ``opened`` to ``closed``, from ``closed`` to ``opened``,
 from ``opening`` to ``closed``, from ``closing`` to ``opened``).
 
 
