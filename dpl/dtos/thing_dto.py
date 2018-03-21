@@ -25,19 +25,52 @@ thing_dto_sample = {
 ```
 
 Also all data from 'metadata' field of a Thing
-will be embedded to the resulting ThingDto
+will be embedded to the resulting ThingDto.
+
+All the data provided in Capability-related fields is also embedded
+to the resulting ThingDto.
 """
 
 # FIXME: CC25: Change a set of Thing properties to eliminate
 # a need in 'metadata field'
-
+from typing import Callable, Dict
 
 from .base_dto import BaseDto
 from .dto_builder import build_dto
-from dpl.things import Thing
+from dpl.things import Thing, capabilities
 
 
 ThingDto = BaseDto
+DtoFillerType = Callable[[Thing, Dict], None]
+
+# DTO filler registry is a mapping between the name of Capability
+# and a corresponding DTO filler method (a method which receives an instance of
+# Thing and adds Capability-related properties to the Thing DTO)
+dto_filler_registry = dict()  # type: Dict[str, DtoFillerType]
+
+
+def register_dto_filler(register_for: str) -> \
+        Callable[[DtoFillerType], DtoFillerType]:
+    """
+    register_dto_filler is a Python decorator which decorates the wrapped
+    DTO Filler method in the dto_filler_registry
+
+    :param register_for: the name of Capability which is handled by this
+           callable
+    :return: the same method as was specified
+    """
+    def _inner(wrapped: DtoFillerType) -> DtoFillerType:
+        """
+        Performs the real registration of the specified callable
+
+        :param wrapped: a callable to be registered
+        :return: the same callable as was specified
+        """
+        dto_filler_registry[register_for] = wrapped
+
+        return wrapped
+
+    return _inner
 
 
 def build_thing_dto(thing: Thing) -> ThingDto:
@@ -51,9 +84,39 @@ def build_thing_dto(thing: Thing) -> ThingDto:
 
     result.update(thing.metadata)
 
+    for capability in thing.capabilities:
+        dto_filler = dto_filler_registry.get(capability)
+
+        if dto_filler is not None:
+            dto_filler(thing, result)
+
     return result
 
 
 @build_dto.register(Thing)
 def _(thing: Thing) -> ThingDto:
     return build_thing_dto(thing)
+
+
+# FIXME: CC39: Define such DTO fillers in their own or Capability-related
+# modules
+
+@register_dto_filler('has_state')
+def _(thing: capabilities.HasState, result: ThingDto) -> None:
+    result['state'] = thing.state.name
+
+
+@register_dto_filler('is_active')
+def _(thing: capabilities.IsActive, result: ThingDto) -> None:
+    result['is_active'] = thing.is_active
+
+
+@register_dto_filler('on_off')
+def _(thing: capabilities.OnOff, result: ThingDto) -> None:
+    result['is_powered_on'] = thing.is_powered_on
+
+
+@register_dto_filler('has_value')
+def _(thing: capabilities.HasValue, result: ThingDto) -> None:
+    result['value'] = thing.value
+
