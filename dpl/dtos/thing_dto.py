@@ -41,11 +41,36 @@ from dpl.things import Thing
 
 
 ThingDto = BaseDto
+DtoFillerType = Callable[[Thing, Dict], None]
 
 # DTO filler registry is a mapping between the name of Capability
 # and a corresponding DTO filler method (a method which receives an instance of
 # Thing and adds Capability-related properties to the Thing DTO)
-dto_filler_registry = dict()  # type: Dict[str, Callable[[Thing, Dict], None]]
+dto_filler_registry = dict()  # type: Dict[str, DtoFillerType]
+
+
+def register_dto_filler(register_for: str) -> \
+        Callable[DtoFillerType, DtoFillerType]:
+    """
+    register_dto_filler is a Python decorator which decorates the wrapped
+    DTO Filler method in the dto_filler_registry
+
+    :param register_for: the name of Capability which is handled by this
+           callable
+    :return: the same method as was specified
+    """
+    def _inner(wrapped: DtoFillerType) -> DtoFillerType:
+        """
+        Performs the real registration of the specified callable
+
+        :param wrapped: a callable to be registered
+        :return: the same callable as was specified
+        """
+        dto_filler_registry[register_for] = wrapped
+
+        return wrapped
+
+    return _inner
 
 
 def build_thing_dto(thing: Thing) -> ThingDto:
