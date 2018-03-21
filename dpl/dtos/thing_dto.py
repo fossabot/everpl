@@ -25,12 +25,15 @@ thing_dto_sample = {
 ```
 
 Also all data from 'metadata' field of a Thing
-will be embedded to the resulting ThingDto
+will be embedded to the resulting ThingDto.
+
+All the data provided in Capability-related fields is also embedded
+to the resulting ThingDto.
 """
 
 # FIXME: CC25: Change a set of Thing properties to eliminate
 # a need in 'metadata field'
-
+from typing import Callable, Dict
 
 from .base_dto import BaseDto
 from .dto_builder import build_dto
@@ -38,6 +41,11 @@ from dpl.things import Thing
 
 
 ThingDto = BaseDto
+
+# DTO filler registry is a mapping between the name of Capability
+# and a corresponding DTO filler method (a method which receives an instance of
+# Thing and adds Capability-related properties to the Thing DTO)
+dto_filler_registry = dict()  # type: Dict[str, Callable[[Thing, Dict], None]]
 
 
 def build_thing_dto(thing: Thing) -> ThingDto:
@@ -50,6 +58,12 @@ def build_thing_dto(thing: Thing) -> ThingDto:
     }
 
     result.update(thing.metadata)
+
+    for capability in thing.capabilities:
+        dto_filler = dto_filler_registry.get(capability)
+
+        if dto_filler is not None:
+            dto_filler(thing, result)
 
     return result
 
