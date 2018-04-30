@@ -3,6 +3,9 @@ import time
 from copy import deepcopy
 from types import MappingProxyType
 from typing import Mapping, Sequence
+import weakref
+
+from typing import Optional, Callable
 
 # Include 3rd-party modules
 # Include DPL modules
@@ -13,9 +16,10 @@ from dpl.things.capabilities.is_enabled import IsEnabled
 from dpl.things.capabilities.is_available import Available
 from dpl.things.capabilities.last_updated import LastUpdated
 from .capability_filler_meta import CapabilityFiller
+from .update_callback import UpdateCallback
 
 
-class Thing(BaseEntity, IsEnabled, Available, LastUpdated,
+class Thing(BaseEntity, IsEnabled, Available, LastUpdated, UpdateCallback,
             metaclass=CapabilityFiller):
     """
     Thing is a base class for all connected devices in the system.
@@ -79,6 +83,8 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated,
         self._metadata = deepcopy(metadata)
         self._last_updated = time.time()
         self._is_enabled = False
+        self._on_update = None
+        self._weak_self = weakref.proxy(self)
 
     @property
     def capabilities(self) -> Sequence[str]:  # -> Collection[str]:
@@ -118,6 +124,29 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated,
         """
         return self._last_updated
 
+    @property
+    def on_update(self) -> Optional[Callable]:
+        """
+        Returns a callable that is currently registered to be called on each
+        update of this object
+
+        :return: a callable that is currently registered to be called on each
+                 update of this object; or None if a callable wasn't set yet
+        """
+        return self._on_update
+
+    @on_update.setter
+    def on_update(self, callback: Optional[Callable]) -> None:
+        """
+        Allows to set a callable to be called on each update of this object.
+        This callable must to accept a reference to the event source (i.e. to
+        this object)
+
+        :param callback: a new callback to be set or None to unset a callback
+        :return: None
+        """
+        self._on_update = callback
+
     def _check_is_available(self) -> None:
         """
         Checks if this thing is available and raises and exception otherwise
@@ -128,3 +157,15 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated,
         if not self.is_available:
             raise RuntimeError("This thing is unavailable and can't be used at this time")
 
+    def _apply_update(self) -> None:
+        """
+        A method to be called after EACH update to ANY of the Thing's field.
+        Updates the value of last_updated field and calls a callback registered
+        in on_update property
+
+        :return: None
+        """
+        self._last_updated = time.time()
+
+        if self._on_update:
+            self._on_update(self._weak_self)
