@@ -5,7 +5,7 @@ from dpl.utils.observer import Observer
 from dpl.model.domain_id import TDomainId
 from dpl.things.thing import Thing
 from .base_repository import BaseRepository
-from dpl.repos.observable_repository import EventType
+from dpl.repos.observable_repository import RepositoryEventType
 from dpl.repos.abs_thing_repository import AbsThingRepository
 
 
@@ -58,7 +58,7 @@ class ThingRepository(BaseRepository[Thing], AbsThingRepository):
         """
         self._notify(
             object_id=thing.domain_id,
-            event_type=EventType.added,
+            event_type=RepositoryEventType.added,
             object_ref=weakref.proxy(thing)
         )
 
@@ -72,7 +72,7 @@ class ThingRepository(BaseRepository[Thing], AbsThingRepository):
         """
         self._notify(
             object_id=thing_id,
-            event_type=EventType.deleted,
+            event_type=RepositoryEventType.deleted,
             object_ref=None
         )
 
@@ -86,7 +86,7 @@ class ThingRepository(BaseRepository[Thing], AbsThingRepository):
         """
         self._notify(
             object_id=thing.domain_id,
-            event_type=EventType.modified,
+            event_type=RepositoryEventType.modified,
             object_ref=weakref.proxy(thing)
         )
 
@@ -109,7 +109,7 @@ class ThingRepository(BaseRepository[Thing], AbsThingRepository):
         self._observers.discard(observer)
 
     def _notify(
-            self, object_id: TDomainId, event_type: EventType,
+            self, object_id: TDomainId, event_type: RepositoryEventType,
             object_ref: Optional[Thing]
     ):
         """

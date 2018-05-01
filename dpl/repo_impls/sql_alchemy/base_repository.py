@@ -13,7 +13,7 @@ from dpl.utils.flatten import flatten
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.repos.abs_repository import AbsRepository
-from dpl.repos.observable_repository import ObservableRepository, EventType
+from dpl.repos.observable_repository import ObservableRepository, RepositoryEventType
 from dpl.utils.observer import Observer
 from .db_session_manager import DbSessionManager
 
@@ -58,17 +58,17 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
         """
         added_listener = partial(
             self._db_event_handler,
-            event_type=EventType.added
+            event_type=RepositoryEventType.added
         )
 
         modified_listener = partial(
             self._db_event_handler,
-            event_type=EventType.modified
+            event_type=RepositoryEventType.modified
         )
 
         deleted_listener = partial(
             self._db_event_handler,
-            event_type=EventType.deleted
+            event_type=RepositoryEventType.deleted
         )
 
         sqlalchemy.event.listen(
@@ -90,7 +90,7 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
         )
 
     def _db_event_handler(
-            self, mapper, connection, target: TEntity, event_type: EventType
+            self, mapper, connection, target: TEntity, event_type: RepositoryEventType
     ) -> None:
         """
         A handler method to be called of any of the objects controlled by
@@ -128,7 +128,7 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
         self._observers.discard(observer)
 
     def _notify(
-            self, object_id: TDomainId, event_type: EventType,
+            self, object_id: TDomainId, event_type: RepositoryEventType,
             object_ref: Optional[TEntity]
     ):
         """

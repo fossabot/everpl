@@ -8,7 +8,7 @@ from dpl.model.domain_id import TDomainId
 T = TypeVar('T')
 
 
-class EventType(Enum):
+class RepositoryEventType(Enum):
     added = 0
     modified = 1
     deleted = 2
@@ -22,7 +22,7 @@ class ObservableRepository(Observable, Generic[T]):
     was added, modified or deleted
     """
     def _notify(
-            self, object_id: TDomainId, event_type: EventType,
+            self, object_id: TDomainId, event_type: RepositoryEventType,
             object_ref: Optional[T]
     ) -> None:
         """
