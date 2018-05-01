@@ -72,8 +72,8 @@ class AbsActuator(Thing, Actuator, HasState):
         :param new_value: new state value to be set
         :return: None
         """
-        self._apply_update()
         self._really_internal_state_value = new_value
+        self._apply_update()
 
     @property
     def commands(self) -> Iterable[str]:
