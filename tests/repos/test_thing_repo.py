@@ -11,7 +11,7 @@ from dpl.connections import Connection
 from dpl.things.thing import Thing
 from dpl.repo_impls.in_memory.thing_repository import ThingRepository
 from dpl.utils.observer import Observer
-from dpl.repos.observable_repository import EventType
+from dpl.repos.observable_repository import RepositoryEventType
 
 
 class TestThingRepository(unittest.TestCase):
@@ -68,7 +68,7 @@ class TestThingRepository(unittest.TestCase):
 
         self.observer_callback.assert_called_once_with(
             source=weakref.proxy(thing_repo),
-            event_type=EventType.added,
+            event_type=RepositoryEventType.added,
             object_id=self.thing_id,
             object_ref=weakref.proxy(self.thing_ins)
         )
@@ -91,7 +91,7 @@ class TestThingRepository(unittest.TestCase):
 
         self.observer_callback.assert_called_once_with(
             source=weakref.proxy(self.filled_thing_repo),
-            event_type=EventType.deleted,
+            event_type=RepositoryEventType.deleted,
             object_id=self.thing_id,
             object_ref=None
         )
@@ -103,7 +103,7 @@ class TestThingRepository(unittest.TestCase):
 
         self.observer_callback.assert_called_once_with(
             source=weakref.proxy(self.filled_thing_repo),
-            event_type=EventType.modified,
+            event_type=RepositoryEventType.modified,
             object_id=self.thing_id,
             object_ref=self.thing_ins
         )
