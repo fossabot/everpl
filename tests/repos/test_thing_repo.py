@@ -95,3 +95,15 @@ class TestThingRepository(unittest.TestCase):
             object_id=self.thing_id,
             object_ref=None
         )
+
+    def test_modify_element(self):
+        assert self.thing_ins in self.filled_thing_repo.load_all()
+
+        self.thing_ins._apply_update()
+
+        self.observer_callback.assert_called_once_with(
+            source=weakref.proxy(self.filled_thing_repo),
+            event_type=EventType.modified,
+            object_id=self.thing_id,
+            object_ref=self.thing_ins
+        )
