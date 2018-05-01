@@ -145,6 +145,7 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
             o.update(
                 source=self._weak_self,
                 event_type=event_type,
+                object_id=object_id,
                 object_ref=object_ref
             )
 
