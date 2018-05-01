@@ -84,7 +84,6 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated, UpdateCallback,
         self._last_updated = time.time()
         self._is_enabled = False
         self._on_update = None
-        self._weak_self = weakref.proxy(self)
 
     @property
     def capabilities(self) -> Sequence[str]:  # -> Collection[str]:
@@ -168,4 +167,4 @@ class Thing(BaseEntity, IsEnabled, Available, LastUpdated, UpdateCallback,
         self._last_updated = time.time()
 
         if self._on_update:
-            self._on_update(self._weak_self)
+            self._on_update(self)
