@@ -1,10 +1,13 @@
+import weakref
 from typing import (
     TypeVar, Optional, MutableMapping, Sequence, Iterable, Type,
     MutableSet
 )
+from functools import partial
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+import sqlalchemy.event
 
 from dpl.utils.flatten import flatten
 from dpl.model.domain_id import TDomainId
@@ -42,6 +45,69 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
         self._session_manager = session_manager
         self._stored_cls = stored_cls
         self._observers = set()  # type: MutableSet[Observer]
+        self._weak_self = weakref.proxy(self)
+
+        self._setup_object_event_handlers()
+
+    def _setup_object_event_handlers(self) -> None:
+        """
+        Performs setup of handlers for object addition, modification and
+        removal for SQLAlchemy-mapped class
+
+        :return: None
+        """
+        added_listener = partial(
+            self._db_event_handler,
+            event_type=EventType.added
+        )
+
+        modified_listener = partial(
+            self._db_event_handler,
+            event_type=EventType.modified
+        )
+
+        deleted_listener = partial(
+            self._db_event_handler,
+            event_type=EventType.deleted
+        )
+
+        sqlalchemy.event.listen(
+            target=self._stored_cls,
+            identifier='after_insert',
+            fn=added_listener
+        )
+
+        sqlalchemy.event.listen(
+            target=self._stored_cls,
+            identifier='after_update',
+            fn=modified_listener
+        )
+
+        sqlalchemy.event.listen(
+            target=self._stored_cls,
+            identifier='after_delete',
+            fn=deleted_listener
+        )
+
+    def _db_event_handler(
+            self, mapper, connection, target: TEntity, event_type: EventType
+    ) -> None:
+        """
+        A handler method to be called of any of the objects controlled by
+        this Repository will be added to, modified in or deleted from the DB
+
+        :param mapper: an instance of SQLAlchemy DB Mapper
+        :param connection: an instance of SQLAlchemy DB Connection
+        :param target: an object that was altered
+        :param event_type: Enum value; determines if the object was added,
+               modified or removed
+        :return: None
+        """
+        self._notify(
+            object_id=target.domain_id,
+            event_type=event_type,
+            object_ref=weakref.proxy(target)
+        )
 
     def subscribe(self, observer: Observer) -> None:
         """
@@ -75,7 +141,12 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
                deleted
         :return: None
         """
-        raise NotImplementedError()
+        for o in self._observers:
+            o.update(
+                source=self._weak_self,
+                event_type=event_type,
+                object_ref=object_ref
+            )
 
     @property
     def _session(self) -> Session:
