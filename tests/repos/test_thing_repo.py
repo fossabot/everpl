@@ -69,6 +69,7 @@ class TestThingRepository(unittest.TestCase):
         self.observer_callback.assert_called_once_with(
             source=weakref.proxy(thing_repo),
             event_type=EventType.added,
+            object_id=self.thing_id,
             object_ref=weakref.proxy(self.thing_ins)
         )
 
@@ -91,5 +92,6 @@ class TestThingRepository(unittest.TestCase):
         self.observer_callback.assert_called_once_with(
             source=weakref.proxy(self.filled_thing_repo),
             event_type=EventType.deleted,
+            object_id=self.thing_id,
             object_ref=None
         )
