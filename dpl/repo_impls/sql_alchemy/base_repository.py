@@ -1,4 +1,7 @@
-from typing import TypeVar, Optional, MutableMapping, Sequence, Iterable, Type
+from typing import (
+    TypeVar, Optional, MutableMapping, Sequence, Iterable, Type,
+    MutableSet
+)
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -7,6 +10,8 @@ from dpl.utils.flatten import flatten
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from dpl.repos.abs_repository import AbsRepository
+from dpl.repos.observable_repository import ObservableRepository, EventType
+from dpl.utils.observer import Observer
 from .db_session_manager import DbSessionManager
 
 
@@ -14,7 +19,7 @@ TEntity = TypeVar("TEntity", bound=BaseEntity)
 TEntityCollection = MutableMapping[TDomainId, TEntity]
 
 
-class BaseRepository(AbsRepository[TEntity]):
+class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
     """
     A base implementation of SQLAlchemy-based repository
     """
@@ -36,6 +41,41 @@ class BaseRepository(AbsRepository[TEntity]):
         """
         self._session_manager = session_manager
         self._stored_cls = stored_cls
+        self._observers = set()  # type: MutableSet[Observer]
+
+    def subscribe(self, observer: Observer) -> None:
+        """
+        Adds the specified Observer to the list of subscribers
+
+        :param observer: an instance of Observer to be added
+        :return: None
+        """
+        self._observers.add(observer)
+
+    def unsubscribe(self, observer: Observer) -> None:
+        """
+        Removes the specified  Observer from the list of subscribers
+
+        :param observer: an instance of Observer to be deleted
+        :return: None
+        """
+        self._observers.discard(observer)
+
+    def _notify(
+            self, object_id: TDomainId, event_type: EventType,
+            object_ref: Optional[TEntity]
+    ):
+        """
+        Notifies all of the subscribers that an object was modified in,
+        added to or deleted from this Repository
+
+        :param object_id: an identifier of an altered object
+        :param event_type: enum value, specifies what happened to the object
+        :param object_ref: a reference to the altered object or None if it was
+               deleted
+        :return: None
+        """
+        raise NotImplementedError()
 
     @property
     def _session(self) -> Session:
