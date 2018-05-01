@@ -25,15 +25,3 @@ class Observable(object):
         :return: None
         """
         raise NotImplementedError()
-
-    def _notify(self, *args, **kwargs) -> None:
-        """
-        A method to be called if a new event was emitted by this Observer
-
-        :param args: optional, additional information about an event to be
-               passed to Observers
-        :param kwargs: optional, additional information about an event to be
-               passed to Observers
-        :return: None
-        """
-        raise NotImplementedError()
