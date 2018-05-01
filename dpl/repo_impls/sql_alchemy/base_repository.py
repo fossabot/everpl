@@ -18,7 +18,9 @@ class BaseRepository(AbsRepository[TEntity]):
     """
     A base implementation of SQLAlchemy-based repository
     """
-    def __init__(self, session_manager: DbSessionManager, stored_cls: Type[TEntity]):
+    def __init__(
+            self, session_manager: DbSessionManager, stored_cls: Type[TEntity]
+    ):
         """
         Constructor. Receives an instance of SessionManager
         to be used and saves a link to it to the internal
