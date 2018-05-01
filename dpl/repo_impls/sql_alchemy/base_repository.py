@@ -218,6 +218,5 @@ class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
         :param domain_id: an ID of element to be removed
         :return: None
         """
-        query = self._session.query(self._stored_cls)
-        on_delete = query.filter(self._stored_cls._domain_id == domain_id)
-        on_delete.delete()
+        on_delete = self.load(domain_id)
+        self._session.delete(on_delete)
