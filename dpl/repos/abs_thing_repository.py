@@ -1,10 +1,11 @@
 from typing import Optional
 
 from .abs_repository import AbsRepository, TDomainId
+from .observable_repository import ObservableRepository
 from dpl.things import Thing
 
 
-class AbsThingRepository(AbsRepository[Thing]):
+class AbsThingRepository(AbsRepository[Thing], ObservableRepository[Thing]):
     """
     Pure abstract base implementation of Repository
     containing Things.
