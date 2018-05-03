@@ -17,7 +17,7 @@ class ServiceEventType(Enum):
     deleted = 2
 
 
-class ObservableService(Observable):
+class ObservableService(Observable, Generic[T]):
     """
     ObservableService is a declaration of an interface to be implemented
     by Observable Service. Is a sample of Observable pattern; notifies all
