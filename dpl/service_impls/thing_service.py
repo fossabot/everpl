@@ -1,5 +1,5 @@
 import weakref
-from typing import Optional, Mapping, Any, Callable, MutableSet
+from typing import Optional, Mapping, Any, Callable
 
 from dpl.utils.observer import Observer
 from dpl.model.domain_id import TDomainId
@@ -18,10 +18,10 @@ from dpl.services.abs_thing_service import (
     ServiceInvalidArgumentsError,
     ServiceUnsupportedCommandError
 )
-from dpl.services.observable_service import ObservableService, ServiceEventType
 
 from dpl.repos.observable_repository import RepositoryEventType
 from dpl.repos.abs_thing_repository import AbsThingRepository
+from .base_observable_service import BaseObservableService, ServiceEventType
 
 
 class RepoObserver(Observer[AbsThingRepository]):
@@ -53,7 +53,7 @@ class RepoObserver(Observer[AbsThingRepository]):
         self._callback(*args, **kwargs)
 
 
-class ThingService(AbsThingService, ObservableService):
+class ThingService(BaseObservableService[ThingDto], AbsThingService):
     """
     This is an implementation of a ThingService - a class
     that manages all Things in the system
@@ -70,29 +70,11 @@ class ThingService(AbsThingService, ObservableService):
 
         :param thing_repo: an instance of a ThingRepository
         """
+        super().__init__()
         self._things = thing_repo
         self._things_observer = RepoObserver(self._handle_repository_update)
         self._things.subscribe(self._things_observer)
         self._weak_self = weakref.proxy(self)
-        self._observers = set()  # type: MutableSet[Observer]
-
-    def subscribe(self, observer: Observer) -> None:
-        """
-        Adds the specified Observer to the list of subscribers
-
-        :param observer: an instance of Observer to be added
-        :return: None
-        """
-        self._observers.add(observer)
-
-    def unsubscribe(self, observer: Observer) -> None:
-        """
-        Removes the specified  Observer from the list of subscribers
-
-        :param observer: an instance of Observer to be deleted
-        :return: None
-        """
-        self._observers.discard(observer)
 
     def _handle_repository_update(
             self, event_type: RepositoryEventType, object_id: TDomainId,
@@ -119,28 +101,6 @@ class ThingService(AbsThingService, ObservableService):
             event_type=service_event_type,
             object_dto=thing_dto
         )
-
-    def _notify(
-            self, object_id: TDomainId, event_type: ServiceEventType,
-            object_dto: Optional[ThingDto]
-    ) -> None:
-        """
-        Notifies all of the subscribers that an object, controlled by this
-        Service, was modified, added to or deleted from the system
-
-        :param object_id: an identifier of an altered object
-        :param event_type: enum value, specifies what happened to the object
-        :param object_dto: a DTO of the altered object or None if it was
-               deleted
-        :return: None
-        """
-        for o in self._observers:
-            o.update(
-                source=self._weak_self,
-                event_type=event_type,
-                object_id=object_id,
-                object_dto=object_dto
-            )
 
     def view(self, domain_id: TDomainId) -> ThingDto:
         """
