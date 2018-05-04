@@ -4,6 +4,8 @@ https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
 
+import pathlib
+import re
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
@@ -20,6 +22,17 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 
+# Extract everpl version from a package __init__ file
+here = pathlib.Path(__file__).parent
+
+txt = (here / 'dpl' / '__init__.py').read_text('utf-8')
+try:
+    version = re.findall(r"^__version__ = '([^']+)'\r?$",
+                         txt, re.M)[0]
+except IndexError:
+    raise RuntimeError('Unable to determine version.')
+
+# Start "setup" section
 setup(
     # This is the name of your project. The first time you publish this
     # package, this name will be registered for you. It will determine how
@@ -40,7 +53,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.3.0',  # Required
+    version=version,  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
