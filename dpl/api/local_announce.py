@@ -36,7 +36,8 @@ class LocalAnnounce(object):
                by default
         :param port: the port of announced service; set to the 10800 by default
         :param server_host: hostname of this instance; set to the
-               "hostname.local" local
+               "hostname.local" by if not set specifically (if server_host is
+               None or is equal to the "0.0.0.0" address)
         :return: None
         """
         hostname = socket.gethostname()
@@ -48,7 +49,7 @@ class LocalAnnounce(object):
 
         coded_address = socket.inet_aton(address)
 
-        if server_host is None:
+        if server_host is None or server_host == "0.0.0.0":
             server_host = "%s.local" % hostname
 
         txt_properties = {}
