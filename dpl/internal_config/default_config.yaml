@@ -54,6 +54,20 @@ apis:  # This section contains configuration of API providers
   local_announce:  # This section allows to override default parameters of
                    # the Zeroconf (Avahi) announcement.
                    # By default REST API params will be used
+    # use the host name specified in 'host' section of REST API configuration
+    # for service announcement
+    use_rest_host: true
+
+    # use the port specified in 'port' section of REST API configuration
+    # for service announcement
+    use_rest_port: true
+
+    # optional parameters; are applied if and only if the use_rest_host
+    # and use_rest_port parameters correspondingly are set to 'false';
+    # allow specify the host name and port for service announcement explicitly
+    host: null  # allows to set a host explicitly, use 'null' value or
+                # "0.0.0.0" string to use a default (Zeroconf-assigned) host name
+    port: 10800  # allows to set a port explicitly; only numbers allowed
 
 
 integrations:  # This section contains configuration of Integrations
