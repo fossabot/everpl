@@ -296,17 +296,26 @@ class Controller(object):
             self._start_local_announce()
 
     def _start_local_announce(self):
-        # FIXME: Allow to override params
-        rest_api_config = self._apis_config['rest_api']
-        rest_api_host = rest_api_config['host']
-        rest_api_port = rest_api_config['port']
+        local_announce_config = self._apis_config['local_announce']
+        rest_api_config = self._apis_config.get('rest_api', dict())
+
+        if local_announce_config['use_rest_host']:
+            assert 'rest_api' in self._apis_config
+            host = rest_api_config['host']
+        else:
+            host = local_announce_config['host']
+
+        if local_announce_config['use_rest_port']:
+            assert 'rest_api' in self._apis_config
+            port = rest_api_config['port']
+        else:
+            port = local_announce_config['port']
 
         self._local_announce.create_server(
             instance_name=None,  # use default
             # address=,  # use default
-            port=rest_api_port,  # use default REST API listening port
-            # server_host=rest_api_host  # use REST API listening hostname
-            server_host=None  # use default name for service host
+            port=port,  # use default REST API listening port
+            server_host=host  # use REST API listening hostname
         )
 
     async def _start_rest_api(self):
