@@ -40,6 +40,8 @@ from dpl.api.rest_api.placements_subapp import build_placements_subapp
 from dpl.api.rest_api.messages_subapp import build_messages_subapp
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
+from dpl.api.local_announce import LocalAnnounce
+
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
 
@@ -179,6 +181,8 @@ class Controller(object):
             auth_service=self._auth_service
         )
 
+        self._local_announce = LocalAnnounce()
+
     def parse_arguments(self):
         """
         Parses command-line arguments and alters everpl configuration
@@ -288,6 +292,32 @@ class Controller(object):
         if 'rest_api' in enabled_apis:
             await self._start_rest_api()
 
+        if 'local_announce' in enabled_apis:
+            self._start_local_announce()
+
+    def _start_local_announce(self):
+        local_announce_config = self._apis_config['local_announce']
+        rest_api_config = self._apis_config.get('rest_api', dict())
+
+        if local_announce_config['use_rest_host']:
+            assert 'rest_api' in self._apis_config
+            host = rest_api_config['host']
+        else:
+            host = local_announce_config['host']
+
+        if local_announce_config['use_rest_port']:
+            assert 'rest_api' in self._apis_config
+            port = rest_api_config['port']
+        else:
+            port = local_announce_config['port']
+
+        self._local_announce.create_server(
+            instance_name=None,  # use default
+            # address=,  # use default
+            port=port,  # use default REST API listening port
+            server_host=host  # use REST API listening hostname
+        )
+
     async def _start_rest_api(self):
         """
         Starts REST API server
@@ -321,4 +351,5 @@ class Controller(object):
 
     async def shutdown(self):
         await self._rest_api.shutdown_server()
+        self._local_announce.shutdown_server()
         self._thing_service_raw.disable_all()
