@@ -42,6 +42,7 @@ Platform itself is hosted on GitHub: https://github.com/s-kostyuk/adpl/
    :name: api-docs
 
    api/api_types
+   api/local_discovery
    api/rest_api
    api/handling_errors
    api/streaming_api
