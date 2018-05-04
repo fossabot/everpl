@@ -40,7 +40,6 @@ from dpl.api.rest_api.placements_subapp import build_placements_subapp
 from dpl.api.rest_api.messages_subapp import build_messages_subapp
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
-from dpl.api.local_announce import LocalAnnounce
 
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
@@ -181,7 +180,31 @@ class Controller(object):
             auth_service=self._auth_service
         )
 
-        self._local_announce = LocalAnnounce()
+        # None will indicate that this module was disabled
+        self._local_announce = None
+
+        # if module ws enabled...
+        if 'local_announce' in self._apis_config['enabled_apis']:
+            self._initialize_local_announcement()
+
+    def _initialize_local_announcement(self):
+        """
+        Performs an import of local_announce module an initializes the
+        self._local_announce field with LocalAnnounce constructor
+
+        :return: None
+        """
+        try:  # ...try to import a module and initialize its instance
+            from dpl.api.local_announce import LocalAnnounce
+            self._local_announce = LocalAnnounce()
+        except ImportError as e:  # if something gone wrong...
+            # ... print an error ...
+            logging.error(
+                "Failed to enable local_announce module: %s. Install all "
+                "missing dependencies or disable local_announce module in "
+                "everpl config file" % e
+            )
+            raise  # ...and terminate
 
     def parse_arguments(self):
         """
@@ -350,6 +373,8 @@ class Controller(object):
         self._db_session_manager.remove_session()
 
     async def shutdown(self):
+        if self._local_announce is not None:
+            self._local_announce.shutdown_server()
+
         await self._rest_api.shutdown_server()
-        self._local_announce.shutdown_server()
         self._thing_service_raw.disable_all()
