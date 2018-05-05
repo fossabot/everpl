@@ -139,7 +139,7 @@ async def messages_post_handler(request: web.Request) -> web.Response:
     thing_service = request.app['thing_service']
 
     try:
-        thing_service.send_command(
+        await thing_service.send_command(
             to_actuator_id=thing_id,
             command=thing_action,
             command_args=thing_action_params
