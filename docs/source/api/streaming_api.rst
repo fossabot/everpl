@@ -94,7 +94,7 @@ following message:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/subscribe",
         "body": {
             "target_topic": "here/is/your/topic"
@@ -115,7 +115,7 @@ with an empty body:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/subscribe_ack",
         "body": {}
     }
@@ -167,7 +167,7 @@ following message:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/unsubscribe",
         "body": {
             "target_topic": "here/is/your/topic"
@@ -188,7 +188,7 @@ with an empty body:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/unsubscribe_ack",
         "body": {}
     }
@@ -214,7 +214,7 @@ access token [#f3]_ in the following message:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/auth",
         "body": {
             "access_token": "here_is_your_token"
@@ -234,7 +234,7 @@ with an empty body:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/auth_ack",
         "body": {}
     }
@@ -272,7 +272,7 @@ Here is an example of an error message:
 .. code-block:: json
 
     {
-        "timestamp": 123456.76
+        "timestamp": 123456.76,
         "topic": "stream/error",
         "body": {
             "error_id": 2101,
