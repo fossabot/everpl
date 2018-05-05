@@ -1,3 +1,5 @@
+import asyncio
+import functools
 from typing import Optional, Mapping, Any
 
 from dpl.model.domain_id import TDomainId
@@ -98,7 +100,7 @@ class ThingService(AbsThingService):
             build_dto(i) for i in self._things.select_by_placement(placement_id)
         ]
 
-    def send_command(
+    async def send_command(
             self, to_actuator_id: TDomainId,
             command: str, command_args: Mapping[str, Any]
     ) -> None:
@@ -148,10 +150,20 @@ class ThingService(AbsThingService):
                 % to_actuator_id
             )
 
+        loop = asyncio.get_event_loop()
+        partial_method = functools.partial(
+            execute_method, command, command_args
+        )
+
         # FIXME: Handle validation and execution errors
         # FIXME: Ensure that such calls will be safe
         try:
-            thing.execute(command, command_args)
+            if asyncio.iscoroutinefunction(execute_method):
+                await partial_method()
+            else:
+                await loop.run_in_executor(
+                    None, partial_method
+                )
 
         except UnacceptableCommandArgumentsError as e:
             raise ServiceInvalidArgumentsError() from e
