@@ -195,7 +195,7 @@ async def thing_execute_post_handler(request: web.Request) -> web.Response:
         )
 
     try:
-        thing_service.send_command(
+        await thing_service.send_command(
             to_actuator_id=thing_id,
             command=command,
             command_args=command_args
