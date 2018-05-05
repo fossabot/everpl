@@ -39,7 +39,7 @@ class AbsThingService(AbsEntityService[ThingDto]):
         """
         raise NotImplementedError()
 
-    def send_command(self, to_actuator_id: TDomainId, command: str, command_args: Mapping[str, Any]) -> None:
+    async def send_command(self, to_actuator_id: TDomainId, command: str, command_args: Mapping[str, Any]) -> None:
         """
         Allows to send a command to Actuator or any other Thing
         which has an 'execute' method implemented.
