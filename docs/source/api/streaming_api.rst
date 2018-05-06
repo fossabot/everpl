@@ -214,7 +214,7 @@ following message:
         "timestamp": 123456.76,
         "topic": "stream/subscribe",
         "body": {
-            "target_topic": "here/is/your/topic".
+            "target_topic": "here/is/your/topic",
             "messages_retained": 0
         }
     }
@@ -233,13 +233,20 @@ Where:
 In response to that message you will receive the following message
 with an empty body:
 
+In response to that message you will receive the following message:
+
 .. code-block:: json
 
     {
         "timestamp": 123456.76,
         "topic": "stream/subscribe_ack",
-        "body": {}
+        "body": {
+            "target_topic": "here/is/your/topic"
+        }
     }
+
+Where ``target_topic`` is the same topic that was specified in
+the ``subscribe`` message.
 
 
 Wildcard subscriptions
@@ -297,16 +304,20 @@ Where:
   (``here/is/your/topic`` on example).
 
 
-In response to that message you will receive the following message
-with an empty body:
+In response to that message you will receive the following message:
 
 .. code-block:: json
 
     {
         "timestamp": 123456.76,
         "topic": "stream/unsubscribe_ack",
-        "body": {}
+        "body": {
+            "target_topic": "here/is/your/topic"
+        }
     }
+
+Where ``target_topic`` is the same topic that was specified in
+the ``unsubscribe`` message.
 
 
 Authentication
