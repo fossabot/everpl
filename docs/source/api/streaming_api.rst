@@ -194,16 +194,6 @@ with an empty body:
     }
 
 
-Wildcard subscriptions and their priority
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In the system the most specific subscriptions have the higher
-priority than the high-level ones. For example, if you explicitly
-subscribed to the ``things/#`` topic but explicitly unsubscribed
-from the ``things/player1/#`` topic, than you will receive updates
-for all of the Things except updates for the ``player1`` Thing.
-
-
 Authentication
 --------------
 
