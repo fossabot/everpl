@@ -26,6 +26,31 @@ application instance are allowed to send messages to each other.
 The format of such messages is described in the next section.
 
 
+Connection procedure
+--------------------
+
+To connect to the Streaming API, you need to open a WebSocket
+connection using the following address: ``BASE_URL/stream``, where
+the ``BASE_URL`` may look like this: ``ws://localhost:10800/api/v1/``
+
+or like this: ``wss://hostname.local/api/v1/``.
+
+The ``BASE_URL`` is shared with a :doc:`./rest_api`, but there is
+a ``ws`` instead of ``http`` and ``wss`` instead of ``https`` in
+the base URL for the unsecured and secured connections correspondingly.
+
+In order to connect to the Streaming API, there is not needed to supply
+additional request headers on WebSocket handshake. But all clients
+are must to send an `Authentication`_ request **immediately**
+after WebSocket connection was established. If the Authentication
+request will not be sent within 20 seconds after connection, then the
+server is allowed to terminate a connection after that period was
+expired.
+
+After the Authentication procedure was passed, both sides are allowed
+to start a normal communication over WebSocket connection.
+
+
 Message Format
 --------------
 
@@ -45,6 +70,14 @@ specified fields:
     Another JSON object. The type and format of this object is
     dependent on a topic of the message.
 
+:message_id:
+    integer, an optional field, a temporary identifier of a message
+    that allows to acknowledge that a message was received by a client.
+    Such identifiers may be reused by server, so two distinct messages
+    can receive the same identifiers in different points of time.
+    Is provided only if the `Message Retention`_ was enabled for
+    the corresponding message topic.
+
 
 Message topics allow to group messages by... topics. By types of
 the messages they belong to, by type of the event they describe.
@@ -59,6 +92,90 @@ The content of the message body is greatly dependent on a topic.
 Each topic is allowed to specify its own set of available fields
 that will carry an additional information about what exactly
 happened in the system or what to do with that.
+
+
+Sessions and data retention
+---------------------------
+
+All the communication between the server and client is processed in
+a scope of a Session. Session is a scope of time between the user was
+logged in on a client device (client application) and the user was
+logged out on on a device or an access for such device was revoked.
+
+One session always corresponds to exactly one user and to exactly one
+authorized device or application. Sessions are identified by
+the corresponding access tokens, specified by client applications in
+client `Authentication`_ procedure.
+
+All the subscriptions (as described below in `Topics and subscriptions`_
+section) **are** saved between connections. So, if a WebSocket
+connection will be interrupted for any reason (such as issues with a
+network connection or a graceful disconnection of a client), then
+all the subscriptions and other session-related data will be restored.
+
+The only exception in this rule is the following. If the client access
+will be revoked and a client Session will be terminated by server
+for any reason, than all Session-related data will be **deleted** from
+a server. And, as result, you'll need to start everything from scratch.
+
+Also, clients are allowed to ask a server to store last N messages
+for specific topic until their delivery will be explicitly
+acknowledged by clients. For more information about this feature, see
+the `Message Retention`_ section of documentation.
+
+
+Message Retention
+-----------------
+
+Message Retention feature allows to keep the last N messages for
+specific topics until their delivery will be specifically acknowledged
+by a client.
+
+The number of retained messages is set for each topic individually.
+So, if you, for example subscribed using a wildcard subscription
+like ``things/door1/#`` with the number of retained messages set to 2,
+then there will be a maximum of two retained messages stored for each
+topic that corresponds to this wildcard: two for ``things/door1/updated``,
+two for ``things/door1/created`` and two for ``things/door1/deleted``.
+
+The number of retained messages is set on the subscription as described
+below in `Topic subscriptions`_ section of documentation.
+
+To enable a message retention, set the number of retained messages to
+a bigger than zero integer value. To disable message retention, this number
+must be set to ``0`` (zero). Negative numbers are forbidden. If omitted,
+the number of retained messages is set to zero.
+
+With the message retention enabled, the client **must** acknowledge the delivery
+of each message using the following special message:
+
+.. code-block:: json
+
+    {
+        "timestamp": 123456.76,
+        "topic": "stream/delivery_ack",
+        "body": {
+            "message_id": 12
+        }
+    }
+
+Where:
+
+- ``topic`` value is constantly equal to ``stream/delivery_ack``;
+- ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
+- ``message_id`` value is an integer, a temporary identifier of a message
+  to be acknowledged.
+
+If the number of undelivered messages will exceed the set number of retained
+messages, than the old messages will be **lost**, **without** any ability
+to be recovered.
+
+Retained messages are allowed to be re-sent until their delivery will be
+acknowledged by a client. The time between attempts to re-send a message
+will grow exponentially until the delivery wil be confirmed by a client.
+
+On re-connection all retained messages are re-sent immediately after the
+client authentication.
 
 
 Topics and subscriptions
@@ -97,7 +214,8 @@ following message:
         "timestamp": 123456.76,
         "topic": "stream/subscribe",
         "body": {
-            "target_topic": "here/is/your/topic"
+            "target_topic": "here/is/your/topic".
+            "messages_retained": 0
         }
     }
 
@@ -106,7 +224,10 @@ Where:
 - ``topic`` value is constantly equal to ``stream/subscribe``;
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``target_topic`` value is set the topic you want to subscribe onto
-  (``here/is/your/topic`` on example).
+  (``here/is/your/topic`` on example);
+- ``messages_retained`` is an optional parameter set to the maximum
+  number of undelivered messages to be retained; positive integer numbers
+  only; is set to ``0`` (zero) if omitted.
 
 
 In response to that message you will receive the following message
@@ -119,12 +240,6 @@ with an empty body:
         "topic": "stream/subscribe_ack",
         "body": {}
     }
-
-.. WARNING::
-    All your subscriptions are **not** saved automatically between
-    sessions. If you will be disconnected from a server by any
-    reason, then you will need to start from scratch and subscribe
-    on each of the needed topics again.
 
 
 Wildcard subscriptions
@@ -311,6 +426,12 @@ Special Message Types
     An acknowledgement packet, sent by a server if the subscription
     was successfully cancelled. Described above in the
     `Unsubscribe from a topic`_ section of documentation.
+
+6. ``stream/delivery_ack``
+    An acknowledgement packet, sent by a **client** if a message
+    with the specified identifier was successfully received.
+    Described above in the `Message Retention`_ section
+    of documentation.
 
 Object-Related Messages
 ^^^^^^^^^^^^^^^^^^^^^^^
