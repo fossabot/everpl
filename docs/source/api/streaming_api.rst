@@ -39,7 +39,7 @@ The ``BASE_URL`` is shared with a :doc:`./rest_api`, but there is
 a ``ws`` instead of ``http`` and ``wss`` instead of ``https`` in
 the base URL for the unsecured and secured connections correspondingly.
 
-In order to connect to the Streaming API, there is not needed to supply
+In order to connect to the Streaming API, there is no need to supply
 additional request headers on WebSocket handshake. But all clients
 are must to send an `Authentication`_ request **immediately**
 after WebSocket connection was established. If the Authentication
