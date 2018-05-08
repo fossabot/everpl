@@ -9,10 +9,13 @@ from dpl.services.abs_placement_service import AbsPlacementService, \
     ServiceEntityResolutionError, ServiceEntityLinkError
 
 from dpl.repos.abs_placement_repository import AbsPlacementRepository
-from .base_service import BaseService
+from .base_observable_service import BaseObservableService
 
 
-class PlacementService(AbsPlacementService, BaseService[PlacementDto]):
+class PlacementService(
+    BaseObservableService[Placement, PlacementDto],
+    AbsPlacementService
+):
     """
     This is an implementation of a PlacementService -
     a class that manages all Placements in the system
@@ -25,6 +28,7 @@ class PlacementService(AbsPlacementService, BaseService[PlacementDto]):
 
         :param placement_repo: an instance of a PlacementRepository
         """
+        super().__init__()
         self._placements = placement_repo
 
     def view_all(self):  # -> Collection[PlacementDto]:
