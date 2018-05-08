@@ -9,7 +9,7 @@ from dpl.services.abs_placement_service import AbsPlacementService, \
     ServiceEntityResolutionError, ServiceEntityLinkError
 
 from dpl.repos.abs_placement_repository import AbsPlacementRepository
-from .base_observable_service import BaseObservableService
+from .base_observable_service import BaseObservableService, ServiceEventType
 
 
 class PlacementService(
@@ -76,6 +76,11 @@ class PlacementService(
         # FIXME: Handle exceptions caused by resolution errors
         # FIXME: Handle exceptions caused by link breakages
         self._placements.delete(domain_id)
+        self._notify(
+            object_id=domain_id,
+            event_type=ServiceEventType.deleted,
+            object_dto=None
+        )
 
     def create_placement(self, friendly_name: Optional[str], image_url: Optional[str]) -> TDomainId:
         """
@@ -95,6 +100,12 @@ class PlacementService(
 
         new_placement = Placement(domain_id, friendly_name, image_url)
         self._placements.add(new_placement)
+
+        self._notify(
+            object_id=domain_id,
+            event_type=ServiceEventType.added,
+            object_dto=build_dto(new_placement)
+        )
 
         return domain_id
 
@@ -119,6 +130,12 @@ class PlacementService(
         # FIXME: Handle validation errors
         placement.friendly_name = new_name
 
+        self._notify(
+            object_id=placement_id,
+            event_type=ServiceEventType.modified,
+            object_dto=build_dto(placement)
+        )
+
     def change_image_url(self, placement_id: TDomainId, new_image_url: Optional[str]) -> None:
         """
         Sets a new image_url value for a Placement with
@@ -140,3 +157,9 @@ class PlacementService(
 
         # FIXME: Handle validation errors
         placement.image_url = new_image_url
+
+        self._notify(
+            object_id=placement_id,
+            event_type=ServiceEventType.modified,
+            object_dto=build_dto(placement)
+        )
