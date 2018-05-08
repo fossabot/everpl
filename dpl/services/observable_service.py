@@ -3,6 +3,7 @@ from enum import Enum
 
 from dpl.model.domain_id import TDomainId
 from dpl.utils.observable import Observable
+from .abs_entity_service import AbsEntityService
 
 
 T = TypeVar('T')
@@ -17,7 +18,7 @@ class ServiceEventType(Enum):
     deleted = 2
 
 
-class ObservableService(Observable, Generic[T]):
+class ObservableService(AbsEntityService[T], Observable):
     """
     ObservableService is a declaration of an interface to be implemented
     by Observable Service. Is a sample of Observable pattern; notifies all
