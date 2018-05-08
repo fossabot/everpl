@@ -53,7 +53,7 @@ class RepoObserver(Observer[AbsThingRepository]):
         self._callback(*args, **kwargs)
 
 
-class ThingService(BaseObservableService[ThingDto], AbsThingService):
+class ThingService(BaseObservableService[Thing, ThingDto], AbsThingService):
     """
     This is an implementation of a ThingService - a class
     that manages all Things in the system
