@@ -2,6 +2,8 @@
 This module contains a definition of Streaming API provider
 """
 import asyncio
+import json
+from typing import Mapping
 
 from aiohttp import web
 
@@ -11,6 +13,82 @@ from dpl.auth.abs_auth_service import (
     AbsAuthService,
     AuthInvalidTokenError
 )
+
+
+class StreamAuthError(Exception):
+    pass
+
+
+async def handle_auth(ws: web.WebSocketResponse) -> str:
+    try:
+        received = await ws.receive_json(timeout=20)  # type: dict
+    except TypeError:
+        ws.send_str("Auth Failed: Not a TEXT frame")
+        raise StreamAuthError()
+
+    except json.JSONDecodeError:
+        ws.send_str("Auth Failed: Not a JSON object")
+        raise StreamAuthError()
+
+    except (asyncio.CancelledError, asyncio.TimeoutError):
+        ws.send_str("Auth Failed: No data received in 20 seconds")
+        raise StreamAuthError()
+
+    if received.get('type') != 'control':
+        ws.send_str("Auth Failed: Not a control message")
+        raise StreamAuthError()
+
+    if received.get('topic') != 'auth':
+        ws.send_str("Auth Failed: Message topic is not 'auth'")
+        raise StreamAuthError()
+
+    body = received.get('body')
+
+    if not isinstance(body, Mapping):
+        ws.send_str("Auth Failed: Message body is missing or is not a mapping")
+        raise StreamAuthError()
+
+    token = body.get('access_token')
+
+    if not isinstance(token, str):
+        ws.send_str("Auth Failed: Auth token body is missing "
+                    "or is not a string")
+        raise StreamAuthError()
+
+    return token
+
+
+async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
+    """
+    Performs handling of a WS connection handshake, authentication and further
+    handling of Streaming API protocol
+
+    :param request: a request to be processed
+    :return: an response to request
+    """
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
+    try:
+        token = await handle_auth(ws)
+
+    except StreamAuthError:
+        ws.close()
+        return ws
+
+    try:
+        auth_context = request.app['auth_context']  # type: AuthContext
+        assert isinstance(auth_context, AuthContext)
+
+        with auth_context(token=token):
+            # everything is fine starting from here
+            ws.send_str("You did it!")
+
+    except AuthInvalidTokenError:
+        ws.send_str("Auth failed: Invalid auth token")
+        ws.close()
+
+    return ws
 
 
 class StreamingApiProvider(object):
@@ -47,6 +125,10 @@ class StreamingApiProvider(object):
         self._app.update(context_data)
 
         self._router = self._app.router  # type: web.UrlDispatcher
+        self._router.add_get(
+            path='/',
+            handler=handle_ws_request
+        )
 
     @property
     def app(self) -> web.Application:
