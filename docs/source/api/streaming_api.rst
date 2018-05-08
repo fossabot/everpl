@@ -63,6 +63,11 @@ specified fields:
     formatted as a UNIX time number (i.e. number of seconds
     passed from 1 January 1970 UTC).
 
+:type:
+    string, indicates if the message carries some data (data message)
+    or control information (control message). Can take either ``data``
+    or ``control`` value.
+
 :topic:
     string, a topic of this message (described in detail below).
 
@@ -78,6 +83,13 @@ specified fields:
     Is provided only if the `Message Retention`_ was enabled for
     the corresponding message topic.
 
+
+All messages belong to one of two types: **Control Messages** or **Data
+Messages**. Control messages are intended to carry information to control
+communication using the Streaming API. All of them are described in a
+`Control Messages`_ section of documentation. Data messages are
+intended to carry some useful data from client to the server and in
+reverse direction.
 
 Message topics allow to group messages by... topics. By types of
 the messages they belong to, by type of the event they describe.
@@ -153,7 +165,8 @@ of each message using the following special message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/delivery_ack",
+        "type": "control",
+        "topic": "delivery_ack",
         "body": {
             "message_id": 12
         }
@@ -161,7 +174,8 @@ of each message using the following special message:
 
 Where:
 
-- ``topic`` value is constantly equal to ``stream/delivery_ack``;
+- ``type`` value is constantly equal to ``control``;
+- ``topic`` value is constantly equal to ``delivery_ack``;
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``message_id`` value is an integer, a temporary identifier of a message
   to be acknowledged.
@@ -212,7 +226,8 @@ following message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/subscribe",
+        "type": "control",
+        "topic": "subscribe",
         "body": {
             "target_topic": "here/is/your/topic",
             "messages_retained": 0
@@ -221,7 +236,8 @@ following message:
 
 Where:
 
-- ``topic`` value is constantly equal to ``stream/subscribe``;
+- ``type`` value is constantly equal to ``control``;
+- ``topic`` value is constantly equal to ``subscribe``;
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``target_topic`` value is set the topic you want to subscribe onto
   (``here/is/your/topic`` on example);
@@ -239,7 +255,8 @@ In response to that message you will receive the following message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/subscribe_ack",
+        "type": "control",
+        "topic": "subscribe_ack",
         "body": {
             "target_topic": "here/is/your/topic"
         }
@@ -290,7 +307,8 @@ following message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/unsubscribe",
+        "type": "control",
+        "topic": "unsubscribe",
         "body": {
             "target_topic": "here/is/your/topic"
         }
@@ -298,7 +316,8 @@ following message:
 
 Where:
 
-- ``topic`` value is constantly equal to ``stream/subscribe``;
+- ``type`` value is constantly equal to ``control``;
+- ``topic`` value is constantly equal to ``subscribe``;
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``target_topic`` value is set the topic you want to unsubscribe from
   (``here/is/your/topic`` on example).
@@ -310,7 +329,8 @@ In response to that message you will receive the following message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/unsubscribe_ack",
+        "type": "control",
+        "topic": "unsubscribe_ack",
         "body": {
             "target_topic": "here/is/your/topic"
         }
@@ -331,7 +351,8 @@ access token [#f3]_ in the following message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/auth",
+        "type": "control",
+        "topic": "auth",
         "body": {
             "access_token": "here_is_your_token"
         }
@@ -339,7 +360,8 @@ access token [#f3]_ in the following message:
 
 Where:
 
-- ``topic`` value is constantly equal to ``stream/auth``;
+- ``type`` value is constantly equal to ``control``;
+- ``topic`` value is constantly equal to ``auth``;
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``access_token`` value is set the your access token to be used
   (``here_is_your_token`` on example).
@@ -351,7 +373,8 @@ with an empty body:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/auth_ack",
+        "type": "control",
+        "topic": "auth_ack",
         "body": {}
     }
 
@@ -363,7 +386,7 @@ Handling Errors
 ---------------
 
 If there is any error happened in communication, you will receive
-a special message with a topic ``stream/error``. Such messages have
+a special message with a topic ``error``. Such messages have
 the following format:
 
 :timestamp:
@@ -371,8 +394,11 @@ the following format:
     formatted as a UNIX time number (i.e. number of seconds
     passed from 1 January 1970 UTC).
 
+:type:
+    string, constantly set to the ``control``.
+
 :topic:
-    string, constantly set to the ``stream/error``.
+    string, constantly set to the ``error``.
 
 :body:
     Another JSON object. Information about an error in the format
@@ -389,7 +415,8 @@ Here is an example of an error message:
 
     {
         "timestamp": 123456.76,
-        "topic": "stream/error",
+        "type": "control",
+        "topic": "error",
         "body": {
             "error_id": 2101,
             "devel_message": "Invalid access token",
@@ -410,35 +437,35 @@ and subscription (`Topics and subscriptions`_) messages.
 Below is a small recap of special message types and a description of
 some general message types.
 
-Special Message Types
-^^^^^^^^^^^^^^^^^^^^^
+Control Messages
+^^^^^^^^^^^^^^^^
 
-1. ``stream/error``
+1. ``error``
     Indicates an error in communication using Streaming API,
     described above in the `Handling Errors`_ section of
     documentation.
 
-2. ``stream/subscribe``
+2. ``subscribe``
     Allows streaming client to subscribe on a specific topic.
     Described above in the `Topic subscriptions`_ section of
     documentation.
 
-3. ``stream/subscribe_ack``
+3. ``subscribe_ack``
     An acknowledgement packet, sent by a server on successful
     subscription. Described above in the `Topic subscriptions`_
     section of documentation.
 
-4. ``stream/unsubscribe``
+4. ``unsubscribe``
     Allows streaming client to unsubscribe from a specific topic.
     Described above in the `Unsubscribe from a topic`_ section of
     documentation.
 
-5. ``stream/unsubscribe_ack``
+5. ``unsubscribe_ack``
     An acknowledgement packet, sent by a server if the subscription
     was successfully cancelled. Described above in the
     `Unsubscribe from a topic`_ section of documentation.
 
-6. ``stream/delivery_ack``
+6. ``delivery_ack``
     An acknowledgement packet, sent by a **client** if a message
     with the specified identifier was successfully received.
     Described above in the `Message Retention`_ section
@@ -455,6 +482,9 @@ system. All of such messages has the following structure:
     float, the moment of time when this message was generated,
     formatted as a UNIX time number (i.e. number of seconds
     passed from 1 January 1970 UTC).
+
+:type:
+    string, constantly set to the ``data``.
 
 :topic:
     string, topic in the following format:
@@ -482,6 +512,7 @@ So here is an example of such message:
 
     {
         "timestamp": 1505768807.4725718,
+        "type": "data",
         "topic": "things/F1/updated",
         "body": {
             "commands": ["activate", "deactivate", "toggle", "on", "off"],
@@ -506,6 +537,9 @@ to the user of a client application. They have the following format:
     float, the moment of time when this message was generated,
     formatted as a UNIX time number (i.e. number of seconds
     passed from 1 January 1970 UTC).
+
+:type:
+    string, constantly set to the ``data``.
 
 :topic:
     string, constantly set to ``notifications``.
