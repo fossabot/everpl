@@ -5,6 +5,8 @@ import asyncio
 
 from aiohttp import web
 
+from dpl.api.cors_middleware import CorsMiddleware
+
 
 class StreamingApiProvider(object):
     """
@@ -20,7 +22,14 @@ class StreamingApiProvider(object):
         self._handler = None
         self._server = None
 
-        self._app = web.Application()
+        self._cors_middleware = CorsMiddleware(
+            is_enabled=True,
+            allowed_origin='*'
+        )
+
+        self._app = web.Application(
+            middlewares=(self._cors_middleware, )
+        )
         self._router = self._app.router  # type: web.UrlDispatcher
 
     @property
