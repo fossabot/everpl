@@ -21,11 +21,9 @@ def _convert_to_event(source: Observable, *args, **kwargs) -> Event:
     :param kwargs: keyword arguments, an information about event
     :return: an instance of Event
     """
-    warnings.warn(
-        "This method should not to be called during normal system operation.\n"
-        "Called with source %s" % source
+    raise NotImplementedError(
+        "Failed to find an event builder for this source: %s" % source
     )
-    return Event(topic='unhandled')
 
 
 class EventHub(Observer, Observable):
