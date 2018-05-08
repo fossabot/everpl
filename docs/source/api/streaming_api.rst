@@ -537,6 +537,12 @@ So here is an example of such message:
 Notifications
 ^^^^^^^^^^^^^
 
+.. WARNING::
+    **Unstable API**
+
+    Notifications API and a format of Notifications is not yet
+    stabilized. Please, check this page later for updates.
+
 Notifications are messages that are supposed to be directly showed
 to the user of a client application. They have the following format:
 
