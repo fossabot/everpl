@@ -6,6 +6,11 @@ import asyncio
 from aiohttp import web
 
 from dpl.api.cors_middleware import CorsMiddleware
+from dpl.auth.auth_context import AuthContext
+from dpl.auth.abs_auth_service import (
+    AbsAuthService,
+    AuthInvalidTokenError
+)
 
 
 class StreamingApiProvider(object):
@@ -13,11 +18,14 @@ class StreamingApiProvider(object):
     A class that provides a Streaming API of the system. Controls WebSocket
     connections, WS authentication and message sending
     """
-    def __init__(self, loop: asyncio.AbstractEventLoop = None):
-        if loop is None:
-            self._loop = asyncio.get_event_loop()
-        else:
-            self._loop = loop
+    def __init__(
+            self, auth_context: AuthContext, auth_service: AbsAuthService,
+            loop: asyncio.AbstractEventLoop = None
+    ):
+        self._auth_context = auth_context
+        self._auth_service = auth_service
+
+        self._loop = loop
 
         self._handler = None
         self._server = None
@@ -30,6 +38,14 @@ class StreamingApiProvider(object):
         self._app = web.Application(
             middlewares=(self._cors_middleware, )
         )
+
+        context_data = {
+            'auth_service': auth_service,
+            'auth_context': auth_context
+        }
+
+        self._app.update(context_data)
+
         self._router = self._app.router  # type: web.UrlDispatcher
 
     @property
