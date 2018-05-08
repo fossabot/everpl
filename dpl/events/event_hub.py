@@ -3,6 +3,7 @@ This module contains a definition of EventHub - a central place for processing
 of all events in the system
 """
 import functools
+import warnings
 from typing import Type, MutableSet, Callable
 
 from dpl.utils.observer import Observer
@@ -20,8 +21,11 @@ def _convert_to_event(source: Observable, *args, **kwargs) -> Event:
     :param kwargs: keyword arguments, an information about event
     :return: an instance of Event
     """
-    raise NotImplementedError("Failed to find a converter for the specified"
-                              "source: %s" % source)
+    warnings.warn(
+        "This method should not to be called during normal system operation.\n"
+        "Called with source %s" % source
+    )
+    return Event(topic='unhandled')
 
 
 class EventHub(Observer, Observable):
