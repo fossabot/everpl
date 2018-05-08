@@ -114,7 +114,7 @@ class StreamingApiProvider(object):
         )
 
         self._app = web.Application(
-            middlewares=(self._cors_middleware, )
+            middlewares=(self._cors_middleware.handle, )
         )
 
         context_data = {
