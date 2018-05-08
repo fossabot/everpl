@@ -3,6 +3,7 @@ import asyncio
 import os
 import logging
 import argparse
+import functools
 
 # Include 3rd-party modules
 from sqlalchemy import create_engine
@@ -28,6 +29,9 @@ from dpl.service_impls.user_service import UserService
 from dpl.service_impls.session_service import SessionService
 from dpl.service_impls.placement_service import PlacementService
 from dpl.service_impls.thing_service import ThingService
+
+from dpl.events.event_hub import EventHub
+from dpl.events.build_object_related_event import build_object_related_event
 
 from dpl.auth.auth_service import AuthService, ServiceEntityResolutionError
 from dpl.auth.auth_context import AuthContext
@@ -155,6 +159,13 @@ class Controller(object):
             aspect=self._auth_aspect
         )  # type: ThingService
 
+        self._event_hub = EventHub()
+        self._setup_event_hub(self._event_hub)
+
+        self._user_service_raw.subscribe(self._event_hub)
+        self._placement_service_raw.subscribe(self._event_hub)
+        self._thing_service_raw.subscribe(self._event_hub)
+
         api_context_data = {'auth_context': self._auth_context}
 
         self._rest_api_things = build_things_subapp(
@@ -186,6 +197,38 @@ class Controller(object):
         # if module ws enabled...
         if 'local_announce' in self._apis_config['enabled_apis']:
             self._initialize_local_announcement()
+
+    @staticmethod
+    def _setup_event_hub(event_hub: EventHub) -> None:
+        """
+        Sets up EventHub to handle notifications from ObservableServices
+
+        :param event_hub: an instance of EventHub to be set up
+        :return: None
+        """
+        handler_users = functools.partial(
+            build_object_related_event, target_root_topic='users'
+        )
+
+        handler_placements = functools.partial(
+            build_object_related_event, target_root_topic='placements'
+        )
+
+        handler_things = functools.partial(
+            build_object_related_event, target_root_topic='things'
+        )
+
+        event_hub.register_handler(
+            source_type=UserService, handler=handler_users
+        )
+
+        event_hub.register_handler(
+            source_type=PlacementService, handler=handler_placements
+        )
+
+        event_hub.register_handler(
+            source_type=ThingService, handler=handler_things
+        )
 
     def _initialize_local_announcement(self):
         """
