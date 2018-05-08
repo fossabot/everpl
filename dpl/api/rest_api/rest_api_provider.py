@@ -124,6 +124,15 @@ class RestApiProvider(object):
         self._router.add_post(path='/auth', handler=auth_post_handler)
         self._router.add_route(method='OPTIONS', path='/auth', handler=auth_options_handler)
 
+    @property
+    def app(self) -> web.Application:
+        """
+        Returns the underlying aiohttp.web Application
+
+        :return: the underlying aiohttp.web Application
+        """
+        return self._app
+
     async def create_server(self, host: str, port: int) -> None:
         """
         Factory function that creates fully-functional aiohttp server
