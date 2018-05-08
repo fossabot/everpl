@@ -1,17 +1,24 @@
 import weakref
-from typing import TypeVar, MutableSet, Optional
+from typing import TypeVar, MutableSet, Optional, Generic
 
 from dpl.utils.observer import Observer
 from dpl.dtos.base_dto import BaseDto
 from dpl.model.domain_id import TDomainId
+from dpl.model.base_entity import BaseEntity
 
 from dpl.services.observable_service import ObservableService, ServiceEventType
+from .base_service import BaseService
 
 
+TStored = TypeVar('TStored', bound=BaseEntity)
 TEntityDto = TypeVar('TEntityDto', bound=BaseDto)
 
 
-class BaseObservableService(ObservableService[TEntityDto]):
+class BaseObservableService(
+    BaseService[TStored],
+    ObservableService[TEntityDto],
+    Generic[TStored, TEntityDto]
+):
     """
     Base implementation of the ObservableService interface
     """
