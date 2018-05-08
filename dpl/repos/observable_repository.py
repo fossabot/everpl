@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Optional
 
 from dpl.utils.observable import Observable
 from dpl.model.domain_id import TDomainId
-
+from .abs_repository import AbsRepository
 
 T = TypeVar('T')
 
@@ -14,7 +14,7 @@ class RepositoryEventType(Enum):
     deleted = 2
 
 
-class ObservableRepository(Observable, Generic[T]):
+class ObservableRepository(AbsRepository[T], Observable):
     """
     ObservableRepository is a declaration of an interface to be implemented
     by Observable Repositories. Is a sample of Observable pattern; notifies all

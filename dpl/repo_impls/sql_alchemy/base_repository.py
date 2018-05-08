@@ -12,7 +12,6 @@ import sqlalchemy.event
 from dpl.utils.flatten import flatten
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
-from dpl.repos.abs_repository import AbsRepository
 from dpl.repos.observable_repository import ObservableRepository, RepositoryEventType
 from dpl.utils.observer import Observer
 from .db_session_manager import DbSessionManager
@@ -22,7 +21,7 @@ TEntity = TypeVar("TEntity", bound=BaseEntity)
 TEntityCollection = MutableMapping[TDomainId, TEntity]
 
 
-class BaseRepository(AbsRepository[TEntity], ObservableRepository[TEntity]):
+class BaseRepository(ObservableRepository[TEntity]):
     """
     A base implementation of SQLAlchemy-based repository
     """
