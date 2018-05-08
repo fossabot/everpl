@@ -19,9 +19,18 @@ path. Keep in mind that the hostname and port of platform instance
 can be changed in various circumstances (like ip address renewal,
 moving between different networks and so on).
 
-The ``BASE_URL`` may look like this: ``http://localhost:10800/api/v1/``
+The ``BASE_URL`` always look like:
+``protocol://domain:port/api/rest/v1``
 
-or like this: ``https://hostname.local/api/v1/``
+Where:
+
+- ``protocol`` is either ``http`` or ``https`` for unsecured and
+  secured (TLS) HTTP connection;
+- ``domain`` is a fully-qualified domain name or IP address of evepl
+  instance you are connecting to;
+- ``port`` is a port used for HTTP connection;
+- ``api/rest/`` is a constant part of an address;
+- ``v1`` indicates the currently used version of the REST API.
 
 .. _protected_resources:
 
