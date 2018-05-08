@@ -67,6 +67,8 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
     :return: an response to request
     """
     ws = web.WebSocketResponse()
+    cors_modder = request.app['cors_modifier']
+    cors_modder(ws)
     await ws.prepare(request)
 
     try:
@@ -119,7 +121,8 @@ class StreamingApiProvider(object):
 
         context_data = {
             'auth_service': auth_service,
-            'auth_context': auth_context
+            'auth_context': auth_context,
+            'cors_modifier': self._cors_middleware._modify_response
         }
 
         self._app.update(context_data)
