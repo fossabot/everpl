@@ -1,18 +1,17 @@
 """
 This module contains a definition of a base Service class
 """
-from typing import TypeVar
+from typing import TypeVar, Generic
 
 from dpl.model.domain_id import TDomainId
 from dpl.model.base_entity import BaseEntity
 from .service_exceptions import ServiceEntityLinkError
-from .observable_service import ObservableService
 
 
 TEntityDto = TypeVar('TEntityDto', bound=BaseEntity)
 
 
-class AbsEntityService(ObservableService[TEntityDto]):
+class AbsEntityService(Generic[TEntityDto]):
     """
     Entity Service implements two basic operations for all
     Entities in the system:
