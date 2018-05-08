@@ -1,5 +1,5 @@
 """
-This module contains a base Observable implementation with registration of
+This module contains an Observable Mixin implementation with registration of
 subscribers and mostly nothing else
 """
 
@@ -9,10 +9,10 @@ from .observer import Observer
 from .observable import Observable
 
 
-class BaseObservableMixin(Observable):
+class ObservableMixin(Observable):
     """
-    A base implementation of Observer interface. Handles registration of
-    subscribers (Observers) and their removal
+    A mixin with implementation of Observable interface. Handles registration
+    of subscribers (Observers) and their removal
     """
     def subscribe(self, observer: Observer) -> None:
         """
