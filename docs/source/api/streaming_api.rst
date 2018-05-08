@@ -29,15 +29,22 @@ The format of such messages is described in the next section.
 Connection procedure
 --------------------
 
-To connect to the Streaming API, you need to open a WebSocket
-connection using the following address: ``BASE_URL/stream``, where
-the ``BASE_URL`` may look like this: ``ws://localhost:10800/api/v1/``
+To connect to the Streaming API, you need to open a WebSocket connection
+to the server using the following address:
+``protocol://domain:port/api/streaming/v1/``
 
-or like this: ``wss://hostname.local/api/v1/``.
+Where:
 
-The ``BASE_URL`` is shared with a :doc:`./rest_api`, but there is
-a ``ws`` instead of ``http`` and ``wss`` instead of ``https`` in
-the base URL for the unsecured and secured connections correspondingly.
+- ``protocol`` is either ``ws`` or ``wss`` for unsecured and
+  secured (TLS) WebSocket connection;
+- ``domain`` is a fully-qualified domain name or IP address of evepl
+  instance you are connecting to;
+- ``port`` is a port used for WebSocket connection (usually the same
+  as used for REST API connection);
+- ``api/streaming/`` is a constant part of an address;
+- ``v1`` indicates the currently used version of the Streaming API;
+- the trailing slash (``/``) is mandatory.
+
 
 In order to connect to the Streaming API, there is no need to supply
 additional request headers on WebSocket handshake. But all clients
