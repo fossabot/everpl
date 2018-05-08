@@ -3,9 +3,10 @@ from dpl.dtos.user_dto import UserDto
 from dpl.auth.exceptions import AuthInvalidUserPasswordCombinationError
 from .service_exceptions import ServiceEntityResolutionError, ServiceValidationError
 from .abs_entity_service import AbsEntityService
+from .observable_service import ObservableService
 
 
-class AbsUserService(AbsEntityService[UserDto]):
+class AbsUserService(AbsEntityService[UserDto], ObservableService[UserDto]):
     """
     A base class for all UserService implementations
     """
