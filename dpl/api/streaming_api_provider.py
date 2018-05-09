@@ -264,6 +264,7 @@ async def handle_incoming_message(
                 "Subscription request from %s: %s, %s" %
                 (session_id, target_topic, messages_retained)
             )
+            await add_subscription(app, session_id, topic=target_topic)
             ack_message = prepare_message(
                 type_="control", topic="subscribe_ack",
                 body={'target_topic': target_topic}
@@ -275,6 +276,7 @@ async def handle_incoming_message(
                 "Unsubscription request from %s: %s" %
                 (session_id, target_topic)
             )
+            await remove_subscription(app, session_id, topic=target_topic)
             ack_message = prepare_message(
                 type_="control", topic="unsubscribe_ack",
                 body={'target_topic': target_topic}
