@@ -22,6 +22,16 @@ class StreamAuthError(Exception):
     pass
 
 
+class Message(object):
+    def __init__(
+            self, timestamp: float, type_: str, topic: str, body: Mapping
+    ):
+        self.timestamp = timestamp
+        self.type = type_
+        self.topic = topic
+        self.body = body
+
+
 def prepare_message(type_: str, topic: str, body: Mapping) -> Mapping:
     """
     Prepares a message to be sent to the client
@@ -49,6 +59,21 @@ def prepare_error_message(body: Mapping) -> Mapping:
     return prepare_message(
         type_="control",
         topic="error",
+        body=body
+    )
+
+
+def parse_message(source: Mapping) -> Message:
+    # FIXME: Raise exceptions if something gone wrong
+    timestamp = source.get('timestamp')
+    type_ = source.get('type')
+    topic = source.get('topic')
+    body = source.get('body')
+
+    return Message(
+        timestamp=timestamp,
+        type_=type_,
+        topic=topic,
         body=body
     )
 
@@ -126,7 +151,7 @@ async def start_auth_flow(ws: web.WebSocketResponse) -> str:
 
 
 async def handle_incoming_message(
-    app: web.Application, ws: web.WebSocketResponse,
+    app: web.Application, ws: web.WebSocketResponse, session_id: str,
     message: dict
 ) -> None:
     """
@@ -137,10 +162,42 @@ async def handle_incoming_message(
            environment variables
     :param ws: an instance of WebSocketResponse for receiving of and sending
            messages
+    :param session_id: FIXME
     :param message: a message to be handled
     :return: None
     """
-    print("RESULT>>>>>>>>>>", message)
+    parsed_message = parse_message(message)
+
+    if parsed_message.type == "control":
+        if parsed_message.topic == "subscribe":
+            target_topic = parsed_message.body.get('target_topic')
+            messages_retained = parsed_message.body.get('messages_retained')
+
+            print(
+                "Subscription request from %s: %s, %s" %
+                (session_id, target_topic, messages_retained)
+            )
+        elif parsed_message.topic == "unsubscribe":
+            target_topic = parsed_message.body.get('target_topic')
+            print(
+                "Unsubscription request from %s: %s" %
+                (session_id, target_topic)
+            )
+        elif parsed_message.topic == "delivery_ack":
+            message_id = parsed_message.body.get('message_id')
+            print(
+                "Delivery ACK from %s: %s" %
+                (session_id, message_id)
+            )
+
+        else:
+            pass  # FIXME: handle unknown topics as well
+
+    elif parsed_message.type == "data":
+        pass  # FIXME: data messages are not allowed to be sent by clients for now
+
+    else:
+        pass  # FIXME: handle unknown message types
 
 
 async def handle_outcoming_message(
@@ -209,7 +266,8 @@ async def message_loop(
 
         if receive_cor_task in done:
             await handle_incoming_message(
-                app=app, ws=ws, message=receive_cor_task.result()
+                app=app, ws=ws, session_id=session_id,
+                message=receive_cor_task.result()
             )
 
             receive_cor = ws.receive_json()
