@@ -3,6 +3,7 @@ This module contains a definition of Streaming API provider
 """
 import asyncio
 import json
+import time
 from typing import Mapping
 
 from aiohttp import web
@@ -12,6 +13,7 @@ from dpl.auth.abs_auth_service import (
     AbsAuthService,
     AuthInvalidTokenError
 )
+from dpl.services.service_exceptions import ServiceEntityResolutionError
 from dpl.api.api_errors import ERROR_TEMPLATES
 
 
@@ -94,16 +96,34 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
         ws.close()
         return ws
 
-    try:
-        auth_context = request.app['auth_context']  # type: AuthContext
-        assert isinstance(auth_context, AuthContext)
+    auth_context = request.app['auth_context']  # type: AuthContext
+    auth_service = request.app['auth_service']  # type: AbsAuthService
+    assert isinstance(auth_context, AuthContext)
+    assert isinstance(auth_service, AbsAuthService)
 
+    try:
+        session = auth_service.view_current_session(token)
+    except ServiceEntityResolutionError:
+        ws.send_json(
+            ERROR_TEMPLATES[2101].to_dict()
+        )
+        ws.close()
+
+    try:
         with auth_context(token=token):
             # everything is fine starting from here
-            ws.send_str("You did it!")
+            auth_ack = {
+                "timestamp": time.time(),
+                "type": "control",
+                "topic": "auth_ack",
+                "body": {}
+            }
+            ws.send_json(auth_ack)
 
     except AuthInvalidTokenError:
-        ws.send_str("Auth failed: Invalid auth token")
+        ws.send_json(
+            ERROR_TEMPLATES[2101].to_dict()
+        )
         ws.close()
 
     return ws
