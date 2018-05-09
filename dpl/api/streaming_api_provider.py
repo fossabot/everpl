@@ -12,6 +12,7 @@ from dpl.auth.abs_auth_service import (
     AbsAuthService,
     AuthInvalidTokenError
 )
+from dpl.api.api_errors import ERROR_TEMPLATES
 
 
 class StreamAuthError(Exception):
@@ -21,37 +22,55 @@ class StreamAuthError(Exception):
 async def handle_auth(ws: web.WebSocketResponse) -> str:
     try:
         received = await ws.receive_json(timeout=20)  # type: dict
-    except TypeError:
-        ws.send_str("Auth Failed: Not a TEXT frame")
+    except TypeError as e:
+        exception_arg = e.args[0]  # type: str
+        got_type = exception_arg[17:exception_arg.index(":")]
+
+        error = ERROR_TEMPLATES[5000].to_dict()
+        error['devel_message'] = error['devel_message'] % ('TEXT', got_type)
+        ws.send_json(data=error)
         raise StreamAuthError()
 
     except json.JSONDecodeError:
-        ws.send_str("Auth Failed: Not a JSON object")
+        error = ERROR_TEMPLATES[5001].to_dict()
+        ws.send_json(error)
         raise StreamAuthError()
 
     except (asyncio.CancelledError, asyncio.TimeoutError):
-        ws.send_str("Auth Failed: No data received in 20 seconds")
+        error = ERROR_TEMPLATES[5002].to_dict()
+        error['devel_message'] = error['devel_message'] % '20 seconds'
+        ws.send_json(error)
         raise StreamAuthError()
 
-    if received.get('type') != 'control':
-        ws.send_str("Auth Failed: Not a control message")
+    msg_type = received.get('type', 'null')
+
+    if msg_type != 'control':
+        error = ERROR_TEMPLATES[5003].to_dict()
+        error['devel_message'] = error['devel_message'] % msg_type
+        ws.send_json(error)
         raise StreamAuthError()
 
-    if received.get('topic') != 'auth':
-        ws.send_str("Auth Failed: Message topic is not 'auth'")
+    msg_topic = received.get('topic', 'null')
+
+    if msg_topic != 'auth':
+        error = ERROR_TEMPLATES[5010].to_dict()
+        error['devel_message'] = error['devel_message'] % ('auth', msg_topic)
+        ws.send_json(error)
         raise StreamAuthError()
 
     body = received.get('body')
 
     if not isinstance(body, Mapping):
-        ws.send_str("Auth Failed: Message body is missing or is not a mapping")
+        error = ERROR_TEMPLATES[5020].to_dict()
+        ws.send_json(error)
         raise StreamAuthError()
 
     token = body.get('access_token')
 
     if not isinstance(token, str):
-        ws.send_str("Auth Failed: Auth token body is missing "
-                    "or is not a string")
+        error = ERROR_TEMPLATES[5021].to_dict()
+        error['devel_message'] = error['devel_message'] % 'access_token'
+        ws.send_json(error)
         raise StreamAuthError()
 
     return token
