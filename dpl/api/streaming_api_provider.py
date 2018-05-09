@@ -125,6 +125,43 @@ async def start_auth_flow(ws: web.WebSocketResponse) -> str:
     return token
 
 
+async def handle_incoming_message(
+    app: web.Application, ws: web.WebSocketResponse,
+    message: dict
+) -> None:
+    """
+    Handles incoming message. Analyzes it, sends a response if needed and
+    executes related server-side tasks (like registration of subscriptions)
+
+    :param app: an instance of aiohttp Application which handles all
+           environment variables
+    :param ws: an instance of WebSocketResponse for receiving of and sending
+           messages
+    :param message: a message to be handled
+    :return: None
+    """
+    print("RESULT>>>>>>>>>>", message)
+
+
+async def handle_outcoming_message(
+    app: web.Application, ws: web.WebSocketResponse,
+    message: dict
+) -> None:
+    """
+    Handles outcoming message i.e. message to be sent to client. Analyzes it
+    and sends to the client if appropriate. May schedule a re-send if sending
+    was failed.
+
+    :param app: an instance of aiohttp Application which handles all
+           environment variables
+    :param ws: an instance of WebSocketResponse for receiving of and sending
+           messages
+    :param message: a message to be handled
+    :return: None
+    """
+    await ws.send_json(message)
+
+
 async def message_loop(
         app: web.Application, ws: web.WebSocketResponse, session_id: str
 ) -> None:
@@ -164,12 +201,17 @@ async def message_loop(
         print(pending)
 
         if queue_cor_task in done:
-            await ws.send_json(queue_cor_task.result())
+            await handle_outcoming_message(
+                app=app, ws=ws, message=queue_cor_task.result()
+            )
             queue_cor = queue.get()
             queue_cor_task = asyncio.ensure_future(queue_cor)
 
         if receive_cor_task in done:
-            print("RESULT>>>>>>>>>>", receive_cor_task.result())
+            await handle_incoming_message(
+                app=app, ws=ws, message=receive_cor_task.result()
+            )
+
             receive_cor = ws.receive_json()
             receive_cor_task = asyncio.ensure_future(receive_cor)
 
