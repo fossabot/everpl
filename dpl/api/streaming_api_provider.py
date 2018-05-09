@@ -300,7 +300,7 @@ async def handle_incoming_message(
 
 
 async def handle_outcoming_message(
-    app: web.Application, ws: web.WebSocketResponse,
+    app: web.Application, ws: web.WebSocketResponse, session_id: str,
     message: dict
 ) -> None:
     """
@@ -313,9 +313,13 @@ async def handle_outcoming_message(
     :param ws: an instance of WebSocketResponse for receiving of and sending
            messages
     :param message: a message to be handled
+    :param session_id: an identifier of this Session
     :return: None
     """
-    await ws.send_json(message)
+    message_topic = message['topic']
+
+    if await is_subscribed(app=app, session_id=session_id, topic=message_topic):
+        await ws.send_json(message)
 
 
 async def message_loop(
@@ -351,7 +355,8 @@ async def message_loop(
 
         if queue_cor_task in done:
             await handle_outcoming_message(
-                app=app, ws=ws, message=queue_cor_task.result()
+                app=app, ws=ws, session_id=session_id,
+                message=queue_cor_task.result()
             )
             queue_cor = queue.get()
             queue_cor_task = asyncio.ensure_future(queue_cor)
