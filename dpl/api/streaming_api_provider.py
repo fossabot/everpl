@@ -156,7 +156,7 @@ async def add_subscription(app: web.Application, session_id: str, topic: str):
     tokenized = topic_to_list(topic)
     subs_lock = app['subs_lock']  # type: asyncio.Lock
 
-    with subs_lock:
+    async with subs_lock:
         subscriptions = app['subscriptions']  # type: MutableMapping[str, MutableMapping]
         subs_plain = app['subs_plain']  # type: MutableMapping[str, MutableSet]
 
