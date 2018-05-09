@@ -5,7 +5,7 @@ import asyncio
 import json
 import time
 import random
-from typing import Mapping, MutableMapping
+from typing import Mapping, MutableMapping, MutableSet, List, Tuple
 
 from aiohttp import web
 
@@ -16,6 +16,7 @@ from dpl.auth.abs_auth_service import (
 )
 from dpl.services.service_exceptions import ServiceEntityResolutionError
 from dpl.api.api_errors import ERROR_TEMPLATES
+from dpl.events.topic import topic_to_list
 
 
 class StreamAuthError(Exception):
@@ -148,6 +149,77 @@ async def start_auth_flow(ws: web.WebSocketResponse) -> str:
         raise StreamAuthError()
 
     return token
+
+
+async def add_subscription(app: web.Application, session_id: str, topic: str):
+    tokenized = topic_to_list(topic)
+    subs_lock = app['subs_lock']  # type: asyncio.Lock
+
+    with subs_lock:
+        pass
+
+
+async def is_subscribed(app: web.Application, session_id: str, topic: str) -> bool:
+    tokenized = topic_to_list(topic)
+    subs_lock = app['subs_lock']  # type: asyncio.Lock
+    subscriptions = app['subscriptions']
+
+    async with subs_lock:
+        session_subs = subscriptions.get(session_id)
+        if session_subs is None:
+            return False
+
+        p_current = session_subs
+
+        for t in tokenized:
+            if t in p_current:
+                p_current = p_current[t]
+            elif '+' in p_current:
+                p_current = p_current['+']
+            elif '#' in p_current:
+                return True
+            else:
+                return False
+
+        return True
+
+
+async def remove_subscription(app: web.Application, session_id: str, topic: str):
+    tokenized = topic_to_list(topic)
+    subs_lock = app['subs_lock']  # type: asyncio.Lock
+    subscriptions = app['subscriptions']  # type: MutableMapping[str, MutableMapping]
+    subs_plain = app['subs_plain']  # type: MutableMapping[str, MutableSet]
+
+    # Key: from, Value: what
+    chain = list()  # type: List[Tuple[MutableMapping, str]]
+
+    async with subs_lock:
+        plain_session_subs = subs_plain.setdefault(session_id)
+
+        if topic not in plain_session_subs:
+            return  # FIXME: raise an error here
+
+        plain_session_subs.discard(topic)
+        session_subs = subscriptions.setdefault(session_id, {})
+
+        p_current = session_subs
+
+        for t in tokenized:
+            if t in p_current:
+                chain.append((p_current, t))
+                p_current = p_current[t]
+            else:
+                return  # FIXME: Raise an exception here
+
+        assert len(chain) == len(tokenized)
+        chain_len = len(chain)
+
+        for i in reversed(range(chain_len)):
+            container, value = chain[i]  # type: MutableMapping[str, MutableMapping], str
+            sub_container = container[value]  # type: MutableMapping[str, MutableMapping]
+
+            if not sub_container:  # if sub-container is empty...
+                container.pop(value)  # ...remove container
 
 
 async def handle_incoming_message(
@@ -348,13 +420,19 @@ class StreamingApiProvider(object):
         self._server = None
 
         self._undelivered = dict()  # type: MutableMapping[str, asyncio.Queue]
+        self._subscriptions = dict()  # type: MutableMapping[str, MutableMapping]
+        self._subs_plain = dict()  # type: MutableMapping[str, MutableSet[str]]
+        self._subs_lock = asyncio.Lock()  # FIXME: replace a global lock with local locks
 
         self._app = web.Application()
 
         context_data = {
             'auth_service': auth_service,
             'auth_context': auth_context,
-            'undelivered': self._undelivered
+            'undelivered': self._undelivered,
+            'subscriptions': self._subscriptions,
+            'subs_plain': self._subs_plain,
+            'subs_lock': self._subs_lock
         }
 
         self._app.update(context_data)
