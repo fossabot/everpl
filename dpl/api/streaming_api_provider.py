@@ -7,7 +7,6 @@ from typing import Mapping
 
 from aiohttp import web
 
-from dpl.api.cors_middleware import CorsMiddleware
 from dpl.auth.auth_context import AuthContext
 from dpl.auth.abs_auth_service import (
     AbsAuthService,
@@ -67,8 +66,6 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
     :return: an response to request
     """
     ws = web.WebSocketResponse()
-    cors_modder = request.app['cors_modifier']
-    cors_modder(ws)
     await ws.prepare(request)
 
     try:
@@ -110,19 +107,11 @@ class StreamingApiProvider(object):
         self._handler = None
         self._server = None
 
-        self._cors_middleware = CorsMiddleware(
-            is_enabled=True,
-            allowed_origin='*'
-        )
-
-        self._app = web.Application(
-            middlewares=(self._cors_middleware.handle, )
-        )
+        self._app = web.Application()
 
         context_data = {
             'auth_service': auth_service,
-            'auth_context': auth_context,
-            'cors_modifier': self._cors_middleware._modify_response
+            'auth_context': auth_context
         }
 
         self._app.update(context_data)
