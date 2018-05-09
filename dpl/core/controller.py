@@ -45,6 +45,8 @@ from dpl.api.rest_api.messages_subapp import build_messages_subapp
 from dpl.api.http_api_provider import HttpApiProvider
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
+from dpl.api.streaming_api_provider import StreamingApiProvider
+
 
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
@@ -194,9 +196,21 @@ class Controller(object):
             auth_service=self._auth_service
         )
 
+        self._streaming_api = StreamingApiProvider(
+            auth_context=self._auth_context,
+            auth_service=self._auth_service
+        )
+
+        self._event_hub.subscribe(self._streaming_api)
+
         self._http_api.add_child_provider(
             provider=self._rest_api,
             provider_root='/api/rest/v1/'
+        )
+
+        self._http_api.add_child_provider(
+            provider=self._streaming_api,
+            provider_root='/api/streaming/v1'
         )
 
         # None will indicate that this module was disabled
@@ -205,6 +219,8 @@ class Controller(object):
         # if module ws enabled...
         if 'local_announce' in self._apis_config['enabled_apis']:
             self._initialize_local_announcement()
+
+        self._sample_loop = None
 
     @staticmethod
     def _setup_event_hub(event_hub: EventHub) -> None:
@@ -406,6 +422,9 @@ class Controller(object):
             self._http_api.create_server(host=rest_api_host, port=rest_api_port)
         )
 
+        self._sample_loop = self._streaming_api.start_sample_loop()
+        asyncio.ensure_future(self._sample_loop)
+
     async def _bootstrap_integrations(self):
         enabled_integrations = self._integrations_config['enabled_integrations']
 
@@ -424,6 +443,8 @@ class Controller(object):
         self._db_session_manager.remove_session()
 
     async def shutdown(self):
+        self._sample_loop.cancel()
+
         if self._local_announce is not None:
             self._local_announce.shutdown_server()
 
