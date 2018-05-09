@@ -146,6 +146,7 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
         message = prepare_error_message(error)
         ws.send_json(message)
         ws.close()
+        return ws
 
     try:
         with auth_context(token=token):
