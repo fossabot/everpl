@@ -1,6 +1,9 @@
-from typing import Optional, Mapping, Any
+import weakref
+from typing import Optional, Mapping, Any, Callable
 
+from dpl.utils.observer import Observer
 from dpl.model.domain_id import TDomainId
+from dpl.things.thing import Thing
 from dpl.integrations.abs_actuator import (
     AbsActuator, UnsupportedCommandError, UnacceptableCommandArgumentsError
 )
@@ -16,10 +19,41 @@ from dpl.services.abs_thing_service import (
     ServiceUnsupportedCommandError
 )
 
+from dpl.repos.observable_repository import RepositoryEventType
 from dpl.repos.abs_thing_repository import AbsThingRepository
+from .base_observable_service import BaseObservableService, ServiceEventType
 
 
-class ThingService(AbsThingService):
+class RepoObserver(Observer[AbsThingRepository]):
+    """
+    A utility class objects of which will observe changes in
+    ObservableRepository and emit events on each change
+    """
+
+    def __init__(self, callback: Callable):
+        """
+        Constructor. Receives a callback to be called if something will be
+        changed in the repository
+
+        :param callback: a callback to be called if something will be
+               changed in the repository
+        """
+        self._callback = callback
+
+    def update(self, source: AbsThingRepository, *args, **kwargs) -> None:
+        """
+        Method which redirects all the event data to the registered
+        callback
+
+        :param source: a source of the received event
+        :param args: positional arguments to be redirected
+        :param kwargs: keyword arguments to be redirected
+        :return: None
+        """
+        self._callback(*args, **kwargs)
+
+
+class ThingService(BaseObservableService[Thing, ThingDto], AbsThingService):
     """
     This is an implementation of a ThingService - a class
     that manages all Things in the system
@@ -36,7 +70,37 @@ class ThingService(AbsThingService):
 
         :param thing_repo: an instance of a ThingRepository
         """
+        super().__init__()
         self._things = thing_repo
+        self._things_observer = RepoObserver(self._handle_repository_update)
+        self._things.subscribe(self._things_observer)
+        self._weak_self = weakref.proxy(self)
+
+    def _handle_repository_update(
+            self, event_type: RepositoryEventType, object_id: TDomainId,
+            object_ref: Thing
+    ):
+        """
+        Utility method to convert events emitted by ThingRepository to events
+        suitable to be passed in _notify called
+
+        :param event_type: a type of the event emitted
+        :param object_id: an identifier of a changed object
+        :param object_ref: a reference to the changed object
+        :return: None
+        """
+        service_event_type = ServiceEventType(event_type.value)
+
+        if service_event_type is ServiceEventType.deleted:
+            thing_dto = None
+        else:
+            thing_dto = build_dto(object_ref)
+
+        self._notify(
+            object_id=object_id,
+            event_type=service_event_type,
+            object_dto=thing_dto
+        )
 
     def view(self, domain_id: TDomainId) -> ThingDto:
         """

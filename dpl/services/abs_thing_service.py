@@ -8,10 +8,10 @@ from .service_exceptions import (
     ServiceInvalidArgumentsError,
     ServiceUnsupportedCommandError
 )
-from .abs_entity_service import AbsEntityService
+from .observable_service import ObservableService
 
 
-class AbsThingService(AbsEntityService[ThingDto]):
+class AbsThingService(ObservableService[ThingDto]):
     """
     A base class for all ThingService implementations
     """

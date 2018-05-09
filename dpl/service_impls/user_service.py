@@ -8,10 +8,13 @@ from dpl.services.abs_user_service import AbsUserService, \
     ServiceEntityResolutionError, AuthInvalidUserPasswordCombinationError
 
 from dpl.repos.abs_user_repository import AbsUserRepository
-from .base_service import BaseService
+from .base_observable_service import BaseObservableService, ServiceEventType
 
 
-class UserService(AbsUserService, BaseService[UserDto]):
+class UserService(
+    BaseObservableService[User, UserDto],
+    AbsUserService
+):
     """
     This is an implementation of a UserService - a class
     that manages all Users in the system
@@ -23,6 +26,7 @@ class UserService(AbsUserService, BaseService[UserDto]):
 
         :param user_repo: an instance of AbsUserRepository
         """
+        super().__init__()
         self._user_repo = user_repo
 
     def view_all(self):  # -> Collection[UserDto]:
@@ -62,6 +66,11 @@ class UserService(AbsUserService, BaseService[UserDto]):
                 (uses or refers) to it
         """
         self._user_repo.delete(domain_id)
+        self._notify(
+            object_id=domain_id,
+            event_type=ServiceEventType.deleted,
+            object_dto=None
+        )
 
     def view_by_username(self, username: str) -> UserDto:
         """
@@ -97,6 +106,12 @@ class UserService(AbsUserService, BaseService[UserDto]):
         )
 
         self._user_repo.add(user)
+
+        self._notify(
+            object_id=user.domain_id,
+            event_type=ServiceEventType.added,
+            object_dto=build_dto(user)
+        )
 
         return user.domain_id
 
@@ -153,6 +168,12 @@ class UserService(AbsUserService, BaseService[UserDto]):
         """
         user = self._resolve_entity(repository=self._user_repo, domain_id=of_user)
         user.username = new_username
+
+        self._notify(
+            object_id=of_user,
+            event_type=ServiceEventType.modified,
+            object_dto=build_dto(user)
+        )
 
     def change_password(self, of_user: TDomainId, old_password: str, new_password: str) -> None:
         """
