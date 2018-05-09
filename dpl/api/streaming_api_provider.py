@@ -4,7 +4,7 @@ This module contains a definition of Streaming API provider
 import asyncio
 import json
 import time
-from typing import Mapping
+from typing import Mapping, MutableMapping
 
 from aiohttp import web
 
@@ -136,6 +136,7 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
 
     auth_context = request.app['auth_context']  # type: AuthContext
     auth_service = request.app['auth_service']  # type: AbsAuthService
+    undelivered = request.app['undelivered']  # type: dict
     assert isinstance(auth_context, AuthContext)
     assert isinstance(auth_service, AbsAuthService)
 
@@ -157,6 +158,39 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
                 body={}
             )
             ws.send_json(auth_ack)
+
+            queue = undelivered.setdefault(
+                session['domain_id'], asyncio.Queue()
+            )
+
+            print(queue)
+            print(queue.qsize())
+
+            queue_cor = queue.get()
+            receive_cor = ws.receive()
+
+            queue_cor_task = asyncio.ensure_future(queue_cor)
+            receive_cor_task = asyncio.ensure_future(receive_cor)
+
+            while not ws.closed:
+                done, pending = await asyncio.wait(
+                    (queue_cor_task, receive_cor_task),
+                    return_when=asyncio.FIRST_COMPLETED
+                )
+
+                print("gone from wait")
+                print(done)
+                print(pending)
+
+                if queue_cor_task in done:
+                    await ws.send_json(queue_cor_task.result())
+                    queue_cor = queue.get()
+                    queue_cor_task = asyncio.ensure_future(queue_cor)
+
+                if receive_cor_task in done:
+                    print("RESULT>>>>>>>>>>", receive_cor_task.result())
+                    receive_cor = ws.receive_json()
+                    receive_cor_task = asyncio.ensure_future(receive_cor)
 
     except AuthInvalidTokenError:
         error = ERROR_TEMPLATES[2101].to_dict()
@@ -184,11 +218,14 @@ class StreamingApiProvider(object):
         self._handler = None
         self._server = None
 
+        self._undelivered = dict()  # type: MutableMapping[str, asyncio.Queue]
+
         self._app = web.Application()
 
         context_data = {
             'auth_service': auth_service,
-            'auth_context': auth_context
+            'auth_context': auth_context,
+            'undelivered': self._undelivered
         }
 
         self._app.update(context_data)
@@ -234,3 +271,14 @@ class StreamingApiProvider(object):
         await self._handler.shutdown(60.0)
         # fires on_cleanup signal (so does nothing now)
         await self._app.cleanup()
+
+    async def start_sample_loop(self) -> None:
+        while True:
+            await asyncio.sleep(1)
+            for queue in self._undelivered.values():
+                await queue.put(
+                    {"Hi!": "Hihihihi!"}
+                )
+                print(queue)
+                print(queue.qsize())
+
