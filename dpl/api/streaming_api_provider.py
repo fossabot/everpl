@@ -53,7 +53,15 @@ def prepare_error_message(body: Mapping) -> Mapping:
     )
 
 
-async def handle_auth(ws: web.WebSocketResponse) -> str:
+async def start_auth_flow(ws: web.WebSocketResponse) -> str:
+    """
+    Handles the first steps of the client authentication and returns the
+    access token specified (send) by client
+
+    :param ws: an instance of WebSocketResponse for receiving of and sending
+           messages
+    :return: an access token specified by client
+    """
     try:
         received = await ws.receive_json(timeout=20)  # type: dict
     except TypeError as e:
@@ -117,6 +125,55 @@ async def handle_auth(ws: web.WebSocketResponse) -> str:
     return token
 
 
+async def message_loop(
+        app: web.Application, ws: web.WebSocketResponse, session_id: str
+) -> None:
+    """
+    Contains the main loop which handles al the incoming and outcoming Messages
+
+    :param app: an instance of aiohttp Application which handles all
+           environment variables
+    :param ws: an instance of WebSocketResponse for receiving of and sending
+           messages
+    :param session_id: an identifier of this Session
+    :return: None
+    """
+    undelivered = app['undelivered']  # type: dict
+
+    queue = undelivered.setdefault(
+        session_id, asyncio.Queue()
+    )
+
+    print(queue)
+    print(queue.qsize())
+
+    queue_cor = queue.get()
+    receive_cor = ws.receive()
+
+    queue_cor_task = asyncio.ensure_future(queue_cor)
+    receive_cor_task = asyncio.ensure_future(receive_cor)
+
+    while not ws.closed:
+        done, pending = await asyncio.wait(
+            (queue_cor_task, receive_cor_task),
+            return_when=asyncio.FIRST_COMPLETED
+        )
+
+        print("gone from wait")
+        print(done)
+        print(pending)
+
+        if queue_cor_task in done:
+            await ws.send_json(queue_cor_task.result())
+            queue_cor = queue.get()
+            queue_cor_task = asyncio.ensure_future(queue_cor)
+
+        if receive_cor_task in done:
+            print("RESULT>>>>>>>>>>", receive_cor_task.result())
+            receive_cor = ws.receive_json()
+            receive_cor_task = asyncio.ensure_future(receive_cor)
+
+
 async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
     """
     Performs handling of a WS connection handshake, authentication and further
@@ -129,7 +186,7 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
     await ws.prepare(request)
 
     try:
-        token = await handle_auth(ws)
+        token = await start_auth_flow(ws)
 
     except StreamAuthError:
         ws.close()
@@ -137,7 +194,6 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
 
     auth_context = request.app['auth_context']  # type: AuthContext
     auth_service = request.app['auth_service']  # type: AbsAuthService
-    undelivered = request.app['undelivered']  # type: dict
     assert isinstance(auth_context, AuthContext)
     assert isinstance(auth_service, AbsAuthService)
 
@@ -150,48 +206,17 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
         ws.close()
         return ws
 
+    # everything is fine starting from here
+    auth_ack = prepare_message(
+        type_="control",
+        topic="auth_ack",
+        body={}
+    )
+    ws.send_json(auth_ack)
+
     try:
         with auth_context(token=token):
-            # everything is fine starting from here
-            auth_ack = prepare_message(
-                type_="control",
-                topic="auth_ack",
-                body={}
-            )
-            ws.send_json(auth_ack)
-
-            queue = undelivered.setdefault(
-                session['domain_id'], asyncio.Queue()
-            )
-
-            print(queue)
-            print(queue.qsize())
-
-            queue_cor = queue.get()
-            receive_cor = ws.receive()
-
-            queue_cor_task = asyncio.ensure_future(queue_cor)
-            receive_cor_task = asyncio.ensure_future(receive_cor)
-
-            while not ws.closed:
-                done, pending = await asyncio.wait(
-                    (queue_cor_task, receive_cor_task),
-                    return_when=asyncio.FIRST_COMPLETED
-                )
-
-                print("gone from wait")
-                print(done)
-                print(pending)
-
-                if queue_cor_task in done:
-                    await ws.send_json(queue_cor_task.result())
-                    queue_cor = queue.get()
-                    queue_cor_task = asyncio.ensure_future(queue_cor)
-
-                if receive_cor_task in done:
-                    print("RESULT>>>>>>>>>>", receive_cor_task.result())
-                    receive_cor = ws.receive_json()
-                    receive_cor_task = asyncio.ensure_future(receive_cor)
+            await message_loop(request.app, ws, session['domain_id'])
 
     except AuthInvalidTokenError:
         error = ERROR_TEMPLATES[2101].to_dict()
