@@ -79,6 +79,46 @@
       "error_id": 3110,
       "devel_message": "Unsupported command",
       "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5000,
+      "devel_message": "Invalid frame type: %s frame expected, got %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5001,
+      "devel_message": "Invalid frame content: Failed to decode JSON object",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5002,
+      "devel_message": "Timeout: no data received in %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5003,
+      "devel_message": "Invalid message type: Control message expected, got %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5004,
+      "devel_message": "Invalid message type: Data message expected, got %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5010,
+      "devel_message": "Invalid message topic: %s expected, got %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5020,
+      "devel_message": "Invalid message body: Message body is missing or is not a mapping",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5021,
+      "devel_message": "Invalid message body: Field %s is missing in the message body or has an invalid type",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
     }
   ]
 }
