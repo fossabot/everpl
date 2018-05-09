@@ -177,12 +177,22 @@ async def handle_incoming_message(
                 "Subscription request from %s: %s, %s" %
                 (session_id, target_topic, messages_retained)
             )
+            ack_message = prepare_message(
+                type_="control", topic="subscribe_ack",
+                body={'target_topic': target_topic}
+            )
+            ws.send_json(ack_message)
         elif parsed_message.topic == "unsubscribe":
             target_topic = parsed_message.body.get('target_topic')
             print(
                 "Unsubscription request from %s: %s" %
                 (session_id, target_topic)
             )
+            ack_message = prepare_message(
+                type_="control", topic="unsubscribe_ack",
+                body={'target_topic': target_topic}
+            )
+            ws.send_json(ack_message)
         elif parsed_message.topic == "delivery_ack":
             message_id = parsed_message.body.get('message_id')
             print(
@@ -242,7 +252,7 @@ async def message_loop(
     print(queue.qsize())
 
     queue_cor = queue.get()
-    receive_cor = ws.receive()
+    receive_cor = ws.receive_json()
 
     queue_cor_task = asyncio.ensure_future(queue_cor)
     receive_cor_task = asyncio.ensure_future(receive_cor)
