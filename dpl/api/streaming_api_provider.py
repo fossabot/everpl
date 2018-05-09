@@ -4,6 +4,7 @@ This module contains a definition of Streaming API provider
 import asyncio
 import json
 import time
+import random
 from typing import Mapping, MutableMapping
 
 from aiohttp import web
@@ -273,12 +274,23 @@ class StreamingApiProvider(object):
         await self._app.cleanup()
 
     async def start_sample_loop(self) -> None:
+        counter = 0
+
         while True:
-            await asyncio.sleep(1)
+            await asyncio.sleep(random.randint(0, 10))
             for queue in self._undelivered.values():
                 await queue.put(
-                    {"Hi!": "Hihihihi!"}
+                    prepare_message(
+                        type_="data",
+                        topic="notification",
+                        body={
+                            "title": "Example notification",
+                            "text": "Hi! #%d" % counter
+                        }
+                    )
                 )
                 print(queue)
                 print(queue.qsize())
+
+            counter += 1
 
