@@ -18,6 +18,9 @@ from dpl.auth.abs_auth_service import (
 from dpl.services.service_exceptions import ServiceEntityResolutionError
 from dpl.api.api_errors import ERROR_TEMPLATES
 from dpl.events.topic import topic_to_list
+from dpl.events.event import Event
+from dpl.events.object_related_event import ObjectRelatedEvent
+from dpl.utils.observer import Observer
 
 
 class StreamAuthError(Exception):
@@ -424,7 +427,7 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
     return ws
 
 
-class StreamingApiProvider(object):
+class StreamingApiProvider(Observer):
     """
     A class that provides a Streaming API of the system. Controls WebSocket
     connections, WS authentication and message sending
@@ -501,23 +504,56 @@ class StreamingApiProvider(object):
         # fires on_cleanup signal (so does nothing now)
         await self._app.cleanup()
 
+    async def send_to_all(self, message: Mapping) -> None:
+        for queue in self._undelivered.values():
+            await queue.put(
+                message
+            )
+            print(queue)
+
+    def update(self, source, *args, **kwargs):
+        """
+        Handles event sent by EventHub
+
+        :param event: FiXME
+        :return: FIXME
+        """
+        event = kwargs.get('event', args[0])
+
+        topic = event.topic
+        timestamp = event.timestamp
+        type_ = "data"
+
+        if isinstance(event, ObjectRelatedEvent):
+            body = event.object_dto
+        else:
+            body = {}
+
+        message = {
+            "topic": topic,
+            "timestamp": timestamp,
+            "type": type_,
+            "body": body
+        }
+
+        asyncio.ensure_future(
+            self.send_to_all(message),
+            loop=self._loop
+        )
+
     async def start_sample_loop(self) -> None:
         counter = 0
 
         while True:
             await asyncio.sleep(random.randint(0, 30))
-            for queue in self._undelivered.values():
-                await queue.put(
-                    prepare_message(
-                        type_="data",
-                        topic="notification",
-                        body={
-                            "title": "Example notification",
-                            "text": "Hi! #%d" % counter
-                        }
-                    )
-                )
-                print(queue)
+            await self.send_to_all(prepare_message(
+                    type_="data",
+                    topic="notification",
+                    body={
+                        "title": "Example notification",
+                        "text": "Hi! #%d" % counter
+                    }
+                ))
 
             counter += 1
 
