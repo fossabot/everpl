@@ -21,6 +21,37 @@ class StreamAuthError(Exception):
     pass
 
 
+def prepare_message(type_: str, topic: str, body: Mapping) -> Mapping:
+    """
+    Prepares a message to be sent to the client
+
+    :param type_: a type of the message
+    :param topic: a topic of the message
+    :param body: a body of the message
+    :return: a constructed message
+    """
+    return {
+        "timestamp": time.time(),
+        "type": type_,
+        "topic": topic,
+        "body": body
+    }
+
+
+def prepare_error_message(body: Mapping) -> Mapping:
+    """
+    Constructs an error message to be sent to the client
+
+    :param body: a body of the message
+    :return: a constructed message
+    """
+    return prepare_message(
+        type_="control",
+        topic="error",
+        body=body
+    )
+
+
 async def handle_auth(ws: web.WebSocketResponse) -> str:
     try:
         received = await ws.receive_json(timeout=20)  # type: dict
@@ -30,18 +61,21 @@ async def handle_auth(ws: web.WebSocketResponse) -> str:
 
         error = ERROR_TEMPLATES[5000].to_dict()
         error['devel_message'] = error['devel_message'] % ('TEXT', got_type)
-        ws.send_json(data=error)
+        message = prepare_error_message(error)
+        ws.send_json(data=message)
         raise StreamAuthError()
 
     except json.JSONDecodeError:
         error = ERROR_TEMPLATES[5001].to_dict()
-        ws.send_json(error)
+        message = prepare_error_message(error)
+        ws.send_json(message)
         raise StreamAuthError()
 
     except (asyncio.CancelledError, asyncio.TimeoutError):
         error = ERROR_TEMPLATES[5002].to_dict()
         error['devel_message'] = error['devel_message'] % '20 seconds'
-        ws.send_json(error)
+        message = prepare_error_message(error)
+        ws.send_json(message)
         raise StreamAuthError()
 
     msg_type = received.get('type', 'null')
@@ -49,7 +83,8 @@ async def handle_auth(ws: web.WebSocketResponse) -> str:
     if msg_type != 'control':
         error = ERROR_TEMPLATES[5003].to_dict()
         error['devel_message'] = error['devel_message'] % msg_type
-        ws.send_json(error)
+        message = prepare_error_message(error)
+        ws.send_json(message)
         raise StreamAuthError()
 
     msg_topic = received.get('topic', 'null')
@@ -57,14 +92,16 @@ async def handle_auth(ws: web.WebSocketResponse) -> str:
     if msg_topic != 'auth':
         error = ERROR_TEMPLATES[5010].to_dict()
         error['devel_message'] = error['devel_message'] % ('auth', msg_topic)
-        ws.send_json(error)
+        message = prepare_error_message(error)
+        ws.send_json(message)
         raise StreamAuthError()
 
     body = received.get('body')
 
     if not isinstance(body, Mapping):
         error = ERROR_TEMPLATES[5020].to_dict()
-        ws.send_json(error)
+        message = prepare_error_message(error)
+        ws.send_json(message)
         raise StreamAuthError()
 
     token = body.get('access_token')
@@ -72,7 +109,8 @@ async def handle_auth(ws: web.WebSocketResponse) -> str:
     if not isinstance(token, str):
         error = ERROR_TEMPLATES[5021].to_dict()
         error['devel_message'] = error['devel_message'] % 'access_token'
-        ws.send_json(error)
+        message = prepare_error_message(error)
+        ws.send_json(message)
         raise StreamAuthError()
 
     return token
@@ -104,26 +142,25 @@ async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
     try:
         session = auth_service.view_current_session(token)
     except ServiceEntityResolutionError:
-        ws.send_json(
-            ERROR_TEMPLATES[2101].to_dict()
-        )
+        error = ERROR_TEMPLATES[2101].to_dict()
+        message = prepare_error_message(error)
+        ws.send_json(message)
         ws.close()
 
     try:
         with auth_context(token=token):
             # everything is fine starting from here
-            auth_ack = {
-                "timestamp": time.time(),
-                "type": "control",
-                "topic": "auth_ack",
-                "body": {}
-            }
+            auth_ack = prepare_message(
+                type_="control",
+                topic="auth_ack",
+                body={}
+            )
             ws.send_json(auth_ack)
 
     except AuthInvalidTokenError:
-        ws.send_json(
-            ERROR_TEMPLATES[2101].to_dict()
-        )
+        error = ERROR_TEMPLATES[2101].to_dict()
+        message = prepare_error_message(error)
+        ws.send_json(message)
         ws.close()
 
     return ws
