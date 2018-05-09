@@ -5,6 +5,7 @@ import asyncio
 import json
 import time
 import random
+import pprint
 from typing import Mapping, MutableMapping, MutableSet, List, Tuple
 
 from aiohttp import web
@@ -156,7 +157,19 @@ async def add_subscription(app: web.Application, session_id: str, topic: str):
     subs_lock = app['subs_lock']  # type: asyncio.Lock
 
     with subs_lock:
-        pass
+        subscriptions = app['subscriptions']  # type: MutableMapping[str, MutableMapping]
+        subs_plain = app['subs_plain']  # type: MutableMapping[str, MutableSet]
+
+        plain_session_subs = subs_plain.setdefault(session_id, set())
+        plain_session_subs.add(topic)
+
+        session_subs = subscriptions.setdefault(session_id, dict())
+        p_current = session_subs
+
+        for t in tokenized:
+            p_current = p_current.setdefault(t, dict())
+
+        pprint.pprint(subscriptions)
 
 
 async def is_subscribed(app: web.Application, session_id: str, topic: str) -> bool:
@@ -220,6 +233,8 @@ async def remove_subscription(app: web.Application, session_id: str, topic: str)
 
             if not sub_container:  # if sub-container is empty...
                 container.pop(value)  # ...remove container
+
+    pprint.pprint(subscriptions)
 
 
 async def handle_incoming_message(
