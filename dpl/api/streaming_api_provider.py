@@ -248,9 +248,6 @@ async def message_loop(
         session_id, asyncio.Queue()
     )
 
-    print(queue)
-    print(queue.qsize())
-
     queue_cor = queue.get()
     receive_cor = ws.receive_json()
 
@@ -262,10 +259,6 @@ async def message_loop(
             (queue_cor_task, receive_cor_task),
             return_when=asyncio.FIRST_COMPLETED
         )
-
-        print("gone from wait")
-        print(done)
-        print(pending)
 
         if queue_cor_task in done:
             await handle_outcoming_message(
@@ -412,7 +405,7 @@ class StreamingApiProvider(object):
         counter = 0
 
         while True:
-            await asyncio.sleep(random.randint(0, 10))
+            await asyncio.sleep(random.randint(0, 30))
             for queue in self._undelivered.values():
                 await queue.put(
                     prepare_message(
@@ -425,7 +418,6 @@ class StreamingApiProvider(object):
                     )
                 )
                 print(queue)
-                print(queue.qsize())
 
             counter += 1
 
