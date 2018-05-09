@@ -38,6 +38,7 @@ from dpl.utils.simple_interceptor import SimpleInterceptor
 from dpl.api.rest_api.things_subapp import build_things_subapp
 from dpl.api.rest_api.placements_subapp import build_placements_subapp
 from dpl.api.rest_api.messages_subapp import build_messages_subapp
+from dpl.api.http_api_provider import HttpApiProvider
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
 
@@ -172,12 +173,19 @@ class Controller(object):
             additional_data=api_context_data
         )
 
+        self._http_api = HttpApiProvider()
+
         self._rest_api = RestApiProvider(
             things=self._rest_api_things,
             placements=self._rest_api_placements,
             messages=self._rest_api_messages,
             auth_context=self._auth_context,
             auth_service=self._auth_service
+        )
+
+        self._http_api.add_child_provider(
+            provider=self._rest_api,
+            provider_root='/api/rest/v1/'
         )
 
         # None will indicate that this module was disabled
@@ -352,7 +360,7 @@ class Controller(object):
         rest_api_port = rest_api_config['port']
 
         asyncio.ensure_future(
-            self._rest_api.create_server(host=rest_api_host, port=rest_api_port)
+            self._http_api.create_server(host=rest_api_host, port=rest_api_port)
         )
 
     async def _bootstrap_integrations(self):
@@ -376,5 +384,5 @@ class Controller(object):
         if self._local_announce is not None:
             self._local_announce.shutdown_server()
 
-        await self._rest_api.shutdown_server()
+        await self._http_api.shutdown_server()
         self._thing_service_raw.disable_all()
