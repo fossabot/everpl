@@ -321,7 +321,7 @@ async def handle_outcoming_message(
     """
     message_topic = message['topic']
 
-    if await is_subscribed(app=app, session_id=session_id, topic=message_topic):
+    if True:  # FIXME: check that the user has rights to read the message!
         await ws.send_json(message)
 
 
@@ -505,10 +505,12 @@ class StreamingApiProvider(Observer):
         await self._app.cleanup()
 
     async def send_to_all(self, message: Mapping) -> None:
-        for queue in self._undelivered.values():
-            await queue.put(
-                message
-            )
+        for session_id, queue in self._undelivered.items():
+            if await is_subscribed(app=self.app, session_id=session_id,
+                                   topic=message['topic']):
+                await queue.put(
+                    message
+                )
             print(queue)
 
     def update(self, source, *args, **kwargs):
