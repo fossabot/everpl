@@ -137,7 +137,7 @@ will be revoked and a client Session will be terminated by server
 for any reason, than all Session-related data will be **deleted** from
 a server. And, as result, you'll need to start everything from scratch.
 
-Also, clients are allowed to ask a server to store last N messages
+Also, clients are allowed to ask a server to store last all messages
 for specific topic until their delivery will be explicitly
 acknowledged by clients. For more information about this feature, see
 the `Message Retention`_ section of documentation.
@@ -146,24 +146,21 @@ the `Message Retention`_ section of documentation.
 Message Retention
 -----------------
 
-Message Retention feature allows to keep the last N messages for
+Message Retention feature allows to keep the all the last messages for
 specific topics until their delivery will be specifically acknowledged
 by a client.
 
-The number of retained messages is set for each topic individually.
-So, if you, for example subscribed using a wildcard subscription
-like ``things/door1/#`` with the number of retained messages set to 2,
-then there will be a maximum of two retained messages stored for each
-topic that corresponds to this wildcard: two for ``things/door1/updated``,
-two for ``things/door1/created`` and two for ``things/door1/deleted``.
+The server is guarantied to save up to 100 retained messages **per client**.
+After this limit was reached, the server is allowed to **remove** all the
+old messages above this limit. So please, enable message retention only
+when you it's really needed. And if the client device is expected to
+go offline for a long period of time - please, remove all unneeded
+subscriptions that have message retention enabled **before** disconnection.
 
-The number of retained messages is set on the subscription as described
-below in `Topic subscriptions`_ section of documentation.
-
-To enable a message retention, set the number of retained messages to
-a bigger than zero integer value. To disable message retention, this number
-must be set to ``0`` (zero). Negative numbers are forbidden. If omitted,
-the number of retained messages is set to zero.
+It's needed to enable message retention explicitly for each topic.
+To enable message retention, just set a ``retain_messages`` value to
+``true`` on topic subscription, as described in `Topic subscriptions`_
+section of documentation.
 
 With the message retention enabled, the client **must** acknowledge the delivery
 of each message using the following special message:
@@ -186,10 +183,6 @@ Where:
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``message_id`` value is an integer, a temporary identifier of a message
   to be acknowledged.
-
-If the number of undelivered messages will exceed the set number of retained
-messages, than the old messages will be **lost**, **without** any ability
-to be recovered.
 
 Retained messages are allowed to be re-sent until their delivery will be
 acknowledged by a client. The time between attempts to re-send a message
@@ -237,7 +230,7 @@ following message:
         "topic": "subscribe",
         "body": {
             "target_topic": "here/is/your/topic",
-            "messages_retained": 0
+            "retain_messages": false
         }
     }
 
@@ -248,9 +241,8 @@ Where:
 - ``timestamp`` is set to the current UNIX time (``123456.76`` on example);
 - ``target_topic`` value is set the topic you want to subscribe onto
   (``here/is/your/topic`` on example);
-- ``messages_retained`` is an optional parameter set to the maximum
-  number of undelivered messages to be retained; positive integer numbers
-  only; is set to ``0`` (zero) if omitted.
+- ``retain_messages`` is an optional boolean parameter that enables
+  message retention for this topic; set to ``false`` (disabled) by default.
 
 
 In response to that message you will receive the following message
