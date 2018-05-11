@@ -444,7 +444,10 @@ class StreamingApiProvider(Observer):
         self._auth_context = auth_context
         self._auth_service = auth_service
 
-        self._loop = loop
+        if loop is None:
+            self._loop = asyncio.get_event_loop()
+        else:
+            self._loop = loop
 
         self._handler = None
         self._server = None
