@@ -322,7 +322,12 @@ async def handle_outcoming_message(
     message_topic = message['topic']
 
     if True:  # FIXME: check that the user has rights to read the message!
-        await ws.send_json(message)
+        try:
+            await ws.send_json(message)
+        except asyncio.CancelledError:
+            undelivered = app['undelivered']  # type: dict
+            this_undelivered = undelivered[session_id]  # type: asyncio.Queue
+            this_undelivered.put(message)
 
 
 async def message_loop(
