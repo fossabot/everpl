@@ -12,17 +12,18 @@ from dpl.auth.abs_auth_service import (
 )
 from dpl.api.cors_middleware import CorsMiddleware
 from dpl.api.api_errors import ERROR_TEMPLATES
+from dpl.api.http_api_provider import HttpApiProvider
 
 from .common import make_json_response
 from .json_decode_decorator import json_decode_decorator
-
 
 # Init logger
 LOGGER = logging.getLogger(__name__)
 
 
 @web.middleware
-async def middleware_process_exceptions(request: web.Request, handler) -> web.Response:
+async def middleware_process_exceptions(request: web.Request,
+                                        handler) -> web.Response:
     """
     A function that wraps original request handler called
     'handler' and processes any unhandled exceptions.
@@ -35,7 +36,8 @@ async def middleware_process_exceptions(request: web.Request, handler) -> web.Re
 
     except web.HTTPMethodNotAllowed:
         error_dict = ERROR_TEMPLATES[1004].to_dict()
-        error_dict["devel_message"] = error_dict["devel_message"].format(method_name=request.method)
+        error_dict["devel_message"] = error_dict["devel_message"].format(
+            method_name=request.method)
 
         return make_json_response(
             status=405,
@@ -51,11 +53,13 @@ async def middleware_process_exceptions(request: web.Request, handler) -> web.Re
     except Exception as e:
         timestamp = time.monotonic()
 
-        LOGGER.error("Unhandled exception in request handling at %s: %s %s\n%s",
-                     timestamp, type(e), e, traceback.format_exc())
+        LOGGER.error(
+            "Unhandled exception in request handling at %s: %s %s\n%s",
+            timestamp, type(e), e, traceback.format_exc())
 
         error_dict = ERROR_TEMPLATES[1003].to_dict()
-        error_dict["user_message"] = error_dict["user_message"].format(timestamp=timestamp)
+        error_dict["user_message"] = error_dict["user_message"].format(
+            timestamp=timestamp)
 
         return make_json_response(
             status=500,
@@ -63,7 +67,7 @@ async def middleware_process_exceptions(request: web.Request, handler) -> web.Re
         )
 
 
-class RestApiProvider(object):
+class RestApiProvider(HttpApiProvider):
     """
     This class contains a logic of a REST API provider.
 
@@ -74,32 +78,30 @@ class RestApiProvider(object):
     """
 
     def __init__(
-            self, things: web.Application, placements: web.Application, messages: web.Application,
-            auth_context: AuthContext, auth_service: AbsAuthService,
+            self, things: web.Application, placements: web.Application,
+            messages: web.Application, auth_context: AuthContext,
+            auth_service: AbsAuthService,
             loop: asyncio.AbstractEventLoop = None
     ):
+        self._cors_middleware = CorsMiddleware(
+            is_enabled=True,
+            allowed_origin='*'
+        )
+
+        middlewares = (
+            self._cors_middleware.handle, middleware_process_exceptions
+        )
+
+        super().__init__(loop=loop, middlewares=middlewares)
+
         self._things = things
         self._placements = placements
         self._messages = messages
         self._auth_context = auth_context
         self._auth_service = auth_service
 
-        if loop is None:
-            self._loop = asyncio.get_event_loop()
-        else:
-            self._loop = loop
-
         self._handler = None
         self._server = None
-
-        self._cors_middleware = CorsMiddleware(
-            is_enabled=True,
-            allowed_origin='*'
-        )
-
-        self._app = web.Application(
-            middlewares=(self._cors_middleware.handle, middleware_process_exceptions,)
-        )
 
         context_data = {
             'auth_service': auth_service,
@@ -122,40 +124,9 @@ class RestApiProvider(object):
 
         self._router.add_get(path='/', handler=root_get_handler)
         self._router.add_post(path='/auth', handler=auth_post_handler)
-        self._router.add_route(method='OPTIONS', path='/auth', handler=auth_options_handler)
-
-    @property
-    def app(self) -> web.Application:
-        """
-        Returns the underlying aiohttp.web Application
-
-        :return: the underlying aiohttp.web Application
-        """
-        return self._app
-
-    async def create_server(self, host: str, port: int) -> None:
-        """
-        Factory function that creates fully-functional aiohttp server
-
-        :param host: a server hostname or address
-        :param port: a server port
-        :return: None
-        """
-        self._handler = self._app.make_handler(loop=self._loop)
-        self._server = await self._loop.create_server(self._handler, host, port)
-
-    async def shutdown_server(self) -> None:
-        """
-        Stop (shutdown) REST server gracefully.
-        More info is available here: http://aiohttp.readthedocs.io/en/stable/web.html#aiohttp-web-graceful-shutdown
-
-        :return: None
-        """
-        self._server.close()
-        await self._server.wait_closed()
-        await self._app.shutdown()  # fires on_shutdown signal (so does nothing now)
-        await self._handler.shutdown(60.0)
-        await self._app.cleanup()  # fires on_cleanup signal (so does nothing now)
+        self._router.add_route(
+            method='OPTIONS', path='/auth', handler=auth_options_handler
+        )
 
 
 async def root_get_handler(request: web.Request) -> web.Response:
