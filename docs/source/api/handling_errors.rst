@@ -407,7 +407,7 @@ than X time units after some point of time). For example, the client
 must to send Authentication message not later than 20 seconds from
 the connection establishment (as defined in :doc:`./streaming_api`
 section of documentation). You must to send messages in the specified
-time windows, otherwise you will receive this (5002) error.
+time windows, otherwise you will receive this (5000) error.
 
 
 Error 5001: Invalid frame type
@@ -477,7 +477,7 @@ Control Message or Data Message. To define either the received Message
 is Control or Data Message, the ``type`` field is used according
 to the :doc:`./streaming_api` section of documentation. You must
 to send messages with a type, appropriate to the current situation,
-otherwise you will receive this (5003) error.
+otherwise you will receive this (5010) error.
 
 
 Error 5011: Invalid message type (not Data)
@@ -496,7 +496,7 @@ Control Message or Data Message. To define either the received Message
 is Control or Data Message, the ``type`` field is used according
 to the :doc:`./streaming_api` section of documentation. You must
 to send messages with a type, appropriate to the current situation,
-otherwise you will receive this (5004) error.
+otherwise you will receive this (5011) error.
 
 
 Error 5020: Invalid message topic
@@ -513,7 +513,7 @@ This error indicates some issue with the client-side code and should
 be fixed by client's developer. In some situations server may wait a
 message from a client application with the specified topic. You must
 to send messages with a topic, appropriate to the current situation,
-otherwise you will receive this (5010) error. To define what message
+otherwise you will receive this (5020) error. To define what message
 topic is expected in the current situation, please refer to the
 :doc:`./streaming_api` section of documentation. The expected topic
 of a message is defined in ``devel_message`` field of Error message.
@@ -534,5 +534,5 @@ be fixed by client's developer. In some situations client must to send
 messages with the specified type, topic and the message body content.
 You must to send messages with bodies as defined in the
 :doc:`./streaming_api` section of documentation, otherwise
-you will receive this (5020) error. The name of the missing or
+you will receive this (5030) error. The name of the missing or
 erroneous field is defined in ``devel_message`` field of Error message.
