@@ -344,21 +344,23 @@ async def message_loop(
     :return: None
     """
     undelivered = app['undelivered']  # type: dict
+    loop = app['loop']
 
     queue = undelivered.setdefault(
-        session_id, asyncio.Queue()
+        session_id, asyncio.Queue(loop=loop)
     )
 
     queue_cor = queue.get()
     receive_cor = ws.receive_json()
 
-    queue_cor_task = asyncio.ensure_future(queue_cor)
-    receive_cor_task = asyncio.ensure_future(receive_cor)
+    queue_cor_task = asyncio.ensure_future(queue_cor, loop=loop)
+    receive_cor_task = asyncio.ensure_future(receive_cor, loop=loop)
 
     while not ws.closed:
         done, pending = await asyncio.wait(
             (queue_cor_task, receive_cor_task),
-            return_when=asyncio.FIRST_COMPLETED
+            return_when=asyncio.FIRST_COMPLETED,
+            loop=loop
         )
 
         if queue_cor_task in done:
@@ -367,7 +369,7 @@ async def message_loop(
                 message=queue_cor_task.result()
             )
             queue_cor = queue.get()
-            queue_cor_task = asyncio.ensure_future(queue_cor)
+            queue_cor_task = asyncio.ensure_future(queue_cor, loop=loop)
 
         if receive_cor_task in done:
             await handle_incoming_message(
@@ -376,7 +378,7 @@ async def message_loop(
             )
 
             receive_cor = ws.receive_json()
-            receive_cor_task = asyncio.ensure_future(receive_cor)
+            receive_cor_task = asyncio.ensure_future(receive_cor, loop=loop)
 
 
 async def handle_ws_request(request: web.Request) -> web.WebSocketResponse:
@@ -455,11 +457,12 @@ class StreamingApiProvider(Observer):
         self._undelivered = dict()  # type: MutableMapping[str, asyncio.Queue]
         self._subscriptions = dict()  # type: MutableMapping[str, MutableMapping]
         self._subs_plain = dict()  # type: MutableMapping[str, MutableSet[str]]
-        self._subs_lock = asyncio.Lock()  # FIXME: replace a global lock with local locks
+        self._subs_lock = asyncio.Lock(loop=self._loop)  # FIXME: replace a global lock with local locks
 
         self._app = web.Application()
 
         context_data = {
+            'loop': self._loop,
             'auth_service': auth_service,
             'auth_context': auth_context,
             'undelivered': self._undelivered,
