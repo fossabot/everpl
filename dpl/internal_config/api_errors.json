@@ -48,7 +48,7 @@
     {
       "error_id": 2101,
       "devel_message": "Invalid access token",
-      "user_message": "Access token was revoked. Please, authenticate."
+      "user_message": "Access token was revoked. Please, repeat authentication procedure."
     },
     {
       "error_id": 2110,
