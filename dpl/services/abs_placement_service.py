@@ -2,11 +2,11 @@ from typing import Optional
 
 from dpl.model.domain_id import TDomainId
 from dpl.dtos.placement_dto import PlacementDto
-from .abs_entity_service import AbsEntityService
 from .service_exceptions import ServiceEntityResolutionError, ServiceEntityLinkError
+from .observable_service import ObservableService
 
 
-class AbsPlacementService(AbsEntityService[PlacementDto]):
+class AbsPlacementService(ObservableService[PlacementDto]):
     """
     A base class for all PlacementService implementations
     """
