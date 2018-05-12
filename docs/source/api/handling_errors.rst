@@ -390,38 +390,8 @@ defined above. All errors with identifiers starting from ``5000``
 and to ``5999`` including are considered as Streaming API-specific
 errors.
 
-Error 5000: Invalid frame type
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This error can be thrown on attempts to send a frame using a Streaming API.
-It may indicate that:
-
-- the frame sent has type that is different from expected.
-
-This error indicates some issue with the client-side code and should
-be fixed by client's developer. For now the only supported type of
-WebSocket frame is TEXT frame. TEXT frames are then parsed as JSON
-objects and interpreted as Streaming API Messages. You must not to use
-binary frames or any other frames for transferring Streaming API Messages.
-
-
-Error 5001: Invalid frame content
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This error can be thrown on attempts to send a frame using a Streaming API.
-It may indicate that:
-
-- the content of the specified TEXT frame is not a JSON object.
-
-This error indicates some issue with the client-side code and should
-be fixed by client's developer. For now all the messages passed via
-Streaming API must to be encoded as JSON objects according to the rules
-defined in :doc:`./streaming_api` section of documentation. You must to
-encode Messages as JSON objects and transfer them in TEXT WebSocket frames.
-Otherwise the mentioned (5001) error will be thrown.
-
-
-Error 5002: Timeout
+Error 5000: Timeout
 ^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on attempts to use a Streaming API.
@@ -440,7 +410,58 @@ section of documentation). You must to send messages in the specified
 time windows, otherwise you will receive this (5002) error.
 
 
-Error 5003: Invalid message type (not Control)
+Error 5001: Invalid frame type
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a frame using a Streaming API.
+It may indicate that:
+
+- the frame sent has type that is different from expected.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. For now the only supported type of
+WebSocket frame is TEXT frame. TEXT frames are then parsed as JSON
+objects and interpreted as Streaming API Messages. You must not to use
+binary frames or any other frames for transferring Streaming API Messages.
+
+
+Error 5002: Invalid frame content
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a frame using a Streaming API.
+It may indicate that:
+
+- the content of the specified TEXT frame is not a JSON object.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. For now all the messages passed via
+Streaming API must to be encoded as JSON objects according to the rules
+defined in :doc:`./streaming_api` section of documentation. You must to
+encode Messages as JSON objects and transfer them in TEXT WebSocket frames.
+Otherwise the mentioned (5002) error will be thrown.
+
+
+Error 5003: Message format violation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a message using a Streaming API.
+It may indicate that:
+
+- the received message is a valid JSON object is not a valid Message object;
+- some fields of Message are missing or have an appropriate type.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. For now all the messages passed via
+Streaming API must to be encoded as JSON objects according to the rules
+defined in :doc:`./streaming_api` section of documentation. You must to
+encode Messages as JSON objects and transfer them in TEXT WebSocket frames.
+Otherwise the mentioned (5003) error will be thrown.
+
+The name of erroneous field is specified in ``devel_message`` field of Error
+message.
+
+
+Error 5010: Invalid message type (not Control)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on attempts to use a Streaming API.
@@ -459,7 +480,7 @@ to send messages with a type, appropriate to the current situation,
 otherwise you will receive this (5003) error.
 
 
-Error 5004: Invalid message type (not Data)
+Error 5011: Invalid message type (not Data)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on attempts to use a Streaming API.
@@ -478,7 +499,7 @@ to send messages with a type, appropriate to the current situation,
 otherwise you will receive this (5004) error.
 
 
-Error 5010: Invalid message topic
+Error 5020: Invalid message topic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on attempts to use a Streaming API.
@@ -498,25 +519,7 @@ topic is expected in the current situation, please refer to the
 of a message is defined in ``devel_message`` field of Error message.
 
 
-Error 5020: Invalid message body
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This error can be thrown on attempts to use a Streaming API.
-It may indicate that:
-
-- the server received a message from a client with a ``body`` field
-  missing or a body field value that is not a mapping.
-
-This error indicates some issue with the client-side code and should
-be fixed by client's developer. For now all the Messages transferred
-using Streaming API must to contain a ``body`` field which value is
-a JSON mapping (dict). Whereas the described mapping can be empty,
-you must to preserve a ``body`` field in all transferred messages and
-it must to be a mapping, as defined in the :doc:`./streaming_api`
-section of documentation.
-
-
-Error 5020: Invalid message body content
+Error 5030: Invalid message body content
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This error can be thrown on attempts to use a Streaming API.
