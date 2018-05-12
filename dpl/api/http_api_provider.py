@@ -12,7 +12,7 @@ class HttpApiProvider(object):
     This class contains a base HTTP provider to be used
     """
 
-    def __init__(self, loop: asyncio.AbstractEventLoop = None):
+    def __init__(self, loop: asyncio.AbstractEventLoop = None, middlewares=()):
         if loop is None:
             self._loop = asyncio.get_event_loop()
         else:
@@ -21,9 +21,11 @@ class HttpApiProvider(object):
         self._handler = None
         self._server = None
 
-        self._app = web.Application()
+        self._app = web.Application(middlewares=middlewares)
 
-    def add_child_provider(self, provider, provider_root: str) -> None:
+    def add_child_provider(
+            self, provider: "HttpApiProvider", provider_root: str
+    ) -> None:
         """
         Assigns the specified address to the specified API provider
 
@@ -32,7 +34,7 @@ class HttpApiProvider(object):
         :return: None
         """
         self._app.add_subapp(
-            provider_root, provider.app
+            provider_root, provider._app
         )
 
     async def create_server(self, host: str, port: int) -> None:
