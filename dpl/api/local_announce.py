@@ -52,7 +52,9 @@ class LocalAnnounce(object):
         if server_host is None or server_host == "0.0.0.0":
             server_host = "%s.local" % hostname
 
-        txt_properties = {}
+        txt_properties = {
+            "host": server_host
+        }
 
         service_info = zeroconf.ServiceInfo(
             type_=self._service_type,
@@ -60,7 +62,7 @@ class LocalAnnounce(object):
             address=coded_address,
             port=port,
             properties=txt_properties,
-            server=server_host
+            server="%s.local." % hostname
         )
 
         self._zeroconf.register_service(service_info)
