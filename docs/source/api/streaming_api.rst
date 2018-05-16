@@ -10,10 +10,6 @@ just after such events had happened. And more of it: client applications
 are able to choose what events they are concerned about and what events
 they wanna subscribe to.
 
-.. WARNING::
-    The information below is a **draft** of specification. **Any**
-    part of this document may be **changed** without notice.
-
 
 General Information
 -------------------
