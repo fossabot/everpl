@@ -380,3 +380,176 @@ Placements
 ----------
 
 There is no Placement-specific exceptions for now.
+
+
+Streaming API
+-------------
+
+Streaming API has its own subset of errors in addition to the errors
+defined above. All errors with identifiers starting from ``5000``
+and to ``5999`` including are considered as Streaming API-specific
+errors.
+
+
+Error 5000: Timeout
+^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to use a Streaming API.
+It may indicate that:
+
+- the server was expected to receive a message from a client in the
+  specified time window but such message wasn't sent.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. In some situations server may wait a
+message from a client application in the specified time window (not later
+than X time units after some point of time). For example, the client
+must to send Authentication message not later than 20 seconds from
+the connection establishment (as defined in :doc:`./streaming_api`
+section of documentation). You must to send messages in the specified
+time windows, otherwise you will receive this (5000) error.
+
+
+Error 5001: Invalid frame type
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a frame using a Streaming API.
+It may indicate that:
+
+- the frame sent has type that is different from expected.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. For now the only supported type of
+WebSocket frame is TEXT frame. TEXT frames are then parsed as JSON
+objects and interpreted as Streaming API Messages. You must not to use
+binary frames or any other frames for transferring Streaming API Messages.
+
+
+Error 5002: Invalid frame content
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a frame using a Streaming API.
+It may indicate that:
+
+- the content of the specified TEXT frame is not a JSON object.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. For now all the messages passed via
+Streaming API must to be encoded as JSON objects according to the rules
+defined in :doc:`./streaming_api` section of documentation. You must to
+encode Messages as JSON objects and transfer them in TEXT WebSocket frames.
+Otherwise the mentioned (5002) error will be thrown.
+
+
+Error 5003: Message format violation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to send a message using a Streaming API.
+It may indicate that:
+
+- the received message is a valid JSON object is not a valid Message object;
+- some fields of Message are missing or have an appropriate type.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. For now all the messages passed via
+Streaming API must to be encoded as JSON objects according to the rules
+defined in :doc:`./streaming_api` section of documentation. You must to
+encode Messages as JSON objects and transfer them in TEXT WebSocket frames.
+Otherwise the mentioned (5003) error will be thrown.
+
+The name of erroneous field is specified in ``devel_message`` field of Error
+message.
+
+
+Error 5004: Session was resumed on another connection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on already opened Streaming API connections.
+It may indicate that:
+
+- some client initiated a new Streaming API connection using the same
+  access token and connected to the same Session.
+
+This error usually indicates some issue with the client-side code and
+should be fixed by client's developer. In some situations, client
+applications keeps old connections unclosed while attempting to establish
+a new one. In such situations, the old connection is closed with the
+specified error - 5004. To avoid this error, please, close the old
+Streaming API connections before the new connection will be opened.
+
+
+Error 5010: Invalid message type (not Control)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to use a Streaming API.
+It may indicate that:
+
+- the server was expected to receive a Control Message from a
+  client but the message received is not a Control Message.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. In some situations server may wait a
+message from a client application with the specified type: either
+Control Message or Data Message. To define either the received Message
+is Control or Data Message, the ``type`` field is used according
+to the :doc:`./streaming_api` section of documentation. You must
+to send messages with a type, appropriate to the current situation,
+otherwise you will receive this (5010) error.
+
+
+Error 5011: Invalid message type (not Data)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to use a Streaming API.
+It may indicate that:
+
+- the server was expected to receive a Data Message from a
+  client but the message received is not a Data Message.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. In some situations server may wait a
+message from a client application with the specified type: either
+Control Message or Data Message. To define either the received Message
+is Control or Data Message, the ``type`` field is used according
+to the :doc:`./streaming_api` section of documentation. You must
+to send messages with a type, appropriate to the current situation,
+otherwise you will receive this (5011) error.
+
+
+Error 5020: Invalid message topic
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to use a Streaming API.
+It may indicate that:
+
+- the server was expected to receive a Message with the specified
+  topic from a client but the topic of the received message is
+  different from expected.
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. In some situations server may wait a
+message from a client application with the specified topic. You must
+to send messages with a topic, appropriate to the current situation,
+otherwise you will receive this (5020) error. To define what message
+topic is expected in the current situation, please refer to the
+:doc:`./streaming_api` section of documentation. The expected topic
+of a message is defined in ``devel_message`` field of Error message.
+
+
+Error 5030: Invalid message body content
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on attempts to use a Streaming API.
+It may indicate that:
+
+- the server expected to find some information in a body content
+  of received message but such information is missing or is invalid
+  (by type or value).
+
+This error indicates some issue with the client-side code and should
+be fixed by client's developer. In some situations client must to send
+messages with the specified type, topic and the message body content.
+You must to send messages with bodies as defined in the
+:doc:`./streaming_api` section of documentation, otherwise
+you will receive this (5030) error. The name of the missing or
+erroneous field is defined in ``devel_message`` field of Error message.
