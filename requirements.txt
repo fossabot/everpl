@@ -1,4 +1,4 @@
-aiohttp >= 2.0
+aiohttp >= 2.0, < 3.0  # a Streaming API will not work with the new aiohttp :(
 passlib
 sqlalchemy >= 1.1  # Used to store and manage persistent data like settings and Placements
 appdirs   # to determine where user .config dir is located

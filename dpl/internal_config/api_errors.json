@@ -79,6 +79,51 @@
       "error_id": 3110,
       "devel_message": "Unsupported command",
       "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5000,
+      "devel_message": "Timeout: No response from a client application",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5001,
+      "devel_message": "Invalid frame type: Expected TEXT frame",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5002,
+      "devel_message": "Invalid frame content: Expected JSON object in the frame content",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5003,
+      "devel_message": "Message format violation: Field: %s, expected: %s, actual: %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5004,
+      "devel_message": "Session was resumed on another connection",
+      "user_message": "Old streaming connection dropped"
+    },
+    {
+      "error_id": 5010,
+      "devel_message": "Invalid message type (not Control)",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5011,
+      "devel_message": "Invalid message type (not Data)",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5020,
+      "devel_message": "Invalid message topic: expected %s, actual: %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
+    },
+    {
+      "error_id": 5030,
+      "devel_message": "Invalid message body content: %s",
+      "user_message": "Unsupported client application.\nPlease, contact the developer of this client application"
     }
   ]
 }

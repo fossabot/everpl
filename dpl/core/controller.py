@@ -44,6 +44,8 @@ from dpl.api.rest_api.placements_subapp import build_placements_subapp
 from dpl.api.http_api_provider import HttpApiProvider
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
+from dpl.api.streaming_api.streaming_api_provider import StreamingApiProvider
+
 
 module_logger = logging.getLogger(__name__)
 dpl_root_logger = logging.getLogger(name='dpl')
@@ -192,12 +194,51 @@ class Controller(object):
             provider_root='/api/rest/v1/'
         )
 
+        self._separate_streaming = False
+        self._streaming_api_provider = None
+
+        if 'streaming_api' in self._apis_config['enabled_apis']:
+            self._init_streaming_api()
+
         # None will indicate that this module was disabled
         self._local_announce = None
 
         # if module ws enabled...
         if 'local_announce' in self._apis_config['enabled_apis']:
             self._initialize_local_announcement()
+
+    def _init_streaming_api(self) -> None:
+        """
+        Initializes and sets up an Streaming API instance
+
+        :return: None
+        """
+        streaming_api_config = self._apis_config.get('streaming_api', dict())
+
+        self._separate_streaming = (
+                streaming_api_config.get('host') is not None or
+                streaming_api_config.get('port') is not None or
+                streaming_api_config.get('is_strict_tls') is not None
+        )
+
+        if self._separate_streaming:
+            api_root = '/api/streaming/v1/'
+        else:
+            api_root = '/'
+
+        self._streaming_api_provider = StreamingApiProvider(
+            auth_context=self._auth_context,
+            auth_service=self._auth_service,
+            api_root=api_root
+        )
+
+        if not self._separate_streaming:
+            self._http_api.add_child_provider(
+                provider=self._streaming_api_provider,
+                provider_root='/api/streaming/v1/'
+            )
+
+        self._event_hub.subscribe(self._streaming_api_provider)
 
     @staticmethod
     def _setup_event_hub(event_hub: EventHub) -> None:
@@ -359,8 +400,27 @@ class Controller(object):
         if 'rest_api' in enabled_apis:
             await self._start_http_api()
 
+        if 'streaming_api' in enabled_apis and self._separate_streaming:
+            await self._start_streaming_api()
+
         if 'local_announce' in enabled_apis:
             self._start_local_announce()
+
+    async def _start_streaming_api(self) -> None:
+        """
+        Starts a Streaming API on host and port different from the main API
+
+        :return: None
+        """
+        rest_api_config = self._apis_config.get('rest_api', dict())
+        streaming_api_config = self._apis_config.get('streaming_api', dict())
+
+        host = streaming_api_config.get('host', rest_api_config['host'])
+        port = streaming_api_config.get('port', rest_api_config['port'])
+
+        assert isinstance(self._streaming_api_provider, StreamingApiProvider)
+
+        await self._streaming_api_provider.create_server(host=host, port=port)
 
     def _start_local_announce(self):
         local_announce_config = self._apis_config['local_announce']
@@ -421,6 +481,9 @@ class Controller(object):
     async def shutdown(self):
         if self._local_announce is not None:
             self._local_announce.shutdown_server()
+
+        if self._separate_streaming:
+            await self._streaming_api_provider.shutdown_server()
 
         await self._http_api.shutdown_server()
         self._thing_service_raw.disable_all()
