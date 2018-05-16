@@ -79,7 +79,7 @@ class RestApiProvider(HttpApiProvider):
 
     def __init__(
             self, things: web.Application, placements: web.Application,
-            messages: web.Application, auth_context: AuthContext,
+            auth_context: AuthContext,
             auth_service: AbsAuthService,
             loop: asyncio.AbstractEventLoop = None
     ):
@@ -96,7 +96,6 @@ class RestApiProvider(HttpApiProvider):
 
         self._things = things
         self._placements = placements
-        self._messages = messages
         self._auth_context = auth_context
         self._auth_service = auth_service
 
@@ -115,9 +114,6 @@ class RestApiProvider(HttpApiProvider):
         )
         self._app.add_subapp(
             '/placements/', self._placements
-        )
-        self._app.add_subapp(
-            '/messages/', self._messages
         )
 
         self._router = self._app.router  # type: web.UrlDispatcher
@@ -139,7 +135,6 @@ async def root_get_handler(request: web.Request) -> web.Response:
     return make_json_response(
         {"things": "/things/",
          "auth": "/auth",
-         "messages": "/messages/",
          "placements": "/placements/"}
     )
 

@@ -37,7 +37,6 @@ from dpl.utils.simple_interceptor import SimpleInterceptor
 
 from dpl.api.rest_api.things_subapp import build_things_subapp
 from dpl.api.rest_api.placements_subapp import build_placements_subapp
-from dpl.api.rest_api.messages_subapp import build_messages_subapp
 from dpl.api.http_api_provider import HttpApiProvider
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
@@ -168,17 +167,11 @@ class Controller(object):
             additional_data=api_context_data
         )
 
-        self._rest_api_messages = build_messages_subapp(
-            thing_service=self._thing_service,
-            additional_data=api_context_data
-        )
-
         self._http_api = HttpApiProvider()
 
         self._rest_api = RestApiProvider(
             things=self._rest_api_things,
             placements=self._rest_api_placements,
-            messages=self._rest_api_messages,
             auth_context=self._auth_context,
             auth_service=self._auth_service
         )
