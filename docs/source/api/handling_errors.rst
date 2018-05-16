@@ -461,6 +461,23 @@ The name of erroneous field is specified in ``devel_message`` field of Error
 message.
 
 
+Error 5004: Session was resumed on another connection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This error can be thrown on already opened Streaming API connections.
+It may indicate that:
+
+- some client initiated a new Streaming API connection using the same
+  access token and connected to the same Session.
+
+This error usually indicates some issue with the client-side code and
+should be fixed by client's developer. In some situations, client
+applications keeps old connections unclosed while attempting to establish
+a new one. In such situations, the old connection is closed with the
+specified error - 5004. To avoid this error, please, close the old
+Streaming API connections before the new connection will be opened.
+
+
 Error 5010: Invalid message type (not Control)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
