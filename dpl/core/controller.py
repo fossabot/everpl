@@ -357,7 +357,7 @@ class Controller(object):
         enabled_apis = self._apis_config['enabled_apis']
 
         if 'rest_api' in enabled_apis:
-            await self._start_rest_api()
+            await self._start_http_api()
 
         if 'local_announce' in enabled_apis:
             self._start_local_announce()
@@ -385,9 +385,9 @@ class Controller(object):
             server_host=host  # use REST API listening hostname
         )
 
-    async def _start_rest_api(self):
+    async def _start_http_api(self):
         """
-        Starts REST API server
+        Starts HTTP API server with parameters defined for REST API
 
         :return: None
         """
@@ -396,7 +396,9 @@ class Controller(object):
         rest_api_port = rest_api_config['port']
 
         asyncio.ensure_future(
-            self._http_api.create_server(host=rest_api_host, port=rest_api_port)
+            self._http_api.create_server(
+                host=rest_api_host, port=rest_api_port
+            )
         )
 
     async def _bootstrap_integrations(self):
