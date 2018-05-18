@@ -33,6 +33,181 @@ by client applications. Use the left navigation menu to find any device type
 quickly.
 
 
+Value Sensor
+============
+
+:type: "value_sensor"
+
+:inherits from: none
+
+:icon: two random digits or a sensor icon
+
+:capabilities: "has_value"
+
+A generic type of sensors which represent their results of measurements
+in numbers of an unspecified unit. Such values must to be displayed
+to user in the same manner: "current value is %d", where "%d" is an
+placeholder for the measured value. Must to be used rarely, only if
+there is no more specific device type declared.
+
+
+Binary Sensor
+=============
+
+:type: "binary_sensor"
+
+:inherits from: "value_sensor"
+
+:icon: "I/O" text or a similar-looking icon
+
+:capabilities: "has_value", "is_active"
+
+The most primitive (but not necessary the base) type of Sensors in the
+system. Can have only one of two integer values: 1 and 0. Where 1 is
+mapped to the "active" state and 0 is mapped to "not active". Usually
+is inherited by more specific implementations of a Binary Sensor,
+including buttons, leakage sensors, reed switches (detects an opening
+of a door or window), motion sensors and so on.
+
+
+Button
+======
+
+:type: "button"
+
+:inherits from: "binary_sensor"
+
+:icon: an icon of a button
+
+:capabilities: "has_value", "is_active"
+
+Represents all the Buttons connected to the system. Its value is set
+to 1 while the button is pressed and sets to 0 just after the button
+was released. There is no long press detection, double press detection
+and so on. Just "pressed" (1) and released (0). All the other
+functionality is the same as in Binary Sensor.
+
+
+Switch
+======
+
+:type: "switch"
+
+:inherits from: "binary_sensor"
+
+:icon: an icon of a switch (or a reed switch)
+
+:capabilities: "has_value", "is_active"
+
+Another kind of a Binary Sensor. Is a base type for devices which can
+preserve their state without the help of a user (i.e. user doesn't need
+to keep the switch pressed). Physically, it can be a simple light switch,
+toggle switch, reed switch and on and on. As any other Binary Sensor,
+the "value" field value can be equal to either 1 or 0, where 1 is mapped
+to "active" and 0 is mapped to "not active".
+
+
+Reed Switch
+===========
+
+:type: "reed_switch"
+
+:inherits from: "switch"
+
+:icon: an icon of a reed switch or an opened door without a handle
+
+:capabilities: "has_value", "is_active", "has_state", "open_closed"
+
+The special subtype of a Switch. Adds a new field to the list: a
+"has_state" field which can take either "opened" or "closed" value,
+where "opened" is equal to 1 and "closed" is equal to 0.
+
+
+Motion Sensor
+=============
+
+TBD. Has the same logic as Button
+
+
+Leakage Sensor
+==============
+
+TBD. Has the same logic as Switch
+
+
+Temperature Sensor
+==================
+
+:type: "temperature_sensor"
+
+:inherits from: none
+
+:icon: an icon of a thermometer
+
+:capabilities: "has_temperature"
+
+Temperature Sensor represents simple thermometers, temperature sensors
+which displays the current temperature of controlled object: in-room
+air temperature, outside temperature, temperature of a human body, etc.
+If your device implements some features in addition to measuring of
+temperature - please, consider some other base types for your device.
+
+
+Humidity Sensor
+===============
+
+TBD. Almost the same as Temperature Sensor but measures humidity
+instead of temperature.
+
+
+Climate Station
+===============
+
+TBD. Combines functions of humidity, temperature, gas and air quality
+sensors.
+
+
+Lock
+====
+
+:type: "lock"
+
+:inherits from: none
+
+:icon: an icon of a keyhole or padlock
+
+:capabilities: "actuator", "has_state", "is_active", "open_closed"
+
+Represents all kinds of controllable Locks. Allows to at least lock
+the controlled door, gate or another object. Unlocking capability is
+optional. The "state" field can take either one of the end state
+values ("opened" or "closed") or one of the transitional state values
+("opening", "closing").
+
+
+Shades
+======
+
+:type: "shades"
+
+:inherits from: none
+
+:icon: an icon of a window with shades
+
+:capabilities: "actuator", "has_state", "is_active", "open_closed"
+
+:optional_capabilities: "has_position"
+
+Represents all kinds of shades - materials which cover the window and
+reduces the amount of light passed through it. Also named as sunblinds,
+shutters, louvers and so on. Their state can take either "opened" or
+"closed" values, where "opened" is equal to "active" and "closed"
+equal to "not active". Two transitional states are also possible:
+"opening" and "closing". Some shades can also provide an "has_position"
+capability that allows to set the position of shades in percents
+from 0 to 100, regarding to the area of window covered by shades.
+
+
 Light
 =====
 
