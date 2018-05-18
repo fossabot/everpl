@@ -186,6 +186,93 @@ Variable Speed Fans are fans whose speed of rotation can be controlled.
 In the rest, it's just a usual Fan described above.
 
 
+Player
+======
+
+:type: "player"
+
+:inherits from: none
+
+:icon: "play" icon in a circle
+
+:capabilities:
+    "actuator", "has_state", "is_active", "play_stop"
+
+:optional capabilities:
+    "on_off", "has_volume"
+
+Player is a base type for all kinds of players: audio players, video
+players, streaming players, radios and so on and so forth. Such devices
+doesn't allow to change tracks, pause the playback or do anything
+similar. They can be only in one of two states: "playing" and "stopped",
+where "playing" state is mapped to the "active" state while "stopped" to
+"not active".
+
+The "on_off" Capability can be provided by real, hardware players. In
+such case, it's recommended to provide a separate button to control
+player's power and separate buttons to control playback.
+
+Some players can also provide an "has_volume" capability but it's not
+absolutely necessary.
+
+
+Pausable Player
+===============
+
+:type: "pausable_player"
+
+:inherits from: "player"
+
+:icon: "play" icon in a circle
+
+:capabilities:
+    "actuator", "has_state", "is_active", "play_stop", "pausable"
+
+:optional capabilities:
+    "on_off", "has_volume"
+
+Pausable Player type represents all Players which support pausing -
+temporarily stopping of playback with saving of the current playback
+position. In general, it's the same Player as described above with
+all its functions and limitations. The only thing that was added
+is an additional "paused" state and a corresponding "pause" command.
+
+
+Track Player
+============
+
+:type: "track_player"
+
+:inherits from: "pausable_player"
+
+:icon: "play" icon in a circle
+
+:capabilities:
+    "actuator", "has_state", "is_active", "play_stop", "pausable",
+    "track_switching", "track_info"
+
+:optional capabilities:
+    "on_off", "has_volume"
+
+Track Player type represents all devices with an ability to switch
+between tracks: backward and forward. It inherits all the fields and
+behaviour provided by Pausable Player type but adds two additional
+commands: "next" and "previous". Also, there is new field "track_info"
+added that allows to find general information about the current playing
+audio track, video, station or stream.
+
+
+Playlist Player
+===============
+
+TBD. Allows to view and manage playback playlist (or queue).
+
+
+Positional Player
+=================
+
+TBD. Reports the current playback position. Supports track rewinding.
+
 
 Speaker
 =======
@@ -225,6 +312,40 @@ Speaker System is a common device type for all sound speakers and
 speaker systems that have multiple input sources. In addition to the
 base functionality of a Speaker, such devices allow to view, choose and
 change the sound source from the list of provided sources.
+
+
+Sound System
+============
+
+TBD. Multi-functional device. Can be either music player or a
+multi-source speaker (i.e. Speaker System) depending on a current mode.
+
+
+Display
+=======
+
+TBD. Can be turned on, off and change screen brightness.
+
+
+Multi-Source Display
+====================
+
+TBD. Can change the source of a displayed picture.
+
+
+TV
+==
+
+TBD. Multi-mode device which can be either Player, Streaming Player or
+Multi-Source Display, depending on the current mode.
+
+
+Virtual Remote Control
+======================
+
+TBD. A device that just provides a list of available commands, a list
+of corresponding virtual buttons and no feedback from the controlled
+system.
 
 
 .. rubric:: Footnotes
