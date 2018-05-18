@@ -173,7 +173,7 @@ heaters is not supported too.
 Variable Speed Fan
 ==================
 
-:type: "variable_speed_fan"
+:type: "vs_fan"
 
 :inherits from: "fan"
 
