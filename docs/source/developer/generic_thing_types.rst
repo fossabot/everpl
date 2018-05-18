@@ -131,6 +131,62 @@ a more appropriate base type in this documentation or
 file an issue on GitHub [#f5]_.
 
 
+Valve
+=====
+
+:type: "valve"
+
+:inherits from: none
+
+:icon: valve icon
+
+:capabilities:
+    "actuator", "has_state", "is_active", "open_closed"
+
+Valve represents an externally controllable valve for gas, liquid or
+other matter which can be either in "opened" or "closed" state.
+Transitional states "opening" and "closing" are also possible.
+
+In addition to valve-specific device states and commands, valves
+support an "is_active" capability where "active" is equal to
+"opened" and "not active" is linked to "closed".
+
+
+Fan
+===
+
+:type: "fan"
+
+:inherits from: none
+
+:icon: fan icon
+
+:capabilities:
+    "actuator", "has_state", "is_active", "on_off"
+
+Fans is the most primitive type of the climatic devices. Fans can
+be either in "on" or "off" states while fan speed control is not
+supported. Additional functionality like enabling and disabling
+heaters is not supported too.
+
+
+Variable Speed Fan
+==================
+
+:type: "variable_speed_fan"
+
+:inherits from: "fan"
+
+:icon: fan icon
+
+:capabilities:
+    "actuator", "has_state", "is_active", "on_off", "fan_speed"
+
+Variable Speed Fans are fans whose speed of rotation can be controlled.
+In the rest, it's just a usual Fan described above.
+
+
+
 Speaker
 =======
 
