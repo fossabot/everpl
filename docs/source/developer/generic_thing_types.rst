@@ -108,6 +108,45 @@ because not all devices on the market support it. And often it's hard
 to determine a clear mapping between RGB and HSB color values.
 
 
+Speaker
+=======
+
+:type: "speaker"
+
+:inherits from: none
+
+:icon: speaker icon
+
+:capabilities:
+    "actuator", "has_state", "is_active", "on_off", "has_volume"
+
+Speaker is a common device type for all sound speakers with a single
+input source. The only thing they can do is to be turned on, off
+and regulate their volume (i.e. the level of loudness).
+
+Please not that muted devices and devices with a volume set to zero
+are still considered as "active" devices. So, Speakers are considered
+to be in "active" state until they are not powered off.
+
+
+Speaker System
+==============
+
+:type: "speaker_system"
+
+:inherits from: "speaker"
+
+:icon: speaker system icon
+
+:capabilities:
+    "actuator", "has_state", "is_active", "on_off", "has_volume",
+    "multi_source"
+
+Speaker System is a common device type for all sound speakers and
+speaker systems that have multiple input sources. In addition to the
+base functionality of a Speaker, such devices allow to view, choose and
+change the sound source from the list of provided sources.
+
 
 .. rubric:: Footnotes
 
