@@ -108,6 +108,29 @@ because not all devices on the market support it. And often it's hard
 to determine a clear mapping between RGB and HSB color values.
 
 
+Power Switch
+============
+
+:type: "power_switch"
+
+:inherits from: none
+
+:icon: switch icon
+
+:capabilities:
+    "actuator", "has_state", "is_active", "on_off"
+
+Power Switch type represents all power switches in the system. Such
+power switches include smart power outlet, circuit breakers, switches
+that are not Light switches and other similar devices. The only
+functionality of such devices is to turn connected load on and off.
+
+If your power switch or power outlet implements an additional
+functionality or is not really a power switch - please, search for
+a more appropriate base type in this documentation or
+file an issue on GitHub [#f5]_.
+
+
 Speaker
 =======
 
@@ -158,3 +181,6 @@ change the sound source from the list of provided sources.
    https://goo.gl/VRKYp5
 
 .. [#f4] Samsung Family Hub
+
+.. [#f5] All issues can be reported on the project's page:
+   https://github.com/s-kostyuk/everpl/issues
