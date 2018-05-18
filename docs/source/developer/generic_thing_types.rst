@@ -104,7 +104,7 @@ from the base Colour Temperature Light device type.
 
 Additionally, devices can support an "has_color_rgb" capability which
 allows to set a color in RGB color units. This capability is optional
-because not all devices on the market support it. And ofter it's hard
+because not all devices on the market support it. And often it's hard
 to determine a clear mapping between RGB and HSB color values.
 
 
