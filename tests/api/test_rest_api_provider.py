@@ -24,7 +24,6 @@ from dpl.services.abs_placement_service import AbsPlacementService, ServiceEntit
 
 from dpl.api.rest_api.things_subapp import build_things_subapp
 from dpl.api.rest_api.placements_subapp import build_placements_subapp
-from dpl.api.rest_api.messages_subapp import build_messages_subapp
 from dpl.api.rest_api.rest_api_provider import RestApiProvider
 
 
@@ -86,16 +85,11 @@ class TestRestApiProvider(unittest.TestCase):
             placement_service=self.placement_service,
             additional_data=context_data
         )
-        messages_subapp = build_messages_subapp(
-            thing_service=self.things_service,
-            additional_data=context_data
-        )
 
         # create an instance of RestApi
         self.rest_api_provider = RestApiProvider(
             things=things_subapp,
             placements=placements_subapp,
-            messages=messages_subapp,
             auth_context=self.auth_context,
             auth_service=self.auth_service,
             loop=self.loop
@@ -131,7 +125,6 @@ class TestRestApiProvider(unittest.TestCase):
         test_response_body = {
             "things": "/things/",
             "auth": "/auth",
-            "messages": "/messages/",
             "placements": "/placements/"
         }
 
