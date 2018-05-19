@@ -1,6 +1,6 @@
-class Available(object):
+class IsAvailable(object):
     """
-    Instances which provide Available capability provides
+    Instances which provide IsAvailable capability provides
     their availability status: is they are available for
     communication or not - i.e. they are explicitly disabled
     (see IsEnabled capability), lost, faulted, have a

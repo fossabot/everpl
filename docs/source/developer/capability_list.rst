@@ -187,17 +187,25 @@ opposite states (from ``opened`` to ``closed``, from ``closed`` to ``opened``,
 from ``opening`` to ``closed``, from ``closing`` to ``opened``).
 
 
-Multimode
-^^^^^^^^^
+Multi-Mode
+^^^^^^^^^^
 
-:Formal Capability Name: ``multimode``
+:Formal Capability Name: ``multi_mode``
 
 :Provided Fields:
-    :Field Name: ``mode``
+    :Field Name: ``current_mode``
     :Field Values:
-        The list of provided values is specified by other Capabilities
+        A string from of the ``available_modes`` list
     :Field Description:
         Signs the current mode of functioning for this Thing.
+
+    |
+
+    :Field Name: ``available_modes``
+    :Field Values:
+        List of strings
+    :Field Description:
+        Signs all available modes of functioning for this Thing.
 
 :Provided Commands:
     :Command Name: ``set_mode``
@@ -207,14 +215,15 @@ Multimode
         the specified one.
 
 
-If the device provides both ``open_closed`` and ``is_active`` capabilities,
-Multimode devices are able to work in different modes. By switching the mode
+Multi-Mode devices are able to work in different modes. By switching the mode
 of the device some Capabilities may become available for usage and some may
 gone. The current mode of the device is specified in the mode field. If
 the mode of the device was changed, then the list of capabilities and a set
 of available fields are altered to correspond to the current mode
 (FIXME: Is it reasonable?). Only one device mode сan be chosen at a time.
-The current mode of the device can be set via set_mode command.
+The current mode of the device can be set via set_mode command. All available
+device modes are listed in ``available_modes`` field. The content of
+``available_modes`` list is defined by Thing Type and provided Capabilities.
 
 
 Has Brightness
@@ -225,7 +234,7 @@ Has Brightness
 :Provided Fields:
     :Field Name: ``brightness``
     :Field Values:
-        integer values in the range between 0 and 100 (including)
+        floating point values in the range between 0.0 and 100.0 (including)
     :Field Description:
         Specified the current level of brightness of a Thing
 
@@ -237,10 +246,10 @@ Has Brightness
 
 
 Has Brightness devices are devices that have the ``brightness`` property.
-The ``brightness`` property is an integer value in the range from
-0 (zero) to 100. Actuator Has Brightness devices are able to change their
+The ``brightness`` property is a floating point value in the range from
+0.0 (zero) to 100.0. Actuator Has Brightness devices are able to change their
 brightness with a ``set_brightness`` command. Usually normal people call
-Actuator Has Brightness devices as "dimmable" devices.
+Actuator Has Brightness devices "dimmable" devices.
 
 
 Has Color HSB
@@ -251,7 +260,7 @@ Has Color HSB
 :Provided Fields:
     :Field Name: ``color_hue``
     :Field Values:
-        An integer value between 0 and 359 including.
+        A floating point value between 0.0 and 360.0 including.
     :Field Description:
         Specifies the current color of a Thing in HSB format.
 
@@ -259,17 +268,19 @@ Has Color HSB
 
     :Field Name: ``color_saturation``
     :Field Values:
-        An integer value between 0 and 100 including.
+        An integer value between 0.0 and 100.0 including.
     :Field Description:
         Specifies the current color of a Thing in HSB format.
 
 :Provided Commands:
     :Command Name: ``set_color``
     :Command Params:
-        ``hue``, ``saturation`` - the new value of hue and saturation
+        ``hue``, ``saturation`` - the new values of hue and saturation
         correspondingly
     :Command Description:
-        Sets the specified color hue and saturation for the Thing
+        Sets the specified color hue and saturation for the Thing.
+        Brightness must to be set separately, see `Has Brightness`_
+        Capability description for details.
 
 
 Has Color HSB devices are devices that have the "color" property. The color
@@ -334,7 +345,7 @@ Capabilities instead.
 
 
 Has Volume
-^^^^^^^^^
+^^^^^^^^^^
 
 :Formal Capability Name: ``has_volume``
 

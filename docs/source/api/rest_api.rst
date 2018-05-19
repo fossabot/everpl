@@ -117,12 +117,10 @@ Thing object
 
 General thing object has the following structure:
 
-:commands:
-    A list of commands that can be sent to this Thing
-
-:is_active:
-    A boolean field that indicates if this Thing is in one of the
-    'active' states (like 'playing' for player or 'on' for lighting).
+:capabilities:
+    A list of Capabilities, supported by this Thing. For more
+    information see :doc:`/developer/capabilities` section of
+    documentation.
 
 :is_available:
     A boolean field that indicates if this Thing is available for
@@ -132,11 +130,6 @@ General thing object has the following structure:
 :last_updated:
     A floating-point value, UNIX time that indicates the
     time of latest update (of state field or any other field)
-
-:state:
-    A string, indicates the current state of Thing (type-specific).
-    For example, for lighting it can take on the following values:
-    'on', 'off' and 'unknown'.
 
 :friendly_name:
     Some user-friendly name of this particular thing that can be
@@ -154,11 +147,29 @@ General thing object has the following structure:
     is currently placed (positioned). See `Placements`_ section for
     detailed information about placements.
 
-The exact set of fields and their values may vary for different types
-of things. For detailed information, please refer to the FIXME section
-of documentation.
 
-Example of Thing object:
+Meanwhile, Actuator Things usually (but not always [#f2]_) provide some
+additional fields:
+
+:commands:
+    A list of commands that can be sent to this Thing
+
+:is_active:
+    A boolean field that indicates if this Thing is in one of the
+    'active' states (like 'playing' for player or 'on' for lighting).
+
+:state:
+    A string, indicates the current state of Thing (type-specific).
+    For example, for lighting it can take on the following values:
+    'on', 'off' and 'unknown'.
+
+
+The exact set of fields and their values may vary for different types
+of things. For detailed information, please refer to the
+:doc:`/developer/capability_list` and :doc:`/developer/generic_thing_types`
+sections of documentation.
+
+Example of an Actuator Thing object:
 
 .. code-block:: json
 
@@ -371,3 +382,7 @@ request:
 
 .. [#f1] See also: `Access token definition in OAuth specs
          <https://tools.ietf.org/html/rfc6749#section-1.4>`_
+
+.. [#f2] Only the presence of ``commands`` field is granted for
+   Actuators. For more information about available fields please
+   refer to the :doc:`/developer/capabilities` section of documentation.

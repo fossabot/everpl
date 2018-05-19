@@ -1,3 +1,8 @@
+"""
+This module contains definition of an OnOff Capability
+"""
+
+
 class OnOff(object):
     """
     On/Off devices are devices that can be either powered “on” or “off”.
@@ -15,6 +20,7 @@ class OnOff(object):
     command is mapped to the deactivate command.
     """
     _capability_name = 'on_off'
+    _commands = ('on', 'off')
 
     @property
     def is_powered_on(self) -> bool:

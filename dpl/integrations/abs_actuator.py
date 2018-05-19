@@ -1,5 +1,4 @@
 # Include standard modules
-import time
 from typing import Iterable, Mapping
 
 # Include 3rd-party modules
@@ -12,10 +11,11 @@ from dpl.things.capabilities.actuator import (
     UnsupportedCommandError,
     UnacceptableCommandArgumentsError
 )
+from dpl.things.capabilities import IsActive
 from dpl.things.thing import Thing, TDomainId, Connection
 
 
-class AbsActuator(Thing, Actuator, HasState):
+class AbsActuator(Thing, Actuator, HasState, IsActive):
     """
     Actuator is an abstraction of devices that can 'act', perform some commands
     and change their states after that.
@@ -113,6 +113,22 @@ class AbsActuator(Thing, Actuator, HasState):
             return command_method(**args)
         except TypeError as e:
             raise UnacceptableCommandArgumentsError() from e
+
+    def activate(self) -> None:
+        """
+        Switches the Thing to one of the 'active' states
+
+        :return: None
+        """
+        raise NotImplementedError()
+
+    def deactivate(self) -> None:
+        """
+        Switches the Thing to one of the 'inactive' states
+
+        :return: None
+        """
+        raise NotImplementedError()
 
     def toggle(self) -> None:
         """

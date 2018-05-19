@@ -1,4 +1,6 @@
-from enum import Enum
+"""
+This module contains definition of IsActive Capability
+"""
 
 
 class IsActive(object):
@@ -28,6 +30,7 @@ class IsActive(object):
     and so on).
     """
     _capability_name = 'is_active'
+    _commands = ('activate', 'deactivate', 'toggle')
 
     @property
     def is_active(self) -> bool:

@@ -1,4 +1,9 @@
-from enum import Enum
+"""
+This module contains a definition of OpenClosed Capability
+"""
+
+
+from enum import IntEnum
 
 from .has_state import HasState
 
@@ -23,8 +28,9 @@ class OpenClosed(HasState):
     from ``opening`` to ``closed``, from ``closing`` to ``opened``).
     """
     _capability_name = 'open_closed'
+    _commands = ('open', 'close')
 
-    class States(Enum):
+    class States(IntEnum):
         """
         Possible states of the thing: 'open', 'closed' and 'unknown'.
         """
@@ -32,6 +38,6 @@ class OpenClosed(HasState):
         opening = 0b01
         closing = 0b10
         opened = 0b11
-        unknown = None
+        unknown = -1
 
     # Everything else is inherited from HasState Capability

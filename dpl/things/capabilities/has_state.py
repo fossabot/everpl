@@ -1,9 +1,7 @@
-from enum import Enum
-
-from .is_active import IsActive
+from enum import IntEnum
 
 
-class HasState(IsActive):
+class HasState(object):
     """
     This interface allows a read-only access to states of a Thing.
 
@@ -11,11 +9,12 @@ class HasState(IsActive):
     property and declare a concrete list (enumeration) of all
     states possible.
 
-    Also it's needed to mention that all states must to be clearly
-    mapped to a one of a binary states: either 'active' or 'inactive'.
-    Such binary representation of a state can be read from an
-    'is_active' property. And different Actuators can provide own
-    methods for switching between an active and inactive states.
+    Also it's needed to mention that if the device provides both ``has_state``
+    and ``is_active`` capabilities, than all of its states can be mapped
+    onto two big categories of states: either "active" or "inactive" states.
+    In such case, an additional ``is_active`` field is provided. For more
+    information, see documentation for IsActive capability and docs for
+    specific device type or implementation.
 
     'unknown' state is considered as an 'inactive' binary state.
 
@@ -27,12 +26,12 @@ class HasState(IsActive):
     """
     _capability_name = 'has_state'
 
-    class States(Enum):
+    class States(IntEnum):
         """
         Possible states of the thing. Must be overridden in derived
         classes with 'unknown' state preserved
         """
-        unknown = None
+        unknown = -1
 
     @property
     def state(self) -> 'States':
