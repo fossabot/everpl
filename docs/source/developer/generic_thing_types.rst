@@ -476,7 +476,8 @@ Speaker
 :icon: speaker icon
 
 :capabilities:
-    "actuator", "has_state", "is_active", "on_off", "has_volume"
+    "actuator", "has_state", "is_active", "on_off", "has_volume",
+    "is_muted"
 
 Speaker is a common device type for all Speakers (sound producing
 devices) with a single input source. The only thing they can do is
@@ -499,7 +500,7 @@ Speaker System
 
 :capabilities:
     "actuator", "has_state", "is_active", "on_off", "has_volume",
-    "multi_source"
+    "multi_source", "is_muted"
 
 Speaker System is a common device type for all sound speakers and
 speaker systems that have multiple input sources. In addition to the
