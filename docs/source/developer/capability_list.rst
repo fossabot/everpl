@@ -609,6 +609,40 @@ from 0 (zero) to 100. Actuator Has Volume devices are able to change their
 volume with a ``set_volume`` command.
 
 
+Is Muted
+^^^^^^^^
+
+:Formal Capability Name: ``is_muted``
+
+:Provided Fields:
+    :Field Name: ``is_muted``
+    :Field Values:
+        boolean: ``true`` or ``false``
+    :Field Description:
+        Indicates if the Thing was muted.
+
+:Provided Commands:
+    :Command Name: ``mute``
+    :Command Params:
+        No params needed
+    :Command Description:
+        Mutes the Thing.
+
+    |
+
+    :Command Name: ``unmute``
+    :Command Params:
+        No params needed
+    :Command Description:
+        Unmutes the Thing - moves the Thing from a "muted" state.
+
+
+Is Muted devices are devices that have the "is_muted" property - the
+indicator of either device was muted (i.e. has temporarily disabled
+sounding) or not. Actuator Is Muted devices are able to be muted
+and unmuted with ``mute`` and ``unmute`` commands correspondingly.
+
+
 Multi-Source
 ^^^^^^^^^^^^
 
