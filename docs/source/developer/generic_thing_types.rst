@@ -23,7 +23,7 @@ onboard [#f4]_...
 But most of the time, it's possible to pick out a primary functionality of
 a device and thus classify it to one of generic, common device types. And this,
 in turn, allows developers to provide the most relevant information to the user.
-At least, a appropriate device icon :).
+At least, an appropriate device icon :).
 
 Below, there is a list of generic Thing types that are recommended to be
 supported by both client applications and device Bindings in Integration packages.
