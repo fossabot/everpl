@@ -260,7 +260,8 @@ Has Color HSB
 :Provided Fields:
     :Field Name: ``color_hue``
     :Field Values:
-        A floating point value between 0.0 and 360.0 including.
+        A floating point value between 0.0 including and
+        360.0 not including.
     :Field Description:
         Specifies the current color of a Thing in HSB format.
 
@@ -268,7 +269,7 @@ Has Color HSB
 
     :Field Name: ``color_saturation``
     :Field Values:
-        An integer value between 0.0 and 100.0 including.
+        An floating-point value between 0.0 and 100.0 including.
     :Field Description:
         Specifies the current color of a Thing in HSB format.
 
