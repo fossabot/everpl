@@ -4,12 +4,11 @@ from typing import Optional, Mapping, Any, Callable
 from dpl.utils.observer import Observer
 from dpl.model.domain_id import TDomainId
 from dpl.things.thing import Thing
-from dpl.integrations.abs_actuator import (
-    AbsActuator, UnsupportedCommandError, UnacceptableCommandArgumentsError
+from dpl.integrations.base_things import (
+    UnsupportedCommandError, UnacceptableCommandArgumentsError
 )
+from dpl.things.capabilities import Actuator
 from dpl.dtos.thing_dto import ThingDto
-# noinspection PyUnresolvedReferences
-from dpl.dtos.actuator_dto import ActuatorDto
 from dpl.dtos.dto_builder import build_dto
 from dpl.services.abs_thing_service import (
     AbsThingService,
@@ -195,7 +194,7 @@ class ThingService(BaseObservableService[Thing, ThingDto], AbsThingService):
                 command is not supported by this instance of Thing
         :raises ServiceUnsupportedCommandError:
         """
-        thing = self._things.load(to_actuator_id)  # type: AbsActuator
+        thing = self._things.load(to_actuator_id)  # type: Actuator
 
         if thing is None:
             raise ServiceEntityResolutionError(
