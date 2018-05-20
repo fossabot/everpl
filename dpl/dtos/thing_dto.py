@@ -101,6 +101,12 @@ def _(thing: Thing) -> ThingDto:
 # FIXME: CC39: Define such DTO fillers in their own or Capability-related
 # modules
 
+
+@register_dto_filler('actuator')
+def _(thing: capabilities.Actuator, result: ThingDto) -> None:
+    result['commands'] = thing.commands
+
+
 @register_dto_filler('has_state')
 def _(thing: capabilities.HasState, result: ThingDto) -> None:
     result['state'] = thing.state.name
