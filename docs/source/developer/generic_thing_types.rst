@@ -46,7 +46,7 @@ Value Sensor
 
 A generic type of sensors which represent their results of measurements
 in numbers of an unspecified unit. Such values must to be displayed
-to user in the same manner: "current value is %d", where "%d" is an
+to user in the following manner: "current value is %d", where "%d" is an
 placeholder for the measured value. Must to be used rarely, only if
 there is no more specific device type declared.
 
@@ -63,10 +63,10 @@ Binary Sensor
 :capabilities: "has_value", "is_active"
 
 The most primitive (but not necessary the base) type of Sensors in the
-system. Can have only one of two integer values: 1 and 0. Where 1 is
+system. Can have only one of two integer values: 1 (one) or 0 (zero). Where 1 is
 mapped to the "active" state and 0 is mapped to "not active". Usually
 is inherited by more specific implementations of a Binary Sensor,
-including buttons, leakage sensors, reed switches (detects an opening
+including buttons, leakage sensors, contact sensors (detects an opening
 of a door or window), motion sensors and so on.
 
 
@@ -81,8 +81,8 @@ Button
 
 :capabilities: "has_value", "is_active"
 
-Represents all the Buttons connected to the system. Its value is set
-to 1 while the button is pressed and sets to 0 just after the button
+Represents all Buttons connected to the system. Its value is set
+to 1 (one) while the button is pressed and sets to 0 (zero) just after the button
 was released. There is no long press detection, double press detection
 and so on. Just "pressed" (1) and released (0). All the other
 functionality is the same as in Binary Sensor.
@@ -119,7 +119,7 @@ Contact Sensor
 :capabilities: "has_value", "is_active", "has_state", "open_closed"
 
 The special subtype of a Switch. Adds a new field to the list: a
-"has_state" field which can take either "opened" or "closed" value,
+"has_state" field which can take either "opened" or "closed" values,
 where "opened" is equal to 1 and "closed" is equal to 0.
 
 
@@ -147,7 +147,7 @@ Temperature Sensor
 :capabilities: "has_temperature"
 
 Temperature Sensor represents simple thermometers, temperature sensors
-which displays the current temperature of controlled object: in-room
+which displays the current temperature of a controlled object: in-room
 air temperature, outside temperature, temperature of a human body, etc.
 If your device implements some features in addition to measuring of
 temperature - please, consider some other base types for your device.
@@ -220,7 +220,7 @@ reduce the amount of light passed through it. Also named as sunblinds,
 shutters, louvers and so on. Their state can take either "opened" or
 "closed" values, where "opened" is equal to "active" and "closed"
 equal to "not active". Two transitional states are also possible:
-"opening" and "closing". Some shades can also provide an "has_position"
+"opening" and "closing". Some shades can also provide a "has_position"
 capability that allows to set the position of shades in percents
 from 0 to 100, regarding to the area of window covered by shades.
 
@@ -238,7 +238,7 @@ Light
 
 Light is a common type for all lightning devices: LED strips, light bulbs,
 floor lamps and so on. The base functionality of such devices is to be turned
-on and off. And to emit a light in the turned on state.
+on and off. And to emit light in the turned on state.
 
 
 Dimmable Light
@@ -313,7 +313,7 @@ Power Switch
     "actuator", "has_state", "is_active", "on_off"
 
 Power Switch type represents all power switches in the system. Such
-power switches include smart power outlet, circuit breakers, switches
+power switches include smart power outlets, circuit breakers, switches
 that are not Light switches and other similar devices. The only
 functionality of such devices is to turn connected load on and off.
 
@@ -449,7 +449,7 @@ Track Player
 Track Player type represents all devices with an ability to switch
 between tracks: backward and forward. It inherits all the fields and
 behaviour provided by Pausable Player type but adds two additional
-commands: "next" and "previous". Also, there is new field "track_info"
+commands: "next" and "previous". Also, there is a new field "track_info"
 added that allows to find general information about the current playing
 audio track, video, station or stream.
 
