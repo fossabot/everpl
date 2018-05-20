@@ -478,11 +478,12 @@ Speaker
 :capabilities:
     "actuator", "has_state", "is_active", "on_off", "has_volume"
 
-Speaker is a common device type for all sound speakers with a single
-input source. The only thing they can do is to be turned on, off
-and regulate their volume (i.e. the level of loudness).
+Speaker is a common device type for all Speakers (sound producing
+devices) with a single input source. The only thing they can do is
+to be turned on, off and regulate their volume (i.e. the level of
+loudness).
 
-Please not that muted devices and devices with a volume set to zero
+Please note that muted devices and devices with a volume set to zero
 are still considered as "active" devices. So, Speakers are considered
 to be in "active" state until they are not powered off.
 
