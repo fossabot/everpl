@@ -2,8 +2,6 @@
 This module contains definition of Has Volume capability
 """
 
-from dpl.utils.color_rgb import ColorRGB
-
 
 class HasVolume(object):
     """
@@ -18,10 +16,11 @@ class HasVolume(object):
     _commands = ('set_volume', )
 
     @property
-    def volume(self) -> ColorRGB:
+    def volume(self) -> int:
         """
-        Returns the current color for this Thing in RGB format
+        Returns the value of volume (loudness) for this Thing in integers
+        from 0 to 100 including.
 
-        :return: the current color for this Thing in RGB format
+        :return: the current volume (loudness) for this Thing
         """
         raise NotImplementedError()
