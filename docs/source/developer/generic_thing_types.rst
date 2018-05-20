@@ -215,8 +215,8 @@ Shades
 
 :optional_capabilities: "has_position"
 
-Represents all kinds of shades - materials which cover the window and
-reduces the amount of light passed through it. Also named as sunblinds,
+Represents all kinds of shades - objects which cover the window and
+reduce the amount of light passed through it. Also named as sunblinds,
 shutters, louvers and so on. Their state can take either "opened" or
 "closed" values, where "opened" is equal to "active" and "closed"
 equal to "not active". Two transitional states are also possible:
