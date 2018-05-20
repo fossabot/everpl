@@ -185,6 +185,23 @@ values ("opened" or "closed") or one of the transitional state values
 ("opening", "closing").
 
 
+Door Actuator
+=============
+
+:type: "door_actuator"
+
+:inherits from: none
+
+:icon: an icon of an opened door without a handle
+
+:capabilities: "actuator", "has_state", "is_active", "open_closed"
+
+Represents Actuator mechanisms which are able to open and close the
+physical door, gate or other similar object. The "state" field can take
+either one of the end state values ("opened" or "closed") or one
+of the transitional state values ("opening", "closing").
+
+
 Shades
 ======
 
