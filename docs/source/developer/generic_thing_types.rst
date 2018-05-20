@@ -493,7 +493,7 @@ Speaker System
 
 :type: "speaker_system"
 
-:inherits from: "speaker"
+:inherits from: none
 
 :icon: speaker system icon
 
