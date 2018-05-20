@@ -15,6 +15,7 @@ from .has_color_hsb import HasColorHSB
 from .has_color_rgb import HasColorRGB
 from .has_value import HasValue
 from .has_volume import HasVolume
+from .is_muted import IsMuted
 from .has_color_temp import HasColorTemperature
 from .has_temperature import HasTemperature
 from .has_position import HasPosition
@@ -30,7 +31,7 @@ __all__ = (
     'Actuator', 'HasState', 'IsActive',
     'OnOff', 'OpenClosed', 'MultiMode',
     'HasBrightness', 'HasColorHSB', 'HasColorRGB',
-    'HasValue', 'HasVolume', 'HasColorTemperature',
+    'HasValue', 'HasVolume', 'IsMuted', 'HasColorTemperature',
     'HasTemperature', 'HasPosition', 'FanSpeed',
     'PlayStop', 'Pausable', 'TrackSwitching',
     'TrackInfo', 'MultiSource'
