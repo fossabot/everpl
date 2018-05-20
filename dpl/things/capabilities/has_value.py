@@ -1,9 +1,4 @@
-from typing import TypeVar, Generic, Optional
-
-TValueType = TypeVar('TValueType')
-
-
-class HasValue(Generic[TValueType]):
+class HasValue(object):
     """
     Objects with HasValue capability are usually mapped to
     sensors. They allow to read the current measurements
@@ -13,7 +8,7 @@ class HasValue(Generic[TValueType]):
     _capability_name = 'has_value'
 
     @property
-    def value(self) -> Optional[TValueType]:
+    def value(self):
         """
         Returns the current (last known for unavailable
         state) value read from the internal sensors. Or

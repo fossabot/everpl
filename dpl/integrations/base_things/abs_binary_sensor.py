@@ -5,7 +5,7 @@ from dpl.things.capabilities import IsActive
 from .abs_value_sensor import AbsValueSensor
 
 
-class AbsBinarySensor(AbsValueSensor[bool], IsActive):
+class AbsBinarySensor(AbsValueSensor, IsActive):
     """
     The most primitive (but not necessary the base) type of Sensors in the
     system. Can have only one of two integer values: 1 and 0. Where 1 is
