@@ -107,10 +107,10 @@ the "value" field value can be equal to either 1 or 0, where 1 is mapped
 to "active" and 0 is mapped to "not active".
 
 
-Reed Switch
-===========
+Contact Sensor
+==============
 
-:type: "reed_switch"
+:type: "contact_sensor"
 
 :inherits from: "switch"
 
