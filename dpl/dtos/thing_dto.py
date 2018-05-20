@@ -120,3 +120,67 @@ def _(thing: capabilities.OnOff, result: ThingDto) -> None:
 def _(thing: capabilities.HasValue, result: ThingDto) -> None:
     result['value'] = thing.value
 
+
+@register_dto_filler('multi_mode')
+def _(thing: capabilities.MultiMode, result: ThingDto) -> None:
+    result['current_mode'] = thing.current_mode
+    result['available_modes'] = thing.available_modes
+
+
+@register_dto_filler('has_brightness')
+def _(thing: capabilities.HasBrightness, result: ThingDto) -> None:
+    result['brightness'] = thing.brightness
+
+
+@register_dto_filler('has_color_hsb')
+def _(thing: capabilities.HasColorHSB, result: ThingDto) -> None:
+    result['color_hue'] = thing.color_hue
+    result['color_saturation'] = thing.color_saturation
+
+
+@register_dto_filler('has_color_rgb')
+def _(thing: capabilities.HasColorRGB, result: ThingDto) -> None:
+    # pylint: disable=W0212
+    # noinspection PyProtectedMember
+    result['color_rgb'] = thing.color_rgb._asdict()
+
+
+@register_dto_filler('has_color_temp')
+def _(thing: capabilities.HasColorTemperature, result: ThingDto) -> None:
+    result['color_temp'] = thing.color_temp
+
+
+@register_dto_filler('has_temperature')
+def _(thing: capabilities.HasTemperature, result: ThingDto) -> None:
+    result['temperature_c'] = thing.temperature_c
+
+
+@register_dto_filler('has_position')
+def _(thing: capabilities.HasPosition, result: ThingDto) -> None:
+    result['position'] = thing.position
+
+
+@register_dto_filler('fan_speed')
+def _(thing: capabilities.FanSpeed, result: ThingDto) -> None:
+    result['fan_speed'] = thing.fan_speed
+
+
+@register_dto_filler('track_info')
+def _(thing: capabilities.TrackInfo, result: ThingDto) -> None:
+    result['track_info'] = thing.track_info
+
+
+@register_dto_filler('has_volume')
+def _(thing: capabilities.HasVolume, result: ThingDto) -> None:
+    result['volume'] = thing.volume
+
+
+@register_dto_filler('is_muted')
+def _(thing: capabilities.IsMuted, result: ThingDto) -> None:
+    result['is_muted'] = thing.is_muted
+
+
+@register_dto_filler('multi_source')
+def _(thing: capabilities.MultiSource, result: ThingDto) -> None:
+    result['available_sources'] = thing.available_sources
+    result['current_source'] = thing.current_source
