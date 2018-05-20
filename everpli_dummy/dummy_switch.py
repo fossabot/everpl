@@ -2,14 +2,14 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.integrations.abs_switch import AbsSwitch
+from dpl.integrations.abs_on_off import AbsOnOff
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
 from .dummy_connection import DummyConnection
 
 
-class DummySwitch(AbsSwitch):
+class DummySwitch(AbsOnOff):
     def __init__(
             self, domain_id: TDomainId,
             con_instance: DummyConnection, con_params: dict,
@@ -38,7 +38,7 @@ class DummySwitch(AbsSwitch):
         self._con_instance = con_instance
 
     @property
-    def state(self) -> AbsSwitch.States:
+    def state(self) -> AbsOnOff.States:
         """
         Return a current state of the Thing
 
@@ -76,6 +76,15 @@ class DummySwitch(AbsSwitch):
         :return: None
         """
         self._is_enabled = True
+
+    @property
+    def is_powered_on(self) -> bool:
+        """
+        Indicates if this device powered on or not
+
+        :return: True if this device is powered on, False otherwise.
+        """
+        return self._state == self.States.on
 
     def on(self) -> None:
         """

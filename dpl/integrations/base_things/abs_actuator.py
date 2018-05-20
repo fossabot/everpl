@@ -11,29 +11,24 @@ from dpl.things.capabilities.actuator import (
     UnsupportedCommandError,
     UnacceptableCommandArgumentsError
 )
-from dpl.things.capabilities import IsActive
 from dpl.things.thing import Thing, TDomainId, Connection
+from dpl.things.commands_filler_meta import CommandsFiller
 
 
-class AbsActuator(Thing, Actuator, HasState, IsActive):
+class AbsActuator(
+    Thing, Actuator, HasState, metaclass=CommandsFiller
+):
     """
-    Actuator is an abstraction of devices that can 'act', perform some commands
-    and change their states after that.
+    AbsActuator is a base implementation of Actuator interface. Such actuators
+    always have a set of available commands and usually have some state
+    associated with them.
 
-    Every actuator implementation must guarantee that:
-
-    - it can be in one of two states: 'activated' or 'deactivated';
-    - 'activation' is a switching of a device to some specific active state
-      (like 'on' for LightBulb, 'opened' for Door and 'capturing' for Camera
-      and 'playing' for Player);
-    - 'deactivation' is a switching of a device to some specific non-active
-      state (like 'off' for LightBulb, 'closed' for Door and 'idle' for Camera
-      and 'stopped'/'paused' for Player);
-    - it can be toggled between those to states;
-    - it provides a list of available commands;
-    - each available command can be executed;
-    - if command can't be executed for any reason, corresponding method raises
-      an exception (FIXME: CC9: or returns an error code???)
+    It's expected that all derivative classes will just implement methods and
+    properties that are specific for concrete Thing type while the base
+    implementation or properties and commands will be left unchanged. But it's
+    not obligatorily if the derivative class will manage all the functionality
+    by itself (i.e. will notify all the subscribers on changes, implement all
+    declared properties and methods and so on).
     """
     def __init__(
             self, domain_id: TDomainId,
@@ -78,12 +73,17 @@ class AbsActuator(Thing, Actuator, HasState, IsActive):
     @property
     def commands(self) -> Iterable[str]:
         """
-        Returns a list of available commands. Must be overridden in derivative
-        classes.
+        Returns a list of available commands.
+
+        By default the list of available commands is fetched from the
+        _all_commands private property, filled by a metaclass. So, by default,
+        all commands declared in inherited Capabilities will be listed.
+
+        Derivative classes are allowed to override this method.
 
         :return: a tuple of command names (strings)
         """
-        return 'activate', 'deactivate', 'toggle'
+        return self._all_commands
 
     # FIXME: CC9: or return an error code???
     def execute(self, command: str, args: Mapping = EMPTY_MAPPING) -> None:
@@ -113,30 +113,3 @@ class AbsActuator(Thing, Actuator, HasState, IsActive):
             return command_method(**args)
         except TypeError as e:
             raise UnacceptableCommandArgumentsError() from e
-
-    def activate(self) -> None:
-        """
-        Switches the Thing to one of the 'active' states
-
-        :return: None
-        """
-        raise NotImplementedError()
-
-    def deactivate(self) -> None:
-        """
-        Switches the Thing to one of the 'inactive' states
-
-        :return: None
-        """
-        raise NotImplementedError()
-
-    def toggle(self) -> None:
-        """
-        Switches an object from the current state to the opposite one
-
-        :return: None
-        """
-        if self.is_active:
-            return self.deactivate()
-        else:
-            return self.activate()

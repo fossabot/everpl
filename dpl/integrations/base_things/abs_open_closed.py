@@ -1,13 +1,12 @@
 # Include standard modules
-from typing import Tuple
 
 # Include 3rd-party modules
 # Include DPL modules
 from dpl.things.capabilities.open_closed import OpenClosed
-from .abs_actuator import AbsActuator
+from .abs_togglable_actuator import AbsTogglableActuator
 
 
-class AbsSlider(AbsActuator, OpenClosed):
+class AbsOpenClosed(AbsTogglableActuator, OpenClosed):
     """
     Slider is an abstraction of real-life object, that can be in one of two
     stable states: 'opened' and 'closed' and also can be two transition states:
@@ -15,23 +14,14 @@ class AbsSlider(AbsActuator, OpenClosed):
     """
 
     @property
-    def commands(self) -> Tuple[str, ...]:
-        """
-        Returns a list of available commands. Must be overridden in derivative
-        classes.
-
-        :return: a tuple of command names (strings)
-        """
-        return super().commands + ('open', 'close')
-
-    @property
     def is_active(self):
         """
         Indicates if the object is in active state
 
-        :return: True if state == 'on', false otherwise
+        :return: True if state == 'opened', false otherwise
         """
-        return self.state == self.States.opened
+        return (self.state == self.States.opened
+                or self.state == self.States.opening)
 
     def activate(self) -> None:
         """

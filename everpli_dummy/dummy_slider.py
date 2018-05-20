@@ -3,14 +3,14 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.integrations.abs_slider import AbsSlider
+from dpl.integrations.abs_open_closed import AbsOpenClosed
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
 from .dummy_connection import DummyConnection
 
 
-class DummySlider(AbsSlider):
+class DummySlider(AbsOpenClosed):
     """
     A reference implementation of slider
     """
@@ -46,7 +46,7 @@ class DummySlider(AbsSlider):
         self._con_instance = con_instance
 
     @property
-    def state(self) -> AbsSlider.States:
+    def state(self) -> AbsOpenClosed.States:
         """
         Return a current state of the Thing
 

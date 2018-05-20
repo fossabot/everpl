@@ -7,6 +7,7 @@ to sent commands and use DummyConnection connection type.
 from .dummy_connection import DummyConnection
 from .dummy_switch import DummySwitch
 from .dummy_slider import DummySlider
-from .dummy_player import DummyPlayer
+from .dummy_pausable_player import DummyPausablePlayer
 
-__all__ = ["DummyConnection", "DummySwitch", "DummySlider", "DummyPlayer"]
+__all__ = ["DummyConnection", "DummySwitch", "DummySlider",
+           "DummyPausablePlayer"]

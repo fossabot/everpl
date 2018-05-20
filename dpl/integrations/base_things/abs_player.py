@@ -1,32 +1,21 @@
 # Include standard modules
-from enum import Enum
-from typing import Tuple
+from enum import IntEnum
 
 # Include 3rd-party modules
 # Include DPL modules
-from .abs_actuator import AbsActuator
+from .abs_togglable_actuator import AbsTogglableActuator
+from dpl.things.capabilities import PlayStop, IsActive
 
 
-class AbsPlayer(AbsActuator):
+class AbsPlayer(AbsTogglableActuator, PlayStop, IsActive):
     """
     Player is an abstraction of basic player device or application. It can be
-    in one of three states: 'stopped', 'playing' and 'paused'.
+    in one of two states: 'stopped' and 'playing'.
     """
-    class States(Enum):
-        stopped = 0
+    class States(IntEnum):
+        unknown = -1
         playing = 1
-        paused  = 2
-        unknown = None
-
-    @property
-    def commands(self) -> Tuple[str, ...]:
-        """
-        Returns a list of available commands. Must be overridden in derivative
-        classes.
-
-        :return: a tuple of command names (strings)
-        """
-        return super().commands + ('stop', 'play', 'pause')
+        stopped = 0
 
     @property
     def is_active(self):
@@ -47,11 +36,11 @@ class AbsPlayer(AbsActuator):
 
     def deactivate(self) -> None:
         """
-        Switches an object to the inactive ('paused') state
+        Switches an object to the inactive ('stopped') state
 
         :return: None
         """
-        return self.pause()
+        return self.stop()
 
     def play(self, *args, **kwargs) -> None:
         """
@@ -67,14 +56,6 @@ class AbsPlayer(AbsActuator):
     def stop(self) -> None:
         """
         Stops playing and switches the object to the 'stopped' state.
-
-        :return: None
-        """
-        raise NotImplementedError()
-
-    def pause(self) -> None:
-        """
-        Pause playing and switches the object to the 'paused' state.
 
         :return: None
         """

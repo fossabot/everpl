@@ -54,6 +54,7 @@ Platform itself is hosted on GitHub: https://github.com/s-kostyuk/adpl/
 
    developer/capabilities
    developer/capability_list
+   developer/generic_thing_types
    developer/dev_overview
    developer/base_components
    developer/dev_integrations

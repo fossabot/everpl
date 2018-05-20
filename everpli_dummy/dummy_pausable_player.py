@@ -2,13 +2,13 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.integrations.abs_player import AbsPlayer
+from dpl.integrations.abs_pausable_player import AbsPausablePlayer
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 from .dummy_connection import DummyConnection
 
 
-class DummyPlayer(AbsPlayer):
+class DummyPausablePlayer(AbsPausablePlayer):
     """
     A reference implementation of Player
     """
@@ -39,7 +39,7 @@ class DummyPlayer(AbsPlayer):
         self._con_instance = con_instance
 
     @property
-    def state(self) -> AbsPlayer.States:
+    def state(self) -> AbsPausablePlayer.States:
         """
         Return a current state of the Thing
 
@@ -121,8 +121,8 @@ class DummyPlayerFactory(ThingFactory):
     DummyPlayers
     """
     @staticmethod
-    def build(*args, **kwargs) -> DummyPlayer:
-        return DummyPlayer(*args, **kwargs)
+    def build(*args, **kwargs) -> DummyPausablePlayer:
+        return DummyPausablePlayer(*args, **kwargs)
 
 
 ThingRegistry.register_factory(
