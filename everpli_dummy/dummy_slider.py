@@ -144,6 +144,24 @@ class DummySliderFactory(ThingFactory):
 
 ThingRegistry.register_factory(
     integration_name="dummy",
-    thing_type="slider",
+    thing_type="shades",
+    factory=DummySliderFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="door_actuator",
+    factory=DummySliderFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="lock",
+    factory=DummySliderFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="valve",
     factory=DummySliderFactory()
 )
