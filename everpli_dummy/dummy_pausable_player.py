@@ -127,6 +127,6 @@ class DummyPlayerFactory(ThingFactory):
 
 ThingRegistry.register_factory(
     integration_name="dummy",
-    thing_type="player",
+    thing_type="pausable_player",
     factory=DummyPlayerFactory()
 )
