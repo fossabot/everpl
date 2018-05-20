@@ -257,8 +257,8 @@ dimmed, i.e. that can change their level of brightness. The rest of functionalit
 is inherited from the base Light device type.
 
 
-Colour Temperature Light
-========================
+Color Temperature Light
+=======================
 
 :type: "ct_light"
 
@@ -275,10 +275,10 @@ can change their color temperature. The rest of functionality is inherited
 from the base Dimmable Light device type.
 
 
-Colour Light
-============
+Color Light
+===========
 
-:type: "colour_light"
+:type: "color_light"
 
 :inherits from: "ct_light"
 
@@ -290,9 +290,9 @@ Colour Light
 
 :optional_capabilities: "has_color_rgb"
 
-Colour Light is a common device type for all lighting devices that can
-change their colour of light. The rest of functionality is inherited
-from the base Colour Temperature Light device type.
+Color Light is a common device type for all lighting devices that can
+change their color of light. The rest of functionality is inherited
+from the base Color Temperature Light device type.
 
 Additionally, devices can support an "has_color_rgb" capability which
 allows to set a color in RGB color units. This capability is optional
