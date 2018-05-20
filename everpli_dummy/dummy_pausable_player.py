@@ -2,7 +2,7 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.integrations.abs_pausable_player import AbsPausablePlayer
+from dpl.integrations.base_things import AbsPausablePlayer
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 from .dummy_connection import DummyConnection
