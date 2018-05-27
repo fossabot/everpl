@@ -148,7 +148,7 @@ def _(thing: capabilities.HasColorHSB, result: ThingDto) -> None:
 def _(thing: capabilities.HasColorRGB, result: ThingDto) -> None:
     # pylint: disable=W0212
     # noinspection PyProtectedMember
-    result['color_rgb'] = thing.color_rgb._asdict()
+    result['color_rgb'] = None if thing.color_rgb is None else thing.color_rgb._asdict()
 
 
 @register_dto_filler('has_color_temp')
