@@ -12,6 +12,8 @@ class AbsPausablePlayer(AbsPlayer, Pausable):
     Player is an abstraction of basic player device or application. It can be
     in one of three states: 'stopped', 'playing' and 'paused'.
     """
+    _type = "pausable_player"
+
     class States(IntEnum):
         unknown = -1
         playing = 1

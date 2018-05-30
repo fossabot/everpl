@@ -16,6 +16,7 @@ class AbsTrackPlayer(AbsPausablePlayer, TrackSwitching, TrackInfo):
     information about the current playing audio track, video, station or
     stream.
     """
+    _type = "track_player"
 
     def next(self) -> None:
         """

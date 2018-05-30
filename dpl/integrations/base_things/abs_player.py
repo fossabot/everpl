@@ -12,6 +12,8 @@ class AbsPlayer(AbsTogglableActuator, PlayStop, IsActive):
     Player is an abstraction of basic player device or application. It can be
     in one of two states: 'stopped' and 'playing'.
     """
+    _type = "player"
+
     class States(IntEnum):
         unknown = -1
         playing = 1
