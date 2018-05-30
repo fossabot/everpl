@@ -6,7 +6,7 @@ import uuid
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.integrations.abs_actuator import AbsActuator
+from dpl.integrations.base_things import AbsActuator
 from dpl.connections import Connection
 
 

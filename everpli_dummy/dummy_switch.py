@@ -2,7 +2,7 @@
 # Include 3rd-party modules
 
 # Include DPL modules
-from dpl.integrations.abs_on_off import AbsOnOff
+from dpl.integrations.base_things import AbsOnOff
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
@@ -119,6 +119,18 @@ class DummySwitchFactory(ThingFactory):
 
 ThingRegistry.register_factory(
     integration_name="dummy",
-    thing_type="switch",
+    thing_type="light",
+    factory=DummySwitchFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="power_switch",
+    factory=DummySwitchFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="fan",
     factory=DummySwitchFactory()
 )

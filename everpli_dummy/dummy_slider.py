@@ -3,7 +3,7 @@ import time
 
 # Include 3rd-party modules
 # Include DPL modules
-from dpl.integrations.abs_open_closed import AbsOpenClosed
+from dpl.integrations.base_things import AbsOpenClosed
 from dpl.integrations import ThingFactory, ThingRegistry
 from dpl.model.domain_id import TDomainId
 
@@ -144,6 +144,24 @@ class DummySliderFactory(ThingFactory):
 
 ThingRegistry.register_factory(
     integration_name="dummy",
-    thing_type="slider",
+    thing_type="shades",
+    factory=DummySliderFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="door_actuator",
+    factory=DummySliderFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="lock",
+    factory=DummySliderFactory()
+)
+
+ThingRegistry.register_factory(
+    integration_name="dummy",
+    thing_type="valve",
     factory=DummySliderFactory()
 )
