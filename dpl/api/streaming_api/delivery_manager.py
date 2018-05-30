@@ -72,10 +72,11 @@ class SessionRetainedStorage(object):
                instantiation
         """
         self.messages = OrderedDict()  # type: OrderedDict[int, Message]
-        self.n_of_retransmissions = 0
+        self.delay = 1
         self.retransmission_handler = None  # type: Optional[asyncio.Future]
         self.messages_lock = asyncio.Lock(loop=None)
         self.last_message_number = 0
+        self.has_retained_event = asyncio.Event(loop=loop)
 
 
 # SessionRescheduledRegistry is Mapping of a unique message identifier and
@@ -173,13 +174,31 @@ class DeliveryManager(object):
 
         async with session_retained.messages_lock:
             if message_id in session_retained.messages:
-                session_retained.messages.pop(message_id)
-                session_retained.n_of_retransmissions = 0
+                self._remove_retained(message_id, session_retained)
             else:
                 LOGGER.info(
                     "Message #%d was already acknowledged, ignored. "
                     "Session %s.", message_id, session_id
                 )
+
+    @staticmethod
+    def _remove_retained(
+            message_id: int, session_retained: SessionRetainedStorage
+    ):
+        """
+        Removes the message from a list of retained messages. Sets the number
+        of retransmissions to zero and stops the has_retained_event if there
+        is no messages left.
+
+        :param message_id: an identifier of a message to be removed
+        :param session_retained: a storage of retained messages
+        :return: None
+        """
+        session_retained.messages.pop(message_id)
+        session_retained.delay = 1
+
+        if not session_retained.messages:  # if there is no messages left
+            session_retained.has_retained_event.clear()  # ...stop event
 
     async def pause_for(self, session_id: TDomainId) -> None:
         """
@@ -214,7 +233,7 @@ class DeliveryManager(object):
             session_id, SessionRetainedStorage()
         )
 
-        session_retained.n_of_retransmissions = 0
+        session_retained.delay = 1
         old_handler = session_retained.retransmission_handler
 
         if old_handler is not None and not old_handler.done():
@@ -294,6 +313,7 @@ class DeliveryManager(object):
             message.message_id = (last_message_id + 1) % self.MAX_MESSAGE_ID
             session_retained.last_message_number = message.message_id
             session_retained.messages[message.message_id] = message
+            session_retained.has_retained_event.set()
 
     async def _retransmission_handler(
             self, session_id: TDomainId,
@@ -309,14 +329,23 @@ class DeliveryManager(object):
                retransmissions performed by this handler
         :return: None
         """
-        delay = 1
+        session_retained.delay = 1
 
         while True:  # interrupted with future cancellation
-            delay = min(delay * 2, self.MAX_RETRANSMISSION_DELAY)
-            await asyncio.sleep(delay, loop=self._loop)
+            # block if there is no retained messages in the storage
+            await session_retained.has_retained_event.wait()
 
+            # wait the specified amount of time between retransmissions
+            await asyncio.sleep(session_retained.delay, loop=self._loop)
+
+            # fetch one message (any) and send it to the list of pending
             async with session_retained.messages_lock:
                 for message in session_retained.messages.values():
                     await self._add_to_pending(session_id, message)
+                    break  # add only one message to the queue at a time
 
-            session_retained.n_of_retransmissions += 1
+            # increase the delay between retransmissions (2^n growth)
+            session_retained.delay = min(
+                session_retained.delay * 2,
+                self.MAX_RETRANSMISSION_DELAY
+            )
