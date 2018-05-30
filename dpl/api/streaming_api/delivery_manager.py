@@ -292,7 +292,7 @@ class DeliveryManager(object):
         async with session_retained.messages_lock:
             last_message_id = session_retained.last_message_number
             message.message_id = (last_message_id + 1) % self.MAX_MESSAGE_ID
-            session_retained.last_message_number = last_message_id
+            session_retained.last_message_number = message.message_id
             session_retained.messages[message.message_id] = message
 
     async def _retransmission_handler(
