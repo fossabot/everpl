@@ -1,19 +1,13 @@
 from typing import Optional, Mapping, Any, Iterable
 
 from dpl.model.domain_id import TDomainId
-from dpl.dtos.thing_dto import ThingDto
-from .service_exceptions import (
-    ServiceEntityResolutionError,
-    ServiceTypeError,
-    ServiceInvalidArgumentsError,
-    ServiceUnsupportedCommandError
-)
 from .abs_entity_service import AbsEntityService
 
-from dpl.repos.abs_routine_repo import AbsRoutineRepo
+from dpl.utils.observer import Observer
+from dpl.events.event_hub import EventHub
 
 
-class AbsRoutineService(AbsEntityService):
+class AbsRoutineService(AbsEntityService, Observer[EventHub]):
     def create_routine(self, *args, **kwargs):
         raise NotImplementedError()
 
