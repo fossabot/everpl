@@ -16,6 +16,7 @@ from dpl.model.user import User
 from dpl.placements.placement import Placement
 from dpl.settings.connection_settings import ConnectionSettings
 from dpl.settings.thing_settings import ThingSettings
+from dpl.routines.routine import Routine
 
 
 class JSONEncodedDict(sa.types.TypeDecorator):
@@ -65,6 +66,7 @@ class DbMapper(object):
         self.table_placements = None  # type: sa.Table
         self.table_con_settings = None  # type: sa.Table
         self.table_thing_settings = None  # type: sa.Table
+        self.table_routines = None  # type: sa.Table
 
     def init_tables(self) -> None:
         """
@@ -107,6 +109,20 @@ class DbMapper(object):
             sa.Column('_placement_id', sa.String(32), sa.ForeignKey("placements._domain_id"), nullable=True)
         )
 
+        self.table_routines = sa.Table(
+            'routines', self.metadata,
+            sa.Column('_domain_id', sa.String(32), primary_key=True),
+            sa.Column(
+                '_author_id', sa.String(32), sa.ForeignKey("users._domain_id"),
+                nullable=False
+            ),
+            sa.Column('_is_enabled', sa.Boolean),
+            sa.Column('_sensitivity_list', sa.PickleType),
+            sa.Column('_friendly_name', sa.String(50), nullable=True),
+            sa.Column('_actions', sa.PickleType),
+            sa.Column('_condition', sa.PickleType, nullable=True)
+        )
+
     def init_mappers(self) -> None:
         """
         Creates mappers between the object model classes and the
@@ -118,6 +134,7 @@ class DbMapper(object):
         sa.orm.mapper(Placement, self.table_placements)
         sa.orm.mapper(ConnectionSettings, self.table_con_settings)
         sa.orm.mapper(ThingSettings, self.table_thing_settings)
+        sa.orm.mapper(Routine, self.table_routines)
 
     def create_all_tables(self, bind: sa.engine.Connectable):
         """
